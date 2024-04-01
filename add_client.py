@@ -79,7 +79,7 @@ def add_client():
 
 # Printare date
 def refresh():
-    get_id = "SELECT client_id FROM clienti WHERE denumire = %s"
+    get_id = "SELECT client_id FROM clienti WHERE LOCATE(%s,denumire)>0"
     search_field = nume_firma_input.get()
     search = (search_field, )
     result = my_cursor.execute(get_id, search)
