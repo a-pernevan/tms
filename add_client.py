@@ -47,6 +47,10 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
 
 # Golire campuri dupa salvarea clientului
 
+def on_closing():
+    if messagebox.askokcancel("Inchidere", "Doriti sa inchideti fereastra?"):
+        root.destroy()
+
 def clear_fields():
     nume_firma_input.delete(0, END)
     cui_firma_tara.delete(0, END)
@@ -81,7 +85,7 @@ def add_client():
     refresh()
 
 
-# Printare date
+# Actualizare Id
 def refresh():
     get_id = "SELECT client_id FROM clienti WHERE LOCATE(%s,denumire)>0"
     search_field = nume_firma_input.get()
@@ -227,4 +231,7 @@ anulare_adaugare.grid(row=0, column=1, padx=5)
 afisare_tot = Button(frame3, text="Afisare", command=refresh)
 afisare_tot.grid(row=0, column=2, padx=5)
 
+
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
