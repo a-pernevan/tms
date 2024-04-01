@@ -9,6 +9,8 @@ root = Tk()
 root.title("Adaugare firma")
 root.geometry("800x600")
 
+# root.grid_columnconfigure((0,1), weight=1)
+
 # Preluare date de la ANAF
 def check_anaf():
     query_params = [{
@@ -110,7 +112,7 @@ sediu_social_input = Entry(detail_frame, width=50)
 sediu_social_input.grid(row=6, column=1, columnspan=3, sticky="w", pady=5)
 
 frame2 = LabelFrame(root, text="Informatii", padx=10, pady=10)
-frame2.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+frame2.grid(row=0, column=1, padx=10, pady=10, sticky="nw", rowspan=6)
 
 var_efactura = StringVar()
 var_tvaincasare = StringVar()
