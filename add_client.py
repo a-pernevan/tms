@@ -1,15 +1,91 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import requests
 from datetime import date
 import json
+import mysql.connector
 
 
 root = Tk()
 root.title("Adaugare firma")
 root.geometry("800x600")
 
+# Create connection to database
+tms_db = mysql.connector.connect(
+    host = "192.168.200.138",
+    user = "andrei",
+    passwd = "Ar10fiatbti#",
+    database = "tms-db",
+    auth_plugin='mysql_native_password'
+)
+
+my_cursor = tms_db.cursor()
+
+my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
+                  cui_tara VARCHAR(255), \
+                  cui_nr INT(20), \
+                  reg_com VARCHAR(255), \
+                  oras VARCHAR(255), \
+                  judet VARCHAR(255), \
+                  tara VARCHAR(255), \
+                  cod_postal VARCHAR(255), \
+                  tip_tara VARCHAR(10), \
+                  sediu_social VARCHAR(255),\
+                  e_factura INT(1), \
+                  tva_incasare INT(1), \
+                  inactiv INT(1), \
+                  client_id INT AUTO_INCREMENT PRIMARY KEY)")
+
+# my_cursor.execute("SELECT * FROM clienti")
+# print(my_cursor.description)
+
 # root.grid_columnconfigure((0,1), weight=1)
+
+# Golire campuri dupa salvarea clientului
+
+def clear_fields():
+    nume_firma_input.delete(0, END)
+    cui_firma_tara.delete(0, END)
+    cui_firma_nr.delete(0, END)
+    reg_com_input.delete(0, END)
+    oras_input.delete(0, END)
+    judet_input.delete(0, END)
+    tara_input.delete(0, END)
+    cod_postal_input.delete(0, END)
+    tip_tara_select.current(0)
+    sediu_social_input.delete(0, END)
+    efactura_check.deselect()
+    tvaincasare_check.deselect()
+
+# Anulare introducere client
+def anulare_client():
+    confirm_cancel = messagebox.askyesno(title="Anulare inregistrare", message="Sigur anulam?")
+    if confirm_cancel:
+        clear_fields()
+    
+
+# Adaugare client in baza de date
+def add_client():
+    sql_command = "INSERT INTO clienti (denumire, cui_tara, cui_nr, reg_com, oras, judet, tara, cod_postal, tip_tara, sediu_social, e_factura, tva_incasare, inactiv) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (nume_firma_input.get(), cui_firma_tara.get(), cui_firma_nr.get(), reg_com_input.get(), oras_input.get(), judet_input.get(), tara_input.get(), cod_postal_input.get(), tip_tara_select.get(), sediu_social_input.get(), var_efactura.get(), var_tvaincasare.get(), var_inactiv.get())
+    my_cursor.execute(sql_command, values)
+
+    # Commit data to DB
+    tms_db.commit()
+
+    confirmation = messagebox.showinfo(title="Adaugare client nou", message="Clientul a fost adaugat")
+    refresh()
+
+
+# Printare date
+def refresh():
+    get_id = "SELECT client_id FROM clienti WHERE denumire = %s"
+    search_field = nume_firma_input.get()
+    search = (search_field, )
+    result = my_cursor.execute(get_id, search)
+    result = my_cursor.fetchall()
+    print(result[0][0])
+    client_id.configure(text=f"Numar TMS: {result[0][0]}")
 
 # Preluare date de la ANAF
 def check_anaf():
@@ -42,6 +118,7 @@ def check_anaf():
         print(var_efactura.get())
 
 tara_values = [
+    "",
     "UE",
     "NON-UE",
     "Romania"
@@ -103,6 +180,7 @@ tip_tara_label = Label(detail_frame, text="Tip Tara: ")
 tip_tara_label.grid(row=5, column=0, sticky="w", pady=5)
 
 tip_tara_select = ttk.Combobox(detail_frame, value=tara_values)
+tip_tara_select.current(0)
 tip_tara_select.grid(row=5, column=1, sticky="w", pady=5, columnspan=2)
 
 sediu_social_label = Label(detail_frame, text="Sediu Social: ")
@@ -129,5 +207,20 @@ tvaincasare_check.grid(row=1, column=0, sticky="w")
 inactiv_check = Checkbutton(frame2, text="Inactiv", variable=var_inactiv, onvalue=True, offvalue=False)
 inactiv_check.deselect()
 inactiv_check.grid(row=2, column=0, sticky="w")
+
+client_id = Label(frame2, text="Numar TMS:")
+client_id.grid(row=3, column=0, sticky="w")
+
+frame3 = LabelFrame(root, text = "Adaugare / Anulare", padx=10, pady=10)
+frame3.grid(row=1, column=0, pady=10)
+
+adaugare_client = Button(frame3, text="Adaugare", command = add_client)
+adaugare_client.grid(row=0, column=0)
+
+anulare_adaugare = Button(frame3, text="Anulare", command=anulare_client)
+anulare_adaugare.grid(row=0, column=1, padx=5)
+
+afisare_tot = Button(frame3, text="Afisare", command=refresh)
+afisare_tot.grid(row=0, column=2, padx=5)
 
 root.mainloop()
