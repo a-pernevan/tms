@@ -4,18 +4,22 @@ import requests
 from datetime import date
 import json
 import mysql.connector
+import os
+from dotenv import load_dotenv
 
 
 root = Tk()
 root.title("Adaugare firma")
 root.geometry("800x600")
 
+load_dotenv()
+
 # Create connection to database
 tms_db = mysql.connector.connect(
-    host = "192.168.200.138",
-    user = "andrei",
-    passwd = "Ar10fiatbti#",
-    database = "tms-db",
+    host = os.getenv("HOST"),
+    user = os.getenv("USER"),
+    passwd = os.getenv("PASS"),
+    database = os.getenv("DB"),
     auth_plugin='mysql_native_password'
 )
 
