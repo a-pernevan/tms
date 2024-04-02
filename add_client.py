@@ -6,7 +6,7 @@ import json
 import mysql.connector
 import os
 from dotenv import load_dotenv
-from check_vies import *
+from check_vat import *
 
 
 root = Tk()
@@ -18,14 +18,18 @@ load_dotenv()
 salvat = False
 
 # Create connection to database
-tms_db = mysql.connector.connect(
-    host = os.getenv("HOST"),
-    user = os.getenv("USER"),
-    passwd = os.getenv("PASS"),
-    database = os.getenv("DB"),
-    auth_plugin='mysql_native_password'
-)
-
+try:
+    tms_db = mysql.connector.connect(
+        host = os.getenv("HOST"),
+        user = os.getenv("USER"),
+        passwd = os.getenv("PASS"),
+        database = os.getenv("DB"),
+        auth_plugin='mysql_native_password'
+    )
+except:
+    print("Could not connect to MySQL")
+    mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+    quit()
 my_cursor = tms_db.cursor()
 
 my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
@@ -111,6 +115,8 @@ def vies_check():
         cui_vies_number = cui_firma_nr.get()
         rezultat = Vies(cui_vies_country, cui_vies_number)
         print(rezultat.check())
+        if not rezultat.check():
+            information = messagebox.showinfo(title="Negasit", message="CUI negasit.")
     else:
         information = messagebox.showwarning(title="Eroare", message="Te rog completeaza tara si numar VAT")
 
