@@ -258,7 +258,7 @@ client_id.grid(row=8, column=0, sticky="w")
 
 # Detaliile bancare
 frame_banca = LabelFrame(root, text="Detalii bancare", padx=10, pady=10)
-frame_banca.grid(row=1, column=0, pady=10, padx=10, sticky="nw")
+frame_banca.grid(row=1, column=0, pady=10, padx=10, sticky="nwe")
 
 banca_label = Label(frame_banca, text="Banca: ")
 banca_label.grid(row=0, column=0, sticky="w")
@@ -280,39 +280,77 @@ cont_eur_input.grid(row=2, column=1, sticky="w", pady=5)
 
 # Conditii incasare / plata
 frame_incasare_plata = LabelFrame(root, text="Conditii incasare/plata", padx=5, pady=5)
-frame_incasare_plata.grid(row=0, column=2, sticky="nw", padx=10, pady=10)
+frame_incasare_plata.grid(row=0, column=2, sticky="nws", padx=10, pady=10)
 
 frame_incasare = LabelFrame(frame_incasare_plata, text="Incasare", padx=5, pady=5)
 frame_incasare.grid(row=0, column=0, sticky="nw")
 
 nr_zile_incasare = Label(frame_incasare, text="Nr. Zile: ")
-nr_zile_incasare.grid(row=0, column=0)
+nr_zile_incasare.grid(row=0, column=0, sticky="w")
 
 nr_zile_incasare_input = Entry(frame_incasare, width=10)
-nr_zile_incasare_input.grid(row=0, column=1)
+nr_zile_incasare_input.grid(row=0, column=1, sticky="w")
 
 # Radio button pt conditii incasare:
-MODES = [
-    ("Data facturii", "data_fact"),
-    ("De la data primirii / iesirii", "data_in_out"),
-]
 
-mod_plata = StringVar()
+tip_incasare = StringVar()
+tip_incasare.set("data_in_out")
+
+Radiobutton(frame_incasare, text="De la data facturii", variable=tip_incasare, value="data_fact").grid(row=1, column=0, sticky="w", columnspan=2)
+Radiobutton(frame_incasare, text="De la data primirii/iesirii facturii", variable=tip_incasare, value="data_in_out").grid(row=2, column=0, sticky="w", columnspan=2)
+
+frame_plata = LabelFrame(frame_incasare_plata, text="Plata", padx=5, pady=5)
+frame_plata.grid(row=1, column=0, sticky="nw")
+
+nr_zile_plata = Label(frame_plata, text="Nr. Zile: ")
+nr_zile_plata.grid(row=0, column=0, sticky="w")
+
+nr_zile_plata_input = Entry(frame_plata, width=10)
+nr_zile_plata_input.grid(row=0, column=1, sticky="w")
+
+# Radio button pt conditii incasare:
+
+tip_plata = StringVar()
+tip_plata.set("data_in_out")
+
+Radiobutton(frame_plata, text="De la data facturii", variable=tip_plata, value="data_fact").grid(row=1, column=0, sticky="w", columnspan=2)
+Radiobutton(frame_plata, text="De la data primirii/iesirii facturii", variable=tip_plata, value="data_in_out").grid(row=2, column=0, sticky="w", columnspan=2)
 
 # Butoanele de salvare, anulare, verificare
 frame_butoane = LabelFrame(root, text = "Adaugare / Anulare", padx=10, pady=10)
-frame_butoane.grid(row=2, column=0, pady=10)
+frame_butoane.grid(row=2, column=0, pady=10, padx=10, sticky="nw")
 
 adaugare_client = Button(frame_butoane, text="Adaugare", command = add_client)
-adaugare_client.grid(row=0, column=0)
+adaugare_client.grid(row=0, column=0, sticky="we")
 
 anulare_adaugare = Button(frame_butoane, text="Anulare", command=anulare_client)
-anulare_adaugare.grid(row=0, column=1, padx=5)
+anulare_adaugare.grid(row=0, column=1, padx=5, sticky="we")
 
 afisare_tot = Button(frame_butoane, text="Afisare", command=refresh)
-afisare_tot.grid(row=0, column=2, padx=5)
+afisare_tot.grid(row=0, column=2, padx=5, sticky="we")
 
 
+# Frame cu datele de contact
+frame_contact = LabelFrame(root, text="Date contact", padx=10, pady=10)
+frame_contact.grid(row=1, column=1, pady=10, padx=10, sticky="nwe", columnspan=2)
+
+tel_label = Label(frame_contact, text="Telefon: ")
+tel_label.grid(row=0, column=0, sticky="w")
+
+tel_input = Entry(frame_contact, width=40)
+tel_input.grid(row=0, column=1, sticky="w")
+
+email_label = Label(frame_contact, text="Email: ")
+email_label.grid(row=1, column=0, sticky="w", pady=5)
+
+email_input = Entry(frame_contact, width=40)
+email_input.grid(row=1, column=1, sticky="w", pady=5)
+
+www_label = Label(frame_contact, text="Web: ")
+www_label.grid(row=2, column=0, sticky="w", pady=5)
+
+www_input = Entry(frame_contact, width=40)
+www_input.grid(row=2, column=1, sticky="w", pady=5)
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
