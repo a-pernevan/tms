@@ -10,9 +10,11 @@ from dotenv import load_dotenv
 
 root = Tk()
 root.title("Adaugare firma")
-root.geometry("800x600")
+root.geometry("900x600")
 
 load_dotenv()
+
+salvat = False
 
 # Create connection to database
 tms_db = mysql.connector.connect(
@@ -48,7 +50,10 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
 # Golire campuri dupa salvarea clientului
 
 def on_closing():
-    if messagebox.askokcancel("Inchidere", "Doriti sa inchideti fereastra?"):
+    if salvat == False:
+        if messagebox.askokcancel("Inchidere", "Doriti sa inchideti fereastra?"):
+            root.destroy()
+    else:
         root.destroy()
 
 def clear_fields():
@@ -74,13 +79,15 @@ def anulare_client():
 
 # Adaugare client in baza de date
 def add_client():
+    global salvat
     sql_command = "INSERT INTO clienti (denumire, cui_tara, cui_nr, reg_com, oras, judet, tara, cod_postal, tip_tara, sediu_social, e_factura, tva_incasare, inactiv) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     values = (nume_firma_input.get(), cui_firma_tara.get(), cui_firma_nr.get(), reg_com_input.get(), oras_input.get(), judet_input.get(), tara_input.get(), cod_postal_input.get(), tip_tara_select.get(), sediu_social_input.get(), var_efactura.get(), var_tvaincasare.get(), var_inactiv.get())
     my_cursor.execute(sql_command, values)
 
     # Commit data to DB
     tms_db.commit()
-
+    adaugare_client.configure(state=DISABLED)
+    salvat = True
     confirmation = messagebox.showinfo(title="Adaugare client nou", message="Clientul a fost adaugat")
     refresh()
 
@@ -122,6 +129,9 @@ def check_anaf():
 
         if data["found"][0]["stare_inactiv"]["statusInactivi"]:
             inactiv_check.select()
+
+        if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
+            platitor_tva.select()
 
         print(var_efactura.get())
 
@@ -197,13 +207,20 @@ sediu_social_label.grid(row=6, column=0, sticky="w", pady=5)
 sediu_social_input = Entry(detail_frame, width=50)
 sediu_social_input.grid(row=6, column=1, columnspan=3, sticky="w", pady=5)
 
-frame2 = LabelFrame(root, text="Informatii", padx=10, pady=10)
-frame2.grid(row=0, column=1, padx=10, pady=10, sticky="nw", rowspan=6)
+frame2 = LabelFrame(root, text="Informatii", padx=5, pady=5)
+frame2.grid(row=0, column=1, padx=10, pady=10, sticky="nw")
 
+# Creare variabile pentru check boxes
 var_efactura = StringVar()
 var_tvaincasare = StringVar()
 var_inactiv = StringVar()
+var_client = StringVar()
+var_furnizor = StringVar()
+var_blocat = StringVar()
+var_tva = StringVar()
+var_facturabil = StringVar()
 
+# Variabile de bifat / debifat
 efactura_check = Checkbutton(frame2, text="E-Factura", variable=var_efactura, onvalue=True, offvalue=False)
 efactura_check.deselect()
 efactura_check.grid(row=0, column=0, sticky="w")
@@ -216,19 +233,83 @@ inactiv_check = Checkbutton(frame2, text="Inactiv", variable=var_inactiv, onvalu
 inactiv_check.deselect()
 inactiv_check.grid(row=2, column=0, sticky="w")
 
+platitor_tva = Checkbutton(frame2, text="Neplatitor TVA", variable=var_tva, onvalue=True, offvalue=False)
+platitor_tva.deselect()
+platitor_tva.grid(row=3, column=0, sticky="w")
+
+facturabil = Checkbutton(frame2, text="Facturabil", variable=var_facturabil, onvalue=True, offvalue=False)
+facturabil.deselect()
+facturabil.grid(row=4, column=0, sticky="w")
+
+client_check = Checkbutton(frame2, text="Client", variable=var_client, onvalue=True, offvalue=False)
+client_check.deselect()
+client_check.grid(row=5, column=0, sticky="w")
+
+furnizor_check = Checkbutton(frame2, text="Furnizor", variable=var_furnizor, onvalue=True, offvalue=False)
+furnizor_check.deselect()
+furnizor_check.grid(row=6, column=0, sticky="w")
+
+blocat_check = Checkbutton(frame2, text="Blocat", variable=var_blocat, onvalue=True, offvalue=False)
+blocat_check.deselect()
+blocat_check.grid(row=7, column=0, sticky="w")
+
 client_id = Label(frame2, text="Numar TMS:")
-client_id.grid(row=3, column=0, sticky="w")
+client_id.grid(row=8, column=0, sticky="w")
 
-frame3 = LabelFrame(root, text = "Adaugare / Anulare", padx=10, pady=10)
-frame3.grid(row=1, column=0, pady=10)
+# Detaliile bancare
+frame_banca = LabelFrame(root, text="Detalii bancare", padx=10, pady=10)
+frame_banca.grid(row=1, column=0, pady=10, padx=10, sticky="nw")
 
-adaugare_client = Button(frame3, text="Adaugare", command = add_client)
+banca_label = Label(frame_banca, text="Banca: ")
+banca_label.grid(row=0, column=0, sticky="w")
+
+banca_input = Entry(frame_banca, width=50)
+banca_input.grid(row=0, column=1, sticky="w")
+
+cont_ron_label = Label(frame_banca, text="Cont RON: ")
+cont_ron_label.grid(row=1, column=0, sticky="w", pady=5)
+
+cont_ron_input = Entry(frame_banca, width=50)
+cont_ron_input.grid(row=1, column=1, sticky="w", pady=5)
+
+cont_eur_label = Label(frame_banca, text="Cont EUR: ")
+cont_eur_label.grid(row=2, column=0, sticky="w", pady=5)
+
+cont_eur_input = Entry(frame_banca, width=50)
+cont_eur_input.grid(row=2, column=1, sticky="w", pady=5)
+
+# Conditii incasare / plata
+frame_incasare_plata = LabelFrame(root, text="Conditii incasare/plata", padx=5, pady=5)
+frame_incasare_plata.grid(row=0, column=2, sticky="nw", padx=10, pady=10)
+
+frame_incasare = LabelFrame(frame_incasare_plata, text="Incasare", padx=5, pady=5)
+frame_incasare.grid(row=0, column=0, sticky="nw")
+
+nr_zile_incasare = Label(frame_incasare, text="Nr. Zile: ")
+nr_zile_incasare.grid(row=0, column=0)
+
+nr_zile_incasare_input = Entry(frame_incasare, width=10)
+nr_zile_incasare_input.grid(row=0, column=1)
+
+# Radio button pt conditii incasare:
+MODES = [
+    ("Data facturii", "data_fact"),
+    ("De la data primirii / iesirii", "data_in_out"),
+]
+
+mod_plata = StringVar()
+
+# Butoanele de salvare, anulare, verificare
+frame_butoane = LabelFrame(root, text = "Adaugare / Anulare", padx=10, pady=10)
+frame_butoane.grid(row=2, column=0, pady=10)
+
+adaugare_client = Button(frame_butoane, text="Adaugare", command = add_client)
 adaugare_client.grid(row=0, column=0)
 
-anulare_adaugare = Button(frame3, text="Anulare", command=anulare_client)
+anulare_adaugare = Button(frame_butoane, text="Anulare", command=anulare_client)
 anulare_adaugare.grid(row=0, column=1, padx=5)
 
-afisare_tot = Button(frame3, text="Afisare", command=refresh)
+afisare_tot = Button(frame_butoane, text="Afisare", command=refresh)
 afisare_tot.grid(row=0, column=2, padx=5)
 
 
