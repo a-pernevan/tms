@@ -114,8 +114,8 @@ def vies_check():
         cui_vies_country = cui_firma_tara.get()
         cui_vies_number = cui_firma_nr.get()
         rezultat = Vies(cui_vies_country, cui_vies_number)
-        print(rezultat.check())
-        if not rezultat.check():
+        print(rezultat.check_vies())
+        if not rezultat.check_vies():
             information = messagebox.showinfo(title="Negasit", message="CUI negasit.")
     else:
         information = messagebox.showwarning(title="Eroare", message="Te rog completeaza tara si numar VAT")
@@ -123,43 +123,45 @@ def vies_check():
 
 # Preluare date de la ANAF
 def check_anaf():
-    if cui_firma_nr.get():
-        query_params = [{
-        "cui": cui_firma_nr.get(),
-        "data": date.today().strftime("%Y-%m-%d")
-        }]
-        headers = {"Content-Type": "application/json"}
-        api_addr = "https://webservicesp.anaf.ro/PlatitorTvaRest/api/v8/ws/tva"
-        response = requests.post(api_addr, data=json.dumps(query_params), headers=headers)
-        data = response.json()
+    pass
+# def check_anaf():
+#     if cui_firma_nr.get():
+#         query_params = [{
+#         "cui": cui_firma_nr.get(),
+#         "data": date.today().strftime("%Y-%m-%d")
+#         }]
+#         headers = {"Content-Type": "application/json"}
+#         api_addr = "https://webservicesp.anaf.ro/PlatitorTvaRest/api/v8/ws/tva"
+#         response = requests.post(api_addr, data=json.dumps(query_params), headers=headers)
+#         data = response.json()
 
-        if data["found"]:
-            nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
-            reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
-            oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
-            judet_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Judet"])
-            tara_input.insert(0, "Romania")
-            cod_postal_input.insert(0, data["found"][0]["adresa_sediu_social"]["scod_Postal"])
-            sediu_social_input.insert(0, data["found"][0]["date_generale"]["adresa"])
-            if data["found"][0]["date_generale"]["statusRO_e_Factura"]:
-                efactura_check.select()
+#         if data["found"]:
+#             nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
+#             reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
+#             oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
+#             judet_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Judet"])
+#             tara_input.insert(0, "Romania")
+#             cod_postal_input.insert(0, data["found"][0]["adresa_sediu_social"]["scod_Postal"])
+#             sediu_social_input.insert(0, data["found"][0]["date_generale"]["adresa"])
+#             if data["found"][0]["date_generale"]["statusRO_e_Factura"]:
+#                 efactura_check.select()
             
-            if data["found"][0]["inregistrare_RTVAI"]["statusTvaIncasare"]:
-                tvaincasare_check.select()
+#             if data["found"][0]["inregistrare_RTVAI"]["statusTvaIncasare"]:
+#                 tvaincasare_check.select()
 
-            if data["found"][0]["stare_inactiv"]["statusInactivi"]:
-                inactiv_check.select()
+#             if data["found"][0]["stare_inactiv"]["statusInactivi"]:
+#                 inactiv_check.select()
 
-            if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
-                platitor_tva.select()
+#             if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
+#                 platitor_tva.select()
 
-            print(var_efactura.get())
+#             print(var_efactura.get())
 
-        else:
-            information = messagebox.showerror(title="Eroare", message="CUI nu a fost gasit")
+#         else:
+#             information = messagebox.showerror(title="Eroare", message="CUI nu a fost gasit")
 
-    else:
-        information = messagebox.showwarning(title="Eroare", message="Campul CUI nu poate fi gol!")
+#     else:
+#         information = messagebox.showwarning(title="Eroare", message="Campul CUI nu poate fi gol!")
 
 tara_values = [
     "",
