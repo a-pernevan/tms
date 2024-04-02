@@ -106,10 +106,13 @@ def refresh():
 
 # Preluare date de la VIES
 def vies_check():
-    cui_vies_country = cui_firma_tara.get()
-    cui_vies_number = cui_firma_nr.get()
-    rezultat = Vies(cui_vies_country, cui_vies_number)
-    print(rezultat.check())
+    if cui_firma_tara.get() and cui_firma_nr.get():
+        cui_vies_country = cui_firma_tara.get()
+        cui_vies_number = cui_firma_nr.get()
+        rezultat = Vies(cui_vies_country, cui_vies_number)
+        print(rezultat.check())
+    else:
+        information = messagebox.showwarning(title="Eroare", message="Te rog completeaza tara si numar VAT")
 
 
 # Preluare date de la ANAF
