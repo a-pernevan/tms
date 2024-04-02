@@ -6,6 +6,7 @@ import json
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from check_vies import *
 
 
 root = Tk()
@@ -101,39 +102,55 @@ def refresh():
     result = my_cursor.fetchall()
     print(result[0][0])
     client_id.configure(text=f"Numar TMS: {result[0][0]}")
+    print(tip_plata.get())
+
+# Preluare date de la VIES
+def vies_check():
+    cui_vies_country = cui_firma_tara.get()
+    cui_vies_number = cui_firma_nr.get()
+    rezultat = Vies(cui_vies_country, cui_vies_number)
+    print(rezultat.check())
+
 
 # Preluare date de la ANAF
 def check_anaf():
-    query_params = [{
-    "cui": cui_firma_nr.get(),
-    "data": date.today().strftime("%Y-%m-%d")
-    }]
-    headers = {"Content-Type": "application/json"}
-    api_addr = "https://webservicesp.anaf.ro/PlatitorTvaRest/api/v8/ws/tva"
-    response = requests.post(api_addr, data=json.dumps(query_params), headers=headers)
-    data = response.json()
+    if cui_firma_nr.get():
+        query_params = [{
+        "cui": cui_firma_nr.get(),
+        "data": date.today().strftime("%Y-%m-%d")
+        }]
+        headers = {"Content-Type": "application/json"}
+        api_addr = "https://webservicesp.anaf.ro/PlatitorTvaRest/api/v8/ws/tva"
+        response = requests.post(api_addr, data=json.dumps(query_params), headers=headers)
+        data = response.json()
 
-    if data["found"]:
-        nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
-        reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
-        oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
-        judet_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Judet"])
-        tara_input.insert(0, "Romania")
-        cod_postal_input.insert(0, data["found"][0]["adresa_sediu_social"]["scod_Postal"])
-        sediu_social_input.insert(0, data["found"][0]["date_generale"]["adresa"])
-        if data["found"][0]["date_generale"]["statusRO_e_Factura"]:
-            efactura_check.select()
-        
-        if data["found"][0]["inregistrare_RTVAI"]["statusTvaIncasare"]:
-            tvaincasare_check.select()
+        if data["found"]:
+            nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
+            reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
+            oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
+            judet_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Judet"])
+            tara_input.insert(0, "Romania")
+            cod_postal_input.insert(0, data["found"][0]["adresa_sediu_social"]["scod_Postal"])
+            sediu_social_input.insert(0, data["found"][0]["date_generale"]["adresa"])
+            if data["found"][0]["date_generale"]["statusRO_e_Factura"]:
+                efactura_check.select()
+            
+            if data["found"][0]["inregistrare_RTVAI"]["statusTvaIncasare"]:
+                tvaincasare_check.select()
 
-        if data["found"][0]["stare_inactiv"]["statusInactivi"]:
-            inactiv_check.select()
+            if data["found"][0]["stare_inactiv"]["statusInactivi"]:
+                inactiv_check.select()
 
-        if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
-            platitor_tva.select()
+            if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
+                platitor_tva.select()
 
-        print(var_efactura.get())
+            print(var_efactura.get())
+
+        else:
+            information = messagebox.showerror(title="Eroare", message="CUI nu a fost gasit")
+
+    else:
+        information = messagebox.showwarning(title="Eroare", message="Campul CUI nu poate fi gol!")
 
 tara_values = [
     "",
@@ -155,20 +172,26 @@ nume_firma_input.grid(row=0, column=1, columnspan=3, sticky="w")
 cui_firma_label = Label(detail_frame, text="CUI:* ", anchor="e", justify=LEFT)
 cui_firma_label.grid(row=1, column=0, sticky="w", pady=5)
 
-cui_firma_tara = Entry(detail_frame, width=5)
-cui_firma_tara.grid(row=1, column=1, sticky="w", pady=5)
+cui_label = Label(detail_frame)
+cui_label.grid(row=1, column=1, sticky="w", columnspan=3)
 
-cui_firma_nr = Entry(detail_frame, justify=LEFT)
-cui_firma_nr.grid(row=1, column=2, sticky="w", pady=5)
+cui_firma_tara = Entry(cui_label, width=5)
+cui_firma_tara.grid(row=0, column=0, sticky="w", pady=5)
 
-get_mfinante = Button(detail_frame, text="Preluare ANAF", command=check_anaf)
-get_mfinante.grid(row=1, column=3, pady=5, sticky="w", padx=5)
+cui_firma_nr = Entry(cui_label, justify=LEFT)
+cui_firma_nr.grid(row=0, column=1, sticky="w", pady=5)
+
+get_mfinante = Button(cui_label, text="Preluare ANAF", command=check_anaf)
+get_mfinante.grid(row=0, column=2, pady=5, sticky="w", padx=5)
+
+get_vies = Button(cui_label, text="Preluare VIES", command=vies_check)
+get_vies.grid(row=0, column=3, pady=5, sticky="w", padx=5)
 
 reg_com_label = Label(detail_frame, text="Reg. Com.: ")
 reg_com_label.grid(row=2, column=0, pady=5)
 
 reg_com_input = Entry(detail_frame)
-reg_com_input.grid(row=2, column=1, pady=5, sticky="w", columnspan=2)
+reg_com_input.grid(row=2, column=1, pady=5, sticky="w")
 
 oras_label = Label(detail_frame, text="Oras: ")
 oras_label.grid(row=3, column=0, sticky="w", pady=5)
@@ -308,7 +331,7 @@ nr_zile_plata.grid(row=0, column=0, sticky="w")
 nr_zile_plata_input = Entry(frame_plata, width=10)
 nr_zile_plata_input.grid(row=0, column=1, sticky="w")
 
-# Radio button pt conditii incasare:
+# Radio button pt conditii plata:
 
 tip_plata = StringVar()
 tip_plata.set("data_in_out")
