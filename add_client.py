@@ -54,6 +54,10 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
 
 # Golire campuri dupa salvarea clientului
 
+# Salvare client din taste
+def save_client(e):
+    add_client()
+
 def on_closing():
     if salvat == False:
         if messagebox.askokcancel("Inchidere", "Doriti sa inchideti fereastra?"):
@@ -390,5 +394,6 @@ www_label.grid(row=2, column=0, sticky="w", pady=5)
 www_input = Entry(frame_contact, width=40)
 www_input.grid(row=2, column=1, sticky="w", pady=5)
 
+root.bind('<Control-s>', save_client)
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
