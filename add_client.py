@@ -6,7 +6,7 @@ import json
 import mysql.connector
 import os
 from dotenv import load_dotenv
-from check_vat import *
+from classes.check_vat import *
 
 
 root = Tk()
