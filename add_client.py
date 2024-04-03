@@ -123,7 +123,11 @@ def vies_check():
 
 # Preluare date de la ANAF
 def check_anaf():
-    pass
+    if cui_firma_nr.get():
+        cui_anaf_number = cui_firma_nr.get()
+        if cui_anaf_number.isdigit():
+            rezultat = Anaf(cui_anaf_number)
+            data = rezultat.check_anaf()
 # def check_anaf():
 #     if cui_firma_nr.get():
 #         query_params = [{
@@ -135,33 +139,33 @@ def check_anaf():
 #         response = requests.post(api_addr, data=json.dumps(query_params), headers=headers)
 #         data = response.json()
 
-#         if data["found"]:
-#             nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
-#             reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
-#             oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
-#             judet_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Judet"])
-#             tara_input.insert(0, "Romania")
-#             cod_postal_input.insert(0, data["found"][0]["adresa_sediu_social"]["scod_Postal"])
-#             sediu_social_input.insert(0, data["found"][0]["date_generale"]["adresa"])
-#             if data["found"][0]["date_generale"]["statusRO_e_Factura"]:
-#                 efactura_check.select()
+        if data["found"]:
+            nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
+            reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
+            oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
+            judet_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Judet"])
+            tara_input.insert(0, "Romania")
+            cod_postal_input.insert(0, data["found"][0]["adresa_sediu_social"]["scod_Postal"])
+            sediu_social_input.insert(0, data["found"][0]["date_generale"]["adresa"])
+            if data["found"][0]["date_generale"]["statusRO_e_Factura"]:
+                efactura_check.select()
             
-#             if data["found"][0]["inregistrare_RTVAI"]["statusTvaIncasare"]:
-#                 tvaincasare_check.select()
+            if data["found"][0]["inregistrare_RTVAI"]["statusTvaIncasare"]:
+                tvaincasare_check.select()
 
-#             if data["found"][0]["stare_inactiv"]["statusInactivi"]:
-#                 inactiv_check.select()
+            if data["found"][0]["stare_inactiv"]["statusInactivi"]:
+                inactiv_check.select()
 
-#             if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
-#                 platitor_tva.select()
+            if data["found"][0]["inregistrare_scop_Tva"]["scpTVA"] == False:
+                platitor_tva.select()
 
-#             print(var_efactura.get())
+            print(var_efactura.get())
 
-#         else:
-#             information = messagebox.showerror(title="Eroare", message="CUI nu a fost gasit")
+        else:
+            information = messagebox.showerror(title="Eroare", message="CUI nu a fost gasit")
 
-#     else:
-#         information = messagebox.showwarning(title="Eroare", message="Campul CUI nu poate fi gol!")
+    else:
+        information = messagebox.showwarning(title="Eroare", message="Campul CUI nu poate fi gol!")
 
 tara_values = [
     "",
