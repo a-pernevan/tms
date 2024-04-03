@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-import requests
 from datetime import date
-import json
 import mysql.connector
 import os
 from dotenv import load_dotenv

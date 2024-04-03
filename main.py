@@ -4,14 +4,14 @@ from tkinter import ttk
 from classes.clients import Clients
 
 root = Tk()
-root.title("TMS Project")
+root.title("TMS Project 2024")
 root.geometry("900x600")
 
 main_window = ttk.Notebook(root)
 main_window.pack(pady=0)
 
-main_frame = Frame(main_window, width=800, height=500)
-client_frame = Frame(main_window, width=800, height=500)
+main_frame = Frame(main_window, width=900, height=600)
+client_frame = Frame(main_window, width=900, height=600)
 
 main_frame.pack(fill=BOTH, expand=1)
 client_frame.pack(fill=BOTH, expand=1)
