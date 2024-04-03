@@ -1,6 +1,7 @@
 # import add_client
 from tkinter import *
 from tkinter import ttk
+from classes.clients import Clients
 
 root = Tk()
 root.title("TMS Project")
@@ -17,6 +18,10 @@ client_frame.pack(fill=BOTH, expand=1)
 
 main_window.add(main_frame, text="Principal")
 main_window.add(client_frame, text="Gestionare clienti")
+
+hello = Clients(main_frame)
+
+
 
 # add_client
 
