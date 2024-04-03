@@ -1,13 +1,18 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import ttk
 
 class Clients:
     def __init__(self, root):
-        my_frame = LabelFrame(root, text="Test class", padx=10, pady=10)
-        my_frame.pack()
-        button_test = Button(root, text="Test", command=self.button_test)
-        button_test.pack()
+        main_window = ttk.Notebook(root)
+        main_window.pack(pady=0)
 
-    def button_test(self):
-        self.message = messagebox.showinfo(title="Test", message="This is a test")
+        main_frame = Frame(main_window, width=900, height=600)
+        client_frame = Frame(main_window, width=900, height=600)
+
+        main_frame.pack(fill=BOTH, expand=1)
+        client_frame.pack(fill=BOTH, expand=1)
+
+        main_window.add(main_frame, text="Principal")
+        main_window.add(client_frame, text="Gestionare clienti")
         
