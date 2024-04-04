@@ -134,7 +134,7 @@ def add_client():
                         %s, %s, %s, %s)"
         values = (nume_firma_input.get(), 
                 cui_firma_tara.get(), 
-                cui_firma_nr.get(), 
+                int(cui_firma_nr.get()), 
                 reg_com_input.get(), 
                 oras_input.get(), 
                 judet_input.get(), 
@@ -165,7 +165,9 @@ def add_client():
         try:
             my_cursor.execute(sql_command, values)
         except mysql.connector.Error as err:
-            print("Something went wrong: {}".format(err))
+            # print("Something went wrong: {}".format(err))
+            if str(err).split(" ")[0] == "1062":
+                error = messagebox.showerror(title="Eroare", message="Mai exista un client cu aceste date")
         else:    
             
             # Commit data to DB
