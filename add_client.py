@@ -30,9 +30,10 @@ except:
     quit()
 my_cursor = tms_db.cursor()
 
-my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
+my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (client_id INT AUTO_INCREMENT PRIMARY KEY, \
+                  denumire VARCHAR(255) NOT NULL, \
                   cui_tara VARCHAR(255), \
-                  cui_nr INT(20), \
+                  cui_nr INT(20) NOT NULL, \
                   reg_com VARCHAR(255), \
                   oras VARCHAR(255), \
                   judet VARCHAR(255), \
@@ -43,7 +44,24 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (denumire VARCHAR(255), \
                   e_factura INT(1), \
                   tva_incasare INT(1), \
                   inactiv INT(1), \
-                  client_id INT AUTO_INCREMENT PRIMARY KEY)")
+                  fara_tva INT(1), \
+                  facturabil INT(1), \
+                  is_client INT(1), \
+                  is_supplier INT(1), \
+                  blocat INT(1), \
+                  zile_incasare VARCHAR(15), \
+                  perioada_incasare VARCHAR(15), \
+                  zile_plata VARCHAR(15), \
+                  perioada_plata VARCHAR(15), \
+                  banca VARCHAR(255), \
+                  iban_ron VARCHAR(255), \
+                  iban_eur VARCHAR(255), \
+                  swift VARCHAR(255), \
+                  pers_contact VARCHAR(255), \
+                  telefon VARCHAR(25), \
+                  email VARCHAR(255), \
+                  web VARCHAR(255), \
+                  UNIQUE (denumire, cui_nr, reg_com))")
 
 # my_cursor.execute("SELECT * FROM clienti")
 # print(my_cursor.description)
@@ -76,6 +94,24 @@ def clear_fields():
     sediu_social_input.delete(0, END)
     efactura_check.deselect()
     tvaincasare_check.deselect()
+    inactiv_check.deselect()
+    platitor_tva.deselect()
+    facturabil.deselect()
+    client_check.deselect()
+    furnizor_check.deselect()
+    blocat_check.deselect()
+    nr_zile_incasare_input.delete(0, END)
+    tip_incasare.set("data_in_out")
+    nr_zile_plata_input.delete(0, END)
+    tip_plata.set("data_in_out")
+    banca_input.delete(0, END)
+    cont_ron_input.delete(0, END)
+    cont_eur_input.delete(0, END)
+    swift_input.delete(0, END)
+    persoana_input.delete(0, END)
+    tel_input.delete(0, END)
+    email_input.delete(0, END)
+    www_input.delete(0, END)
 
 # Anulare introducere client
 def anulare_client():
@@ -87,17 +123,60 @@ def anulare_client():
 # Adaugare client in baza de date
 def add_client():
     global salvat
-    sql_command = "INSERT INTO clienti (denumire, cui_tara, cui_nr, reg_com, oras, judet, tara, cod_postal, tip_tara, sediu_social, e_factura, tva_incasare, inactiv) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    values = (nume_firma_input.get(), cui_firma_tara.get(), cui_firma_nr.get(), reg_com_input.get(), oras_input.get(), judet_input.get(), tara_input.get(), cod_postal_input.get(), tip_tara_select.get(), sediu_social_input.get(), var_efactura.get(), var_tvaincasare.get(), var_inactiv.get())
-    my_cursor.execute(sql_command, values)
+    if nume_firma_input.get() and cui_firma_nr.get() and reg_com_input.get():
+    
+        sql_command = "INSERT INTO clienti (denumire, cui_tara, cui_nr, reg_com, oras, judet, tara, cod_postal, tip_tara, sediu_social, e_factura, tva_incasare, inactiv, fara_tva, facturabil, is_client, is_supplier, blocat, zile_incasare, perioada_incasare, zile_plata, perioada_plata, banca, iban_ron, iban_eur, swift, pers_contact, telefon, email, web) VALUES \
+                        (%s, %s, %s, %s, %s, %s, \
+                        %s, %s, %s, %s, %s, \
+                        %s, %s, %s, %s, %s, \
+                        %s, %s, %s, %s, %s, \
+                        %s, %s, %s, %s, %s, \
+                        %s, %s, %s, %s)"
+        values = (nume_firma_input.get(), 
+                cui_firma_tara.get(), 
+                cui_firma_nr.get(), 
+                reg_com_input.get(), 
+                oras_input.get(), 
+                judet_input.get(), 
+                tara_input.get(), 
+                cod_postal_input.get(), 
+                tip_tara_select.get(), 
+                sediu_social_input.get(), 
+                var_efactura.get(), 
+                var_tvaincasare.get(), 
+                var_inactiv.get(),
+                var_tva.get(),
+                var_facturabil.get(),
+                var_client.get(),
+                var_furnizor.get(),
+                var_blocat.get(),
+                nr_zile_incasare_input.get(),
+                tip_incasare.get(),
+                nr_zile_plata_input.get(),
+                tip_plata.get(),
+                banca_input.get(),
+                cont_ron_input.get(),
+                cont_eur_input.get(),
+                swift_input.get(),
+                persoana_input.get(),
+                tel_input.get(),
+                email_input.get(),
+                www_input.get())
+        try:
+            my_cursor.execute(sql_command, values)
+        except mysql.connector.Error as err:
+            print("Something went wrong: {}".format(err))
+        else:    
+            
+            # Commit data to DB
+            tms_db.commit()
+            adaugare_client.configure(state=DISABLED)
+            salvat = True
+            confirmation = messagebox.showinfo(title="Adaugare client nou", message="Clientul a fost adaugat")
+            refresh()
 
-    # Commit data to DB
-    tms_db.commit()
-    adaugare_client.configure(state=DISABLED)
-    salvat = True
-    confirmation = messagebox.showinfo(title="Adaugare client nou", message="Clientul a fost adaugat")
-    refresh()
-
+    else:
+        error_msg = messagebox.showerror(title="Eroare", message="Va rog completati campurile obligatorii.")
 
 # Actualizare Id
 def refresh():
@@ -130,16 +209,6 @@ def check_anaf():
         if cui_anaf_number.isdigit():
             rezultat = Anaf(cui_anaf_number)
             data = rezultat.check_anaf()
-# def check_anaf():
-#     if cui_firma_nr.get():
-#         query_params = [{
-#         "cui": cui_firma_nr.get(),
-#         "data": date.today().strftime("%Y-%m-%d")
-#         }]
-#         headers = {"Content-Type": "application/json"}
-#         api_addr = "https://webservicesp.anaf.ro/PlatitorTvaRest/api/v8/ws/tva"
-#         response = requests.post(api_addr, data=json.dumps(query_params), headers=headers)
-#         data = response.json()
 
         if data["found"]:
             nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
@@ -189,7 +258,7 @@ nume_firma_input.grid(row=0, column=1, columnspan=3, sticky="w")
 cui_firma_label = Label(detail_frame, text="CUI:* ", anchor="e", justify=LEFT)
 cui_firma_label.grid(row=1, column=0, sticky="w", pady=5)
 
-cui_label = Label(detail_frame)
+cui_label = Frame(detail_frame)
 cui_label.grid(row=1, column=1, sticky="w", columnspan=3)
 
 cui_firma_tara = Entry(cui_label, width=5)
@@ -318,6 +387,13 @@ cont_eur_label.grid(row=2, column=0, sticky="w", pady=5)
 cont_eur_input = Entry(frame_banca, width=50)
 cont_eur_input.grid(row=2, column=1, sticky="w", pady=5)
 
+swift_label = Label(frame_banca, text="SWIFT: ")
+swift_label.grid(row=3, column=0, sticky="w", pady=5)
+
+swift_input = Entry(frame_banca, width=50)
+swift_input.grid(row=3, column=1, pady=5, sticky="w")
+
+
 # Conditii incasare / plata
 frame_incasare_plata = LabelFrame(root, text="Conditii incasare/plata", padx=5, pady=5)
 frame_incasare_plata.grid(row=0, column=2, sticky="nws", padx=10, pady=10)
@@ -374,23 +450,29 @@ afisare_tot.grid(row=0, column=2, padx=5, sticky="we")
 frame_contact = LabelFrame(root, text="Date contact", padx=10, pady=10)
 frame_contact.grid(row=1, column=1, pady=10, padx=10, sticky="nwe", columnspan=2)
 
+persoana_label = Label(frame_contact, text="Persoana contact: ")
+persoana_label.grid(row=0, column=0, sticky="w")
+
+persoana_input = Entry(frame_contact, width=40)
+persoana_input.grid(row=0, column=1, sticky="w")
+
 tel_label = Label(frame_contact, text="Telefon: ")
-tel_label.grid(row=0, column=0, sticky="w")
+tel_label.grid(row=1, column=0, sticky="w", pady=5)
 
 tel_input = Entry(frame_contact, width=40)
-tel_input.grid(row=0, column=1, sticky="w")
+tel_input.grid(row=1, column=1, sticky="w", pady=5)
 
 email_label = Label(frame_contact, text="Email: ")
-email_label.grid(row=1, column=0, sticky="w", pady=5)
+email_label.grid(row=2, column=0, sticky="w", pady=5)
 
 email_input = Entry(frame_contact, width=40)
-email_input.grid(row=1, column=1, sticky="w", pady=5)
+email_input.grid(row=2, column=1, sticky="w", pady=5)
 
 www_label = Label(frame_contact, text="Web: ")
-www_label.grid(row=2, column=0, sticky="w", pady=5)
+www_label.grid(row=3, column=0, sticky="w", pady=5)
 
 www_input = Entry(frame_contact, width=40)
-www_input.grid(row=2, column=1, sticky="w", pady=5)
+www_input.grid(row=3, column=1, sticky="w", pady=5)
 
 root.bind('<Control-s>', save_client)
 root.protocol("WM_DELETE_WINDOW", on_closing)
