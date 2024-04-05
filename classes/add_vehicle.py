@@ -3,8 +3,9 @@ from tkinter import ttk
 
 class Vehicule:
     def __init__(self, root):
-        self.main_window = Frame(root)
-        # self.main_window.title("Adaugare mijloc transport")
-        # self.main_window.geometry("900x600")
-        self.test = Button(root, text="test")
-        self.test.pack()
+        self.client_frame = Frame(root, width=900, height=600)
+        self.client_frame.pack(fill=BOTH, expand=1)
+
+        self.window = Frame(self.client_frame, width=900, height=600)
+        self.window.add(self.client_frame, text="Gestionare firme")
+        self.window.pack(fill=BOTH, expand=1)

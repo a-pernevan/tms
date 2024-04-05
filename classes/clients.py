@@ -15,9 +15,9 @@ class Clients:
         self.client_frame.pack(fill=BOTH, expand=1)
 
         self.main_window.add(self.main_frame, text="Principal")
-        self.main_window.add(self.client_frame, text="Gestionare clienti")
+        self.main_window.add(self.client_frame, text="Gestionare firme")
         self.adaugare_cam = Button(self.main_frame, text="Adaugare", command=self.adaugare)
         self.adaugare_cam.pack()
 
     def adaugare(self):
-        Vehicule(self.client_frame)
+        Vehicule(self.main_window)
