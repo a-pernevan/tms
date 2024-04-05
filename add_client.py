@@ -118,6 +118,7 @@ def anulare_client():
     confirm_cancel = messagebox.askyesno(title="Anulare inregistrare", message="Sigur anulam?")
     if confirm_cancel:
         clear_fields()
+        adaugare_client.configure(state=NORMAL)
     
 
 # Adaugare client in baza de date
