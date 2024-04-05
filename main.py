@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 from classes.clients import Clients
+from classes.add_vehicle import Vehicule
 
 root = Tk()
 root.title("TMS Project 2024")
