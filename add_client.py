@@ -74,6 +74,7 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (client_id INT AUTO_INCREM
 def save_client(e):
     add_client()
 
+# Verificam daca e salvat clientul inainte sa se inchida fereastra
 def on_closing():
     if salvat == False:
         if messagebox.askokcancel("Inchidere", "Doriti sa inchideti fereastra?"):
