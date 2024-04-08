@@ -43,4 +43,5 @@ class Clients:
         self.my_cursor.execute("SELECT * FROM clienti")
         print (self.my_cursor.fetchall())
         
+        
 
