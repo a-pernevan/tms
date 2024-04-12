@@ -68,7 +68,6 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS clienti (client_id INT AUTO_INCREM
 
 # root.grid_columnconfigure((0,1), weight=1)
 
-# Golire campuri dupa salvarea clientului
 
 # Salvare client din taste
 def save_client(e):
@@ -82,6 +81,7 @@ def on_closing():
     else:
         root.destroy()
 
+# Golire campuri dupa salvarea clientului
 def clear_fields():
     nume_firma_input.delete(0, END)
     cui_firma_tara.delete(0, END)
@@ -169,18 +169,18 @@ def add_client():
         except mysql.connector.Error as err:
             # print("Something went wrong: {}".format(err))
             if str(err).split(" ")[0] == "1062":
-                error = messagebox.showerror(title="Eroare", message="Mai exista un client cu aceste date")
+                messagebox.showerror(title="Eroare", message="Mai exista un client cu aceste date")
         else:    
             
             # Commit data to DB
             tms_db.commit()
             adaugare_client.configure(state=DISABLED)
             salvat = True
-            confirmation = messagebox.showinfo(title="Adaugare client nou", message="Clientul a fost adaugat")
+            messagebox.showinfo(title="Adaugare client nou", message="Clientul a fost adaugat")
             refresh()
 
     else:
-        error_msg = messagebox.showerror(title="Eroare", message="Va rog completati campurile obligatorii.")
+        messagebox.showerror(title="Eroare", message="Va rog completati campurile obligatorii.")
 
 # Actualizare Id
 def refresh():
