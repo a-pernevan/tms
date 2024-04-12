@@ -8,17 +8,17 @@ from dotenv import load_dotenv
 
 class Clients:
     def __init__(self, root):
-        self.main_window = ttk.Notebook(root)
+        self.main_window = ttk.Notebook(root, width=900, height=600)
         self.main_window.pack(pady=0)
 
         
 
         load_dotenv()
         
-        self.main_frame = Frame(self.main_window)
-        self.client_frame = Frame(self.main_window)
-        # self.main_frame = Frame(self.main_window, width=900, height=600)
-        # self.client_frame = Frame(self.main_window, width=900, height=600)
+        # self.main_frame = Frame(self.main_window)
+        # self.client_frame = Frame(self.main_window)
+        self.main_frame = Frame(self.main_window, width=900, height=600)
+        self.client_frame = Frame(self.main_window, width=900, height=600)
 
         self.main_frame.pack(fill=BOTH, expand=1, anchor=W)
         self.client_frame.pack(fill=BOTH, expand=1, anchor=W)
@@ -48,20 +48,25 @@ class Clients:
     def show_clients(self):
         self.main_window.add(self.client_frame, text="Gestionare firme")
         self.main_window.select(1)
-        # self.show_client_frame = LabelFrame(self.client_frame, text= "Afisare clienti")
-        # self.show_client_frame.grid(row=0, column=0, sticky="nw")
-    #     self.list_clients()
+        self.show_client_frame = LabelFrame(self.client_frame, text= "Afisare clienti", width=800, height=700)
+        self.show_client_frame.grid(row=0, column=0, sticky="nw")
+        self.close = Button(self.show_client_frame, text="inchidere", command=lambda:self.main_window.hide(1))
+        self.close.grid(row=0, column=0)
+        self.list_clients()
+        self.list_all = ttk.Treeview(self.client_frame)
+        # self.list_all["columns"] = 
 
-    # def list_clients(self):
-    #     self.my_cursor.execute("SELECT * FROM clienti")
-    #     self.result = self.my_cursor.fetchall()
-
-    #     for index, x in enumerate(self.result):
-    #         print(index)
-    #         print(x[1])
-    #         y = 0
-    #         self.client_name = Label(self.show_client_frame, text=x[1]).grid(row=index, column=y)
-    #         y += 1
+    def list_clients(self):
+        self.my_cursor.execute("SELECT * FROM clienti")
+        self.result = self.my_cursor.fetchall()
+        print(self.result)
+        for index, x in enumerate(self.result):
+            print(index)
+            print(x[1])
+            index += 1
+            y = 0
+            self.client_name = Label(self.show_client_frame, text=x[1]).grid(row=index, column=y, sticky="nw")
+            y += 1
 
         
         
