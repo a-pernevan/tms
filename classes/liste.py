@@ -37,7 +37,7 @@ class Functii:
         
 
     def adauga_functie(self, master):
-        self.main_window = Toplevel(master)
+        self.main_window = master
         self.main_window.title("Administrare Functii")
         
         self.main_frame = LabelFrame(self.main_window, text="Adaugare Functie")
@@ -61,10 +61,26 @@ class Functii:
         self.my_cursor.execute("INSERT INTO functii (denumire, grupa) VALUES (%s, %s)", (self.functie_entry.get(), self.grup_entry.get()))
         self.tms_db.commit()
         messagebox.showinfo(title="Success", message="Functie adaugata")
+        self.actualizare_functii()
         self.main_window.destroy()
+
+
 
     def afisare_functii(self):
         return self.lista_functii
+
+    def actualizare_functii(self):
+        self.my_cursor.execute("SELECT * FROM functii")
+        self.result = self.my_cursor.fetchall()
+        for self.functie in self.result:
+                self.lista_functii.append(self.functie[1])
+        self.afisare_functii()
+
+# class add_functie(Functii):
+#     def __init__(self):
+#         super().__init__
+#         Functii.adauga_functie(self)
+
 
 if __name__ == "__main__":
     root = Tk()
