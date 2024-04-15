@@ -30,14 +30,19 @@ hello = Functii(root)
 
 lista_functii = hello.afisare_functii()
 
-functii = ttk.Combobox(root, value=lista_functii)
-functii.current(0)
-functii.pack()
-print(hello.afisare_functii())
+if lista_functii:
 
-functie_noua = Button(root, text="Adauga nou", command=lambda: refresh_window(root))
-functie_noua.pack()
+    functii = ttk.Combobox(root, value=lista_functii)
+    functii.current(0)
+    functii.pack()
+    print(hello.afisare_functii())
 
+    functie_noua = Button(root, text="Adauga nou", command=lambda: refresh_window(root))
+    functie_noua.pack()
+
+else:
+    window = Toplevel(root)
+    hello.adauga_functie(window)
 
 
 

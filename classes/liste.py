@@ -32,7 +32,7 @@ class Functii:
             self.afisare_functii()
         else:
             messagebox.showerror(title="Error", message="No data found")
-            self.adauga_functie(master)
+            # self.adauga_functie(master)
 
         
 
