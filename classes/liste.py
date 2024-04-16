@@ -7,8 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Se definesc functiile ocupate de angajati in cadrul companiei
+# Se definesc si grupurile din care fac parte. 
 class Functii:
     def __init__(self, master):
+        super().__init__()
         self.lista_functii = []
         try:
             self.tms_db = mysql.connector.connect(
@@ -32,12 +35,12 @@ class Functii:
             self.afisare_functii()
         else:
             messagebox.showerror(title="Error", message="No data found")
-            # self.adauga_functie(master)
-
         
-
+    # Se 
     def adauga_functie(self, master):
         self.main_window = master
+        # self.main_window.transient(master)
+        # self.main_window.grab_set()
         self.main_window.title("Administrare Functii")
         
         self.main_frame = LabelFrame(self.main_window, text="Adaugare Functie")
@@ -57,14 +60,20 @@ class Functii:
         self.functie_button = Button(self.main_frame, text="Adaugare", command=self.adauga)
         self.functie_button.grid(row=2, column=1, sticky="nw")
 
+
     def adauga(self):
-        self.my_cursor.execute("INSERT INTO functii (denumire, grupa) VALUES (%s, %s)", (self.functie_entry.get(), self.grup_entry.get()))
-        self.tms_db.commit()
-        messagebox.showinfo(title="Success", message="Functie adaugata")
+        try:
+            self.my_cursor.execute("INSERT INTO functii (denumire, grupa) VALUES (%s, %s)", (self.functie_entry.get(), self.grup_entry.get()))
+        except mysql.connector.Error as err:
+            # print("Something went wrong: {}".format(err))
+            if str(err).split(" ")[0] == "1062":
+                messagebox.showerror(title="Eroare", message="Mai exista aceasta functie")
+        else:
+            self.tms_db.commit()
+            messagebox.showinfo(title="Success", message="Functie adaugata")
         self.actualizare_functii()
+        # self.afisare_functii()
         self.main_window.destroy()
-
-
 
     def afisare_functii(self):
         return self.lista_functii
@@ -72,21 +81,8 @@ class Functii:
     def actualizare_functii(self):
         self.my_cursor.execute("SELECT * FROM functii")
         self.result = self.my_cursor.fetchall()
+        self.lista_functii = []
         for self.functie in self.result:
                 self.lista_functii.append(self.functie[1])
         self.afisare_functii()
 
-# class add_functie(Functii):
-#     def __init__(self):
-#         super().__init__
-#         Functii.adauga_functie(self)
-
-
-if __name__ == "__main__":
-    root = Tk()
-    root.title("Administrare Functii")
-    root.geometry("500x500")
-
-    hello = Functii(root)
-
-    root.mainloop()

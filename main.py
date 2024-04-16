@@ -11,9 +11,11 @@ def refresh_window(root):
     global functii
     global lista_functii
     window = Toplevel(root)
+    window.transient(root)
+    window.grab_set()
     hello.adauga_functie(window)
     window.wait_window()
-    # window.wait_window()
+
     print(type(window))
     
     # Redraw the window
@@ -34,11 +36,14 @@ if lista_functii:
 
     functii = ttk.Combobox(root, value=lista_functii)
     functii.current(0)
+    functii.bind("<Double-1>", lambda event: refresh_window(root))
     functii.pack()
-    print(hello.afisare_functii())
+    
 
     functie_noua = Button(root, text="Adauga nou", command=lambda: refresh_window(root))
     functie_noua.pack()
+
+    print(hello.afisare_functii())
 
 else:
     window = Toplevel(root)
