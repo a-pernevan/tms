@@ -10,13 +10,13 @@ root.title("TMS Project 2024")
 def refresh_window(root):
     global functii
     global lista_functii
+    # Cream o instanta noua si se trimite la class 
     window = Toplevel(root)
+    # Se blocheaza fereastra mama pana se inchide fereastra de inroducere functie
     window.transient(root)
     window.grab_set()
     hello.adauga_functie(window)
     window.wait_window()
-
-    print(type(window))
     
     # Redraw the window
     root.update()
@@ -31,7 +31,7 @@ def refresh_window(root):
 hello = Functii(root)
 
 lista_functii = hello.afisare_functii()
-
+# Verificam daca exista inregistrari, in caz contrar adaugam una noua.
 if lista_functii:
 
     functii = ttk.Combobox(root, value=lista_functii)
@@ -40,10 +40,8 @@ if lista_functii:
     functii.pack()
     
 
-    functie_noua = Button(root, text="Adauga nou", command=lambda: refresh_window(root))
-    functie_noua.pack()
-
-    print(hello.afisare_functii())
+    # functie_noua = Button(root, text="Adauga nou", command=lambda: refresh_window(root))
+    # functie_noua.pack()
 
 else:
     window = Toplevel(root)
