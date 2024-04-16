@@ -8,10 +8,10 @@ from liste import Functii
 
 load_dotenv()
 
-class Angajati_firma(Toplevel):
+class Angajati_firma:
     def __init__(self, master):
         super().__init__()
-        self.master = master
+        self.master = Toplevel(master)
         self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
