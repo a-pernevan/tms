@@ -79,6 +79,7 @@ def on_closing():
         if messagebox.askokcancel("Inchidere", "Doriti sa inchideti fereastra?"):
             root.destroy()
     else:
+        tms_db.close()
         root.destroy()
 
 # Golire campuri dupa salvarea clientului
