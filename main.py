@@ -7,7 +7,7 @@ root = Tk()
 root.title("TMS Project 2024")
 # root.geometry("900x600")
 
-def refresh_window(root):
+def refresh_window_functii(root):
     global functii
     global lista_functii
     # Cream o instanta noua si se trimite la class 
@@ -36,7 +36,7 @@ if lista_functii:
 
     functii = ttk.Combobox(root, value=lista_functii)
     functii.current(0)
-    functii.bind("<Double-1>", lambda event: refresh_window(root))
+    functii.bind("<Double-1>", lambda event: refresh_window_functii(root))
     functii.pack()
     
 
