@@ -45,18 +45,18 @@ class Functii:
         self.main_window.title("Administrare Functii")
         
         self.main_frame = LabelFrame(self.main_window, text="Adaugare Functie")
-        self.main_frame.pack()
+        self.main_frame.pack(padx=10, pady=10)
         self.functie_label = Label(self.main_frame, text="Functie: ")
         self.functie_label.grid(row=0, column=0, sticky="nw")
 
         self.functie_entry = Entry(self.main_frame)
-        self.functie_entry.grid(row=0, column=1, sticky="nw")
+        self.functie_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=5)
 
         self.grup_label = Label(self.main_frame, text="Grup: ")
         self.grup_label.grid(row=1, column=0, sticky="nw")
 
         self.grup_entry = Entry(self.main_frame)
-        self.grup_entry.grid(row=1, column=1, sticky="nw")
+        self.grup_entry.grid(row=1, column=1, sticky="nw", pady=10, padx=5)
 
         self.functie_button = Button(self.main_frame, text="Adaugare", command=self.adauga)
         self.functie_button.grid(row=2, column=1, sticky="nw")
