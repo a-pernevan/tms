@@ -59,4 +59,9 @@ if not lista_filiale:
     window = Toplevel(root)
     sediu.adauga_filiala(window)
 
+else:
+    filiala = ttk.Combobox(root, value=lista_filiale)
+    filiala.current(0)
+    filiala.pack()
+
 root.mainloop()
