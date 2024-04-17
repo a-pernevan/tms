@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-from classes.add_vehicle import Vehicule
+from angajati import Angajati_firma
 import mysql.connector
 import os
 from dotenv import load_dotenv
@@ -19,16 +19,26 @@ class Clients:
         # self.client_frame = Frame(self.main_window)
         self.main_frame = Frame(self.main_window, width=900, height=600)
         self.client_frame = Frame(self.main_window, width=900, height=600)
+        self.angajat_frame = Frame(self.main_window, width=900, height=600)
 
         self.main_frame.pack(fill=BOTH, expand=1, anchor=W)
         self.client_frame.pack(fill=BOTH, expand=1, anchor=W)
+        self.angajat_frame.pack(fill=BOTH, expand=1, anchor=W)
 
         self.main_window.add(self.main_frame, text="Principal")
         self.main_window.add(self.client_frame, text="Gestionare firme")
-        self.adaugare_cam = Button(self.main_frame, text="Adaugare", command=self.show_clients)
+        self.main_window.add(self.angajat_frame, text="Gestionare angajati")
+
+        self.adaugare_cam = Button(self.main_frame, text="Afisare firme", command=self.show_clients)
         self.adaugare_cam.grid(row=0, column=0)
 
+        self.angajati_button = Button(self.main_frame, text="Gestionare angajati", command=self.admin_angajati)
+        self.angajati_button.grid(row=1, column=0, pady=5)
+
+
+
         self.main_window.hide(1)
+        self.main_window.hide(2)
 
         # Create connection to database
         try:
@@ -53,8 +63,8 @@ class Clients:
         self.close = Button(self.show_client_frame, text="inchidere", command=lambda:self.main_window.hide(1))
         self.close.grid(row=0, column=0)
         self.list_clients()
-        self.list_all = ttk.Treeview(self.client_frame)
-        # self.list_all["columns"] = 
+        # self.list_all = ttk.Treeview(self.client_frame)
+        # # self.list_all["columns"] = 
 
     def list_clients(self):
         self.my_cursor.execute("SELECT * FROM clienti")
@@ -69,5 +79,16 @@ class Clients:
             y += 1
 
         
+    def admin_angajati(self):
+        self.main_window.add(self.angajat_frame, text="Gestionare angajati")
+        self.main_window.select(2)
+        self.create_frame = Angajati_firma(self.angajat_frame)
+        
+
+
+if __name__ == "__main__":
+    root = Tk()
+    clients = Clients(root)
+    root.mainloop()
         
 

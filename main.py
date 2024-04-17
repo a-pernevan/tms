@@ -1,7 +1,7 @@
 # import add_client
 from tkinter import *
 from tkinter import ttk
-from classes.clients import Clients
+# from classes.clients import Clients
 from classes.liste import Functii, Filiala
 root = Tk()
 root.title("TMS Project 2024")

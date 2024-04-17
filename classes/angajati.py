@@ -11,8 +11,9 @@ load_dotenv()
 class Angajati_firma:
     def __init__(self, master):
         super().__init__()
-        self.master = Toplevel(master)
-        self.master.title("Gestionare angajati")
+        # self.master = Toplevel(master)
+        # self.master.title("Gestionare angajati")
+        self.master = master
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
         self.get_filiale = Filiala(self.master)
