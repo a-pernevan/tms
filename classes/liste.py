@@ -129,9 +129,31 @@ class Filiala:
         self.filiala_entry = Entry(self.main_frame)
         self.filiala_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=5)
 
-        self.filiala_button = Button(self.main_frame, text="Adaugare")
+        self.filiala_button = Button(self.main_frame, text="Adaugare", command=self.adauga)
         self.filiala_button.grid(row=2, column=1, sticky="nw")
 
         
     def afisare_filiale(self):
         return self.lista_filiale
+    
+    def adauga(self):
+        try:
+            self.my_cursor.execute("INSERT INTO filiale (denumire) VALUES (%s)", (self.filiala_entry.get(),))
+        except mysql.connector.Error as err:
+            
+            if str(err).split(" ")[0] == "1062":
+                messagebox.showerror(title="Eroare", message="Mai exista aceasta filiala")
+        else:
+            self.tms_db.commit()
+            messagebox.showinfo(title="Success", message="Filiala adaugata")
+        self.actualizare_filiale()
+        
+        self.main_window.destroy()
+
+    def actualizare_filiale(self):
+        self.my_cursor.execute("SELECT * FROM filiale")
+        self.result = self.my_cursor.fetchall()
+        self.lista_filiale = []
+        for self.filiala in self.result:
+                self.lista_filiale.append(self.filiala[1])
+        self.afisare_filiale()
