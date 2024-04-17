@@ -34,7 +34,7 @@ class Angajati_firma:
         self.angajat_prenume_label.grid(row=1, column=0, sticky="nw", pady=10)
 
         self.angajat_functie_label = Label(self.detalii_angajat, text="Functie: ")
-        self.angajat_functie_label.grid(row=2, column=0, sticky="nw")
+        self.angajat_functie_label.grid(row=2, column=0, sticky="nw", pady=10)
 
         self.angajat_nume_entry = Entry(self.detalii_angajat)
         self.angajat_nume_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=10)

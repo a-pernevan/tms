@@ -2,7 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 from classes.clients import Clients
-from classes.liste import Functii
+from classes.liste import Functii, Filiala
 root = Tk()
 root.title("TMS Project 2024")
 # root.geometry("900x600")
@@ -29,6 +29,7 @@ def refresh_window_functii(root):
 
 # hello = Clients(root)
 hello = Functii(root)
+sediu = Filiala(root)
 
 lista_functii = hello.afisare_functii()
 # Verificam daca exista inregistrari, in caz contrar adaugam una noua.
@@ -50,5 +51,12 @@ else:
 
 
 # add_client
+
+lista_filiale = sediu.afisare_filiale()
+print(lista_filiale)
+
+if not lista_filiale:
+    window = Toplevel(root)
+    sediu.adauga_filiala(window)
 
 root.mainloop()

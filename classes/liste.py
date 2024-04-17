@@ -24,7 +24,7 @@ class Functii:
             )
         except:
             print("Could not connect to MySQL")
-            self,mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            self.mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
             quit()
         self.my_cursor = self.tms_db.cursor()
         # Cream tabelul pentru functiile angajatilor
@@ -88,3 +88,50 @@ class Functii:
                 self.lista_functii.append(self.functie[1])
         self.afisare_functii()
 
+
+class Filiala:
+    def __init__(self, master):
+        super().__init__()
+        self.lista_filiale = []
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
+
+        self.my_cursor = self.tms_db.cursor()
+        self.my_cursor.execute("CREATE TABLE IF NOT EXISTS filiale (filiala_id INT AUTO_INCREMENT PRIMARY KEY, denumire VARCHAR(120) NOT NULL, UNIQUE(denumire))")
+        self.my_cursor.execute("SELECT * FROM filiale")
+        self.result = self.my_cursor.fetchall()
+        if self.result:
+            for self.filiala in self.result:
+                self.lista_filiale.append(self.filiala[1])
+            self.afisare_filiale() # De creat
+        else:
+            messagebox.showerror(title="Error", message="No data found")
+
+    def adauga_filiala(self, master):
+        self.main_window = master
+        self.main_window.title("Administrare Filiale")
+        
+        self.main_frame = LabelFrame(self.main_window, text="Adaugare Filiala")
+        self.main_frame.pack(padx=10, pady=10)
+        self.filiala_label = Label(self.main_frame, text="Filiala: ")
+        self.filiala_label.grid(row=0, column=0, sticky="nw")
+
+        self.filiala_entry = Entry(self.main_frame)
+        self.filiala_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=5)
+
+        self.filiala_button = Button(self.main_frame, text="Adaugare")
+        self.filiala_button.grid(row=2, column=1, sticky="nw")
+
+        
+    def afisare_filiale(self):
+        return self.lista_filiale
