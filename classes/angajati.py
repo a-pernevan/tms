@@ -43,7 +43,7 @@ class Angajati_firma:
     # Interfata de adaugare angajat nou. 
     def interfata(self):
         self.main_window = LabelFrame(self.master, text="Angajati")
-        self.main_window.pack(padx=10, pady=10)
+        self.main_window.grid(row=0, column=0, padx=10, pady=10)
         self.detalii_angajat = LabelFrame(self.main_window, text="Detalii Angajat")
         self.detalii_angajat.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
 
