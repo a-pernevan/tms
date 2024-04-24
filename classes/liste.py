@@ -89,7 +89,7 @@ class Functii:
         self.afisare_functii()
 
 
-class Filiala:
+class Filiala():
     def __init__(self, master):
         super().__init__()
         self.lista_filiale = []

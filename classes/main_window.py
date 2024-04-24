@@ -95,7 +95,7 @@ class Main_Window:
         # initializam clasa angajati_firma
         self.create_frame = Angajati_firma(self.modul_angajati_frame)
         self.angajati_button.configure(state=DISABLED)
-        self.inchide_angajati_button = Button(self.modul_angajati_frame, text="inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.angajat_frame)), self.angajati_button.configure(state=NORMAL)))
+        self.inchide_angajati_button = Button(self.modul_angajati_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.angajat_frame)), self.angajati_button.configure(state=NORMAL)))
         self.inchide_angajati_button.grid(row=1, column=0)
         
 
