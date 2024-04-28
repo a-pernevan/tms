@@ -12,6 +12,7 @@ class Main_Window:
     def __init__(self, root):
         self.main_window = ttk.Notebook(root, width=900, height=600)
         self.main_window.pack(pady=0)
+        
 
         
 
@@ -101,7 +102,9 @@ class Main_Window:
 
 if __name__ == "__main__":
     root = Tk()
+    root.title("TMS")
     clients = Main_Window(root)
+
     root.mainloop()
         
 

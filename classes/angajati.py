@@ -14,6 +14,7 @@ class Angajati_firma:
         # self.master = Toplevel(master)
         # self.master.title("Gestionare angajati")
         self.master = master
+        # self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
         self.get_filiale = Filiala(self.master)
