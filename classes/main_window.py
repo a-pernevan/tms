@@ -12,6 +12,7 @@ class Main_Window:
     def __init__(self, root):
         self.main_window = ttk.Notebook(root, width=900, height=600)
         self.main_window.pack(pady=0)
+        
 
         
 
@@ -95,13 +96,15 @@ class Main_Window:
         # initializam clasa angajati_firma
         self.create_frame = Angajati_firma(self.modul_angajati_frame)
         self.angajati_button.configure(state=DISABLED)
-        self.inchide_angajati_button = Button(self.modul_angajati_frame, text="inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.angajat_frame)), self.angajati_button.configure(state=NORMAL)))
+        self.inchide_angajati_button = Button(self.modul_angajati_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.angajat_frame)), self.angajati_button.configure(state=NORMAL)))
         self.inchide_angajati_button.grid(row=1, column=0)
         
 
 if __name__ == "__main__":
     root = Tk()
+    root.title("TMS")
     clients = Main_Window(root)
+
     root.mainloop()
         
 
