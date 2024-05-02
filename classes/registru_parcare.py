@@ -10,6 +10,7 @@ class Registru_parcare:
         super().__init__()
         load_dotenv()
 
+        #Deschidem conexiunea cu baza de date
         try:
             self.tms_db = mysql.connector.connect(
                 host = os.getenv("HOST"),
@@ -79,7 +80,7 @@ class Registru_parcare:
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
 
-        # cautare cap tractor
+    # cautare cap tractor
     def search_auto(self):
         # global nr_auto_cap
         self.query = self.nr_auto_combo.get()
@@ -90,7 +91,7 @@ class Registru_parcare:
         else:
             self.nr_auto_combo['values'] = self.nr_auto_cap
 
-
+    # cautare remorca
     def search_remorca(self):
         # global nr_auto_cap
         self.query = self.remorca_combo.get()
@@ -100,7 +101,7 @@ class Registru_parcare:
             self.remorca_combo['values'] = filtered_values
         else:
             self.remorca_combo['values'] = self.nr_auto_remorca
-
+    # VErificare numere auto detectate de LPR.
     def search_lpr(self):
         self.my_cursor.execute("SELECT plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         self.lpr_values = self.my_cursor.fetchall()
