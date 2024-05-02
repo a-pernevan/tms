@@ -37,7 +37,7 @@ class Registru_parcare:
         self.logo_title.pack()
 
         self.truck_frame = Frame(self.tauros_frame)
-        self.truck_frame.pack()
+        self.truck_frame.pack(pady=10)
 
         self.nr_auto_label = Label(self.truck_frame, text="Nr auto: ")
         self.nr_auto_label.grid(row=0, column=0)
@@ -60,10 +60,21 @@ class Registru_parcare:
         self.query = self.nr_auto_combo.get()
         if self.query:
             # Perform search based on the query and update the combobox options
-            filtered_values = [value for value in self.nr_auto_cap if query.lower() in value.lower()]
+            filtered_values = [value for value in self.nr_auto_cap if self.query.lower() in value.lower()]
             self.nr_auto_combo['values'] = filtered_values
         else:
             self.nr_auto_combo['values'] = self.nr_auto_cap
+
+
+    def search_remorca(self):
+        # global nr_auto_cap
+        self.query = self.remorca_combo.get()
+        if self.query:
+            # Perform search based on the query and update the combobox options
+            filtered_values = [value for value in self.nr_auto_remorca if self.query.lower() in value.lower()]
+            self.remorca_combo['values'] = filtered_values
+        else:
+            self.remorca_combo['values'] = self.nr_auto_remorca
 
 # Testam aplicatia
 
