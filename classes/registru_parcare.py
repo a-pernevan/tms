@@ -1,11 +1,29 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-
+import mysql.connector
+import os
+from dotenv import load_dotenv
 
 class Registru_parcare:
     def __init__(self, master):
         super().__init__()
+        load_dotenv()
+
+        #Deschidem conexiunea cu baza de date
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
+        self.my_cursor = self.tms_db.cursor()
 
         # Valori demo pt nr camion
         self.nr_auto_cap = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
@@ -40,21 +58,21 @@ class Registru_parcare:
         self.truck_frame.pack(pady=10)
 
         self.nr_auto_label = Label(self.truck_frame, text="Nr auto: ")
-        self.nr_auto_label.grid(row=0, column=0, sticky="w ")
+        self.nr_auto_label.grid(row=0, column=0)
 
         self.remorca_label = Label(self.truck_frame, text="Remorca: ")
-        self.remorca_label.grid(row=0, column=2, padx=5)
+        self.remorca_label.grid(row=1, column=0)
 
         self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto)
         self.nr_auto_combo.grid(row=0, column=1)
 
         self.remorca_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_remorca)
-        self.remorca_combo.grid(row=0, column=3)
+        self.remorca_combo.grid(row=1, column=1)
 
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
 
-        # cautare cap tractor
+    # cautare cap tractor
     def search_auto(self):
         # global nr_auto_cap
         self.query = self.nr_auto_combo.get()
@@ -64,17 +82,6 @@ class Registru_parcare:
             self.nr_auto_combo['values'] = filtered_values
         else:
             self.nr_auto_combo['values'] = self.nr_auto_cap
-
-        
-    def search_remorca(self):
-    # global nr_auto_cap
-        self.query = self.remorca_combo.get()
-        if self.query:
-            # Perform search based on the query and update the combobox options
-            filtered_values = [value for value in self.nr_auto_remorca if self.query.lower() in value.lower()]
-            self.remorca_combo['values'] = filtered_values
-        else:
-            self.remorca_combo['values'] = self.nr_auto_remorca
 
 # Testam aplicatia
 
