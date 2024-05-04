@@ -57,17 +57,25 @@ class Registru_parcare:
         self.truck_frame = Frame(self.tauros_frame)
         self.truck_frame.pack(pady=10)
 
-        self.nr_auto_label = Label(self.truck_frame, text="Nr auto: ")
-        self.nr_auto_label.grid(row=0, column=0)
+        self.nr_auto_label = Label(self.truck_frame, text="Nr auto:")
+        self.nr_auto_label.grid(row=0, column=0, padx=5)
 
-        self.remorca_label = Label(self.truck_frame, text="Remorca: ")
-        self.remorca_label.grid(row=1, column=0)
+        self.remorca_label = Label(self.truck_frame, text="Remorca:")
+        self.remorca_label.grid(row=0, column=2, padx=5)
 
         self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto)
         self.nr_auto_combo.grid(row=0, column=1)
 
         self.remorca_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_remorca)
-        self.remorca_combo.grid(row=1, column=1)
+        self.remorca_combo.grid(row=0, column=3)
+
+        self.lpr_label = Label(self.truck_frame, text="LPR:")
+        self.lpr_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.lpr_input = Entry(self.truck_frame, width=23)
+        self.lpr_input.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+        self.test_button = Button(self.truck_frame, text="Verifica nr auto", command=self.search_lpr)
+        self.test_button.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
@@ -82,6 +90,41 @@ class Registru_parcare:
             self.nr_auto_combo['values'] = filtered_values
         else:
             self.nr_auto_combo['values'] = self.nr_auto_cap
+
+    # cautare remorca
+    def search_remorca(self):
+        # global nr_auto_cap
+        self.query = self.remorca_combo.get()
+        if self.query:
+            # Perform search based on the query and update the combobox options
+            filtered_values = [value for value in self.nr_auto_remorca if self.query.lower() in value.lower()]
+            self.remorca_combo['values'] = filtered_values
+        else:
+            self.remorca_combo['values'] = self.nr_auto_remorca
+    # VErificare numere auto detectate de LPR.
+    def search_lpr(self):
+        self.my_cursor.execute("SELECT plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        self.lpr_values = self.my_cursor.fetchall()
+        print(self.lpr_values)
+        for plate, status in self.lpr_values:
+            print(plate, status)
+            self.lpr_input.delete(0, END)
+            self.lpr_input.insert(0, plate)
+            if plate in self.nr_auto_cap:
+                tauros_truck = messagebox.showinfo(title="Camion Tauros", message="Nr. auto disponibil")
+                if tauros_truck == "ok":
+                    self.main_window.select(0)
+            else:
+                warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
+                print(warning)
+                if warning:
+                    self.main_window.select(2)
+                else:
+                    self.my_cursor.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_no = %s", (plate,))
+                    self.tms_db.commit()
+                    messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
+        
+
 
 # Testam aplicatia
 
