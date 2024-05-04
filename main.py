@@ -55,6 +55,8 @@ else:
 lista_filiale = sediu.afisare_filiale()
 print(lista_filiale)
 
+# Verificam daca exista inregistrari, in caz contrar adaugam una noua.
+
 if not lista_filiale:
     window = Toplevel(root)
     sediu.adauga_filiala(window)

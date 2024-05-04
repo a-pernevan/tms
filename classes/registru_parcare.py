@@ -4,6 +4,7 @@ from tkinter import messagebox
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from tkcalendar import DateEntry
 
 class Registru_parcare:
     def __init__(self, master):
@@ -26,7 +27,7 @@ class Registru_parcare:
         self.my_cursor = self.tms_db.cursor()
 
         # Valori demo pt nr camion
-        self.nr_auto_cap = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
+        self.nr_auto_cap = ["IS04GCI", "Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
         self.nr_auto_remorca = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
 
         # Cream interfata si notebook-ul
@@ -51,7 +52,7 @@ class Registru_parcare:
         self.logo_frame = Frame(self.tauros_frame)
         self.logo_frame.pack()
 
-        self.logo_title = Label(self.logo_frame, text="Intrari / Iesiri Tauros", font=("Arial", 20))
+        self.logo_title = Label(self.logo_frame, text="Intrari / Iesiri Parcare Principala TAUROS", font=("Arial", 20))
         self.logo_title.pack()
 
         self.truck_frame = Frame(self.tauros_frame)
@@ -61,13 +62,16 @@ class Registru_parcare:
         self.nr_auto_label.grid(row=0, column=0, padx=5)
 
         self.remorca_label = Label(self.truck_frame, text="Remorca:")
-        self.remorca_label.grid(row=0, column=2, padx=5)
+        self.remorca_label.grid(row=0, column=2, padx=5, sticky="w")
 
-        self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto)
-        self.nr_auto_combo.grid(row=0, column=1)
+        # self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto)
+        # self.nr_auto_combo.grid(row=0, column=1)
+
+        self.nr_auto_entry = Entry(self.truck_frame, width=23)
+        self.nr_auto_entry.grid(row=0, column=1, padx=5, sticky="w")
 
         self.remorca_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_remorca)
-        self.remorca_combo.grid(row=0, column=3)
+        self.remorca_combo.grid(row=0, column=3, sticky="w")
 
         self.lpr_label = Label(self.truck_frame, text="LPR:")
         self.lpr_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
@@ -75,12 +79,12 @@ class Registru_parcare:
         self.lpr_input.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
         self.test_button = Button(self.truck_frame, text="Verifica nr auto", command=self.search_lpr)
-        self.test_button.grid(row=1, column=2, padx=5, pady=5, sticky="w")
+        self.test_button.grid(row=1, column=2, padx=5, pady=5, sticky="w", columnspan=2)
 
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
 
-    # cautare cap tractor
+    # cautare cap tractor in lista
     def search_auto(self):
         # global nr_auto_cap
         self.query = self.nr_auto_combo.get()
@@ -91,7 +95,7 @@ class Registru_parcare:
         else:
             self.nr_auto_combo['values'] = self.nr_auto_cap
 
-    # cautare remorca
+    # cautare remorca in lista
     def search_remorca(self):
         # global nr_auto_cap
         self.query = self.remorca_combo.get()
@@ -101,28 +105,42 @@ class Registru_parcare:
             self.remorca_combo['values'] = filtered_values
         else:
             self.remorca_combo['values'] = self.nr_auto_remorca
+
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
-        self.my_cursor.execute("SELECT plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        self.my_cursor.execute("SELECT * FROM lpr_cam WHERE status= 'CHECK'")
         self.lpr_values = self.my_cursor.fetchall()
-        print(self.lpr_values)
-        for plate, status in self.lpr_values:
-            print(plate, status)
-            self.lpr_input.delete(0, END)
-            self.lpr_input.insert(0, plate)
-            if plate in self.nr_auto_cap:
-                tauros_truck = messagebox.showinfo(title="Camion Tauros", message="Nr. auto disponibil")
-                if tauros_truck == "ok":
-                    self.main_window.select(0)
-            else:
-                warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
-                print(warning)
-                if warning:
-                    self.main_window.select(2)
+
+        if self.lpr_values:
+            print(self.lpr_values)
+            for id, plate, status in self.lpr_values:
+                print(id, plate, status)
+                self.lpr_input.delete(0, END)
+                self.lpr_input.insert(0, plate)
+
+                # Verificam daca este camion Tauros
+
+                if plate in self.nr_auto_cap:
+                    tauros_truck = messagebox.showinfo(title="Camion Tauros", message=f"{plate} este camion Tauros")
+                    if tauros_truck == "ok":
+                        self.main_window.select(0)
+                        self.nr_auto_entry.delete(0, END)
+                        self.nr_auto_entry.insert(0, plate)
+                        self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
+                        self.tms_db.commit()
+
                 else:
-                    self.my_cursor.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_no = %s", (plate,))
-                    self.tms_db.commit()
-                    messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
+                    warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
+                    print(warning)
+                    if warning:
+                        self.main_window.select(2)
+                    else:
+                        self.my_cursor.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_id = %s", (id,))
+                        self.tms_db.commit()
+                        messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
+        
+        else:
+            messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
         
 
 
