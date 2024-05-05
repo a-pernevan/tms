@@ -138,10 +138,23 @@ class Registru_parcare:
         self.visit_time_in_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_time_in_entry.grid(row=2, column=3, padx=5, pady=5, sticky="w")
 
-        self.visit_time_in_but = Button(self.visit_frame, text="Preia ora", command=self.cur_time)
+        self.visit_time_in_but = Button(self.visit_frame, text="Preia ora", command=lambda:self.cur_time("in"))
         self.visit_time_in_but.grid(row=2, column=4, padx=5, pady=5, sticky="w")
 
+        self.visit_out_date = Label(self.visit_frame, text="Data iesire:")
+        self.visit_out_date.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
+        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='dd-MM-yyyy', state="readonly")
+        self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+
+        self.visit_time_out_label = Label(self.visit_frame, text=f"Ora iesire:")
+        self.visit_time_out_label.grid(row=3, column=2, padx=5, pady=5, sticky="w")
+
+        self.visit_time_out_entry = Entry(self.visit_frame, width=23, state="readonly")
+        self.visit_time_out_entry.grid(row=3, column=3, padx=5, pady=5, sticky="w")
+
+        self.visit_time_out_but = Button(self.visit_frame, text="Preia ora", command=lambda:self.cur_time("out"), state="disabled")
+        self.visit_time_out_but.grid(row=3, column=4, padx=5, pady=5, sticky="w")
         
 
     # cautare cap tractor in lista
@@ -202,12 +215,20 @@ class Registru_parcare:
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
     
-    def cur_time(self):
+    def cur_time(self, direction):
         self.current_time = time.strftime("%H:%M:%S")
-        self.visit_time_in_entry.config(state="normal")
-        self.visit_time_in_entry.delete(0, END)
-        self.visit_time_in_entry.insert(0, self.current_time)
-        self.visit_time_in_entry.config(state="readonly")
+        if direction == "in":            
+            self.visit_time_in_entry.config(state="normal")
+            self.visit_time_in_entry.delete(0, END)
+            self.visit_time_in_entry.insert(0, self.current_time)
+            self.visit_time_in_entry.config(state="readonly")
+
+        elif direction == "out":
+            self.visit_time_out_entry.config(state="normal")
+            self.visit_time_out_entry.delete(0, END)
+            self.visit_time_out_entry.insert(0, self.current_time)
+            self.visit_time_out_entry.config(state="readonly")
+
         
 
 # Testam aplicatia
