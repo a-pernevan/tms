@@ -5,12 +5,13 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 from tkcalendar import DateEntry
+import time
 
 class Registru_parcare:
     def __init__(self, master):
         super().__init__()
         load_dotenv()
-
+        
         #Deschidem conexiunea cu baza de date
         try:
             self.tms_db = mysql.connector.connect(
@@ -36,6 +37,8 @@ class Registru_parcare:
         self.main_window = ttk.Notebook(master, width=900, height=600)
         self.main_window.pack(pady=0)
 
+        # Cream cele trei frame-uri
+
         self.tauros_frame = Frame(self.main_window)
         self.tauros_frame.pack(fill=BOTH, expand=1, anchor=W)
 
@@ -48,6 +51,8 @@ class Registru_parcare:
         self.main_window.add(self.tauros_frame, text="Tauros")
         self.main_window.add(self.samsung_frame, text="Samsung")
         self.main_window.add(self.vizitatori_frame, text="Vizitatori")
+
+        # Frame-ul parcare tauros
 
         self.logo_frame = Frame(self.tauros_frame)
         self.logo_frame.pack()
@@ -70,7 +75,7 @@ class Registru_parcare:
         self.nr_auto_entry = Entry(self.truck_frame, width=23)
         self.nr_auto_entry.grid(row=0, column=1, padx=5, sticky="w")
 
-        self.remorca_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_remorca)
+        self.remorca_combo = ttk.Combobox(self.truck_frame, width=23, postcommand=self.search_remorca)
         self.remorca_combo.grid(row=0, column=3, sticky="w")
 
         self.lpr_label = Label(self.truck_frame, text="LPR:")
@@ -83,6 +88,61 @@ class Registru_parcare:
 
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
+
+        # Frame vizitatori
+
+        self.logo_vizitatori_frame = Frame(self.vizitatori_frame)
+        self.logo_vizitatori_frame.pack()
+
+        self.logo_vizitatori_title = Label(self.logo_vizitatori_frame, text = "Intrari / iesiri vizitatori Tauros", font=("Arial", 20))
+        self.logo_vizitatori_title.pack()
+
+        self.visit_frame = Frame(self.vizitatori_frame)
+        self.visit_frame.pack(pady=10)
+
+        self.visit_plate_label = Label(self.visit_frame, text="Nr Auto:")
+        self.visit_plate_label.grid(row=0, column=0, padx=5)
+
+        self.visit_plate_entry = Entry(self.visit_frame, width=23)
+        self.visit_plate_entry.grid(row=0, column=1, padx=5, sticky="w")
+
+        self.visit_nume_label = Label(self.visit_frame, text="Nume:")
+        self.visit_nume_label.grid(row=0, column=2, padx=5, sticky="w")
+
+        self.visit_nume_entry = Entry(self.visit_frame, width=23)
+        self.visit_nume_entry.grid(row=0, column=3, padx=5, sticky="w")
+
+        self.visit_id_label = Label(self.visit_frame, text="Buletin:")
+        self.visit_id_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+
+        self.visit_id_entry = Entry(self.visit_frame, width=23)
+        self.visit_id_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+        self.visit_destinatie_label = Label(self.visit_frame, text="Departament:")
+        self.visit_destinatie_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
+
+        self.visit_destinatie_entry = Entry(self.visit_frame, width=23)
+        self.visit_destinatie_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
+
+        self.visit_in_date = Label(self.visit_frame, text="Data intrare:")
+        self.visit_in_date.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+
+        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='dd-MM-yyyy')
+        self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
+        # print(self.visit_in_date_entry.get())
+
+        self.visit_time_in_label = Label(self.visit_frame, text=f"Ora intrare:")
+        self.visit_time_in_label.grid(row=2, column=2, padx=5, pady=5, sticky="w")
+
+        self.visit_time_in_entry = Entry(self.visit_frame, width=23, state="readonly")
+        self.visit_time_in_entry.grid(row=2, column=3, padx=5, pady=5, sticky="w")
+
+        self.visit_time_in_but = Button(self.visit_frame, text="Preia ora", command=self.cur_time)
+        self.visit_time_in_but.grid(row=2, column=4, padx=5, pady=5, sticky="w")
+
+
+        
 
     # cautare cap tractor in lista
     def search_auto(self):
@@ -141,8 +201,14 @@ class Registru_parcare:
         
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
+    
+    def cur_time(self):
+        self.current_time = time.strftime("%H:%M:%S")
+        self.visit_time_in_entry.config(state="normal")
+        self.visit_time_in_entry.delete(0, END)
+        self.visit_time_in_entry.insert(0, self.current_time)
+        self.visit_time_in_entry.config(state="readonly")
         
-
 
 # Testam aplicatia
 
