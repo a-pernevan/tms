@@ -1,6 +1,8 @@
+from calendar import c
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+# from tkinter.tix import COLUMN
 import mysql.connector
 import os
 from dotenv import load_dotenv
@@ -89,7 +91,7 @@ class Registru_parcare:
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
 
-        # Frame vizitatori
+        # Frame vizitatori - facem interfata
 
         self.logo_vizitatori_frame = Frame(self.vizitatori_frame)
         self.logo_vizitatori_frame.pack()
@@ -127,7 +129,7 @@ class Registru_parcare:
         self.visit_in_date = Label(self.visit_frame, text="Data intrare:")
         self.visit_in_date.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='dd-MM-yyyy')
+        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
         self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
         # print(self.visit_in_date_entry.get())
@@ -144,7 +146,7 @@ class Registru_parcare:
         self.visit_out_date = Label(self.visit_frame, text="Data iesire:")
         self.visit_out_date.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='dd-MM-yyyy', state="readonly")
+        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="readonly")
         self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
         self.visit_time_out_label = Label(self.visit_frame, text=f"Ora iesire:")
@@ -155,6 +157,65 @@ class Registru_parcare:
 
         self.visit_time_out_but = Button(self.visit_frame, text="Preia ora", command=lambda:self.cur_time("out"), state="disabled")
         self.visit_time_out_but.grid(row=3, column=4, padx=5, pady=5, sticky="w")
+
+        self.visit_status_label = Label(self.visit_frame, text="Status:")
+        self.visit_status_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+
+        self.visit_status = Label(self.visit_frame, text="INREGISTRARE", fg="red")
+        self.visit_status.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+
+        self.visit_lpr_id_label = Label(self.visit_frame, text="LPR ID:")
+        self.visit_lpr_id_label.grid(row=4, column=2, padx=5, pady=5, sticky="w")
+
+        self.visit_lpr_id = Label(self.visit_frame, text="")
+        self.visit_lpr_id.grid(row=4, column=3, padx=5, pady=5, sticky="w")
+
+        # print(type(self.visit_status.cget("text")))
+
+        # Frame-ul cu butoane
+
+        self.visit_butt_frame = Frame(self.vizitatori_frame)
+        self.visit_butt_frame.pack(pady=10)
+
+        self.visit_save_button = Button(self.visit_butt_frame, text="Salveaza", command=self.tauros_visit_save)
+        self.visit_save_button.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+        self.visit_delete_button = Button(self.visit_butt_frame, text="Sterge")
+        self.visit_delete_button.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
+        self.visit_update_button = Button(self.visit_butt_frame, text="Actualizeaza", state="disabled")
+        self.visit_update_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
+
+        # Frame-ul cu treeview
+
+        self.visit_tree_frame = Frame(self.vizitatori_frame)
+        self.visit_tree_frame.pack(pady=10)
+
+        self.visit_tree = ttk.Treeview(self.visit_tree_frame)
+        self.visit_tree["columns"] = ("Nr Auto", "Nume", "Buletin", "Departament", "Data Intrare", "Ora Intrare", "Data Iesire", "Ora Iesire", "Status")
+        self.visit_tree.column("#0", width=0, stretch=NO)
+        self.visit_tree.column("Nr Auto", anchor=CENTER, width=100)
+        self.visit_tree.column("Nume", anchor=CENTER, width=100)
+        self.visit_tree.column("Buletin", anchor=CENTER, width=100)
+        self.visit_tree.column("Departament", anchor=CENTER, width=100)
+        self.visit_tree.column("Data Intrare", anchor=CENTER, width=100)
+        self.visit_tree.column("Ora Intrare", anchor=CENTER, width=100)
+        self.visit_tree.column("Data Iesire", anchor=CENTER, width=100)
+        self.visit_tree.column("Ora Iesire", anchor=CENTER, width=100)
+        self.visit_tree.column("Status", anchor=CENTER, width=100)
+
+        self.visit_tree.heading("#0", text="", anchor=CENTER)
+        self.visit_tree.heading("Nr Auto", text="Nr Auto", anchor=CENTER)
+        self.visit_tree.heading("Nume", text="Nume", anchor=CENTER)
+        self.visit_tree.heading("Buletin", text="Buletin", anchor=CENTER)
+        self.visit_tree.heading("Departament", text="Departament", anchor=CENTER)
+        self.visit_tree.heading("Data Intrare", text="Data Intrare", anchor=CENTER)
+        self.visit_tree.heading("Ora Intrare", text="Ora Intrare", anchor=CENTER)
+        self.visit_tree.heading("Data Iesire", text="Data Iesire", anchor=CENTER)
+        self.visit_tree.heading("Ora Iesire", text="Ora Iesire", anchor=CENTER)
+        self.visit_tree.heading("Status", text="Status", anchor=CENTER)
+
+        self.visit_tree.pack()
         
 
     # cautare cap tractor in lista
@@ -207,6 +268,9 @@ class Registru_parcare:
                     print(warning)
                     if warning:
                         self.main_window.select(2)
+                        self.visit_plate_entry.delete(0, END)
+                        self.visit_plate_entry.insert(0, plate)
+                        self.visit_lpr_id.config(text=id)
                     else:
                         self.my_cursor.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_id = %s", (id,))
                         self.tms_db.commit()
@@ -228,6 +292,20 @@ class Registru_parcare:
             self.visit_time_out_entry.delete(0, END)
             self.visit_time_out_entry.insert(0, self.current_time)
             self.visit_time_out_entry.config(state="readonly")
+
+    # Inregistram masina in treeview si baza de date.
+    def tauros_visit_save(self):
+        self.visit_save_button.config(state=DISABLED)
+        self.visit_status.config(text="PARCAT", fg="green")
+        self.visit_tree.insert(parent='', index='end', iid=int(self.visit_lpr_id.cget("text")), text="", values=(self.visit_plate_entry.get(), \
+                                                                                                                self.visit_nume_entry.get(), \
+                                                                                                                self.visit_id_entry.get(), \
+                                                                                                                self.visit_destinatie_entry.get(), \
+                                                                                                                self.visit_in_date_entry.get(), \
+                                                                                                                self.visit_time_in_entry.get(), \
+                                                                                                                "IN CURTE", \
+                                                                                                                self.visit_time_out_entry.get(), \
+                                                                                                                self.visit_status.cget("text")))
 
         
 
