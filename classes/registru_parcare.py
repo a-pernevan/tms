@@ -2,7 +2,6 @@ from calendar import c
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-# from tkinter.tix import COLUMN
 import mysql.connector
 import os
 from dotenv import load_dotenv
