@@ -180,7 +180,7 @@ class Registru_parcare:
         self.visit_save_button = Button(self.visit_butt_frame, text="Salveaza", command=self.tauros_visit_save)
         self.visit_save_button.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_delete_button = Button(self.visit_butt_frame, text="Sterge")
+        self.visit_delete_button = Button(self.visit_butt_frame, text="Sterge", command=self.clear_visit)
         self.visit_delete_button.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
         self.visit_update_button = Button(self.visit_butt_frame, text="Actualizeaza", state="disabled")
@@ -271,6 +271,7 @@ class Registru_parcare:
                         self.visit_plate_entry.delete(0, END)
                         self.visit_plate_entry.insert(0, plate)
                         self.visit_lpr_id.config(text=id)
+                        self.visit_status.config(text="INREGISTRARE", fg="red")
                     else:
                         self.my_cursor.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_id = %s", (id,))
                         self.tms_db.commit()
@@ -306,7 +307,20 @@ class Registru_parcare:
                                                                                                                 "IN CURTE", \
                                                                                                                 self.visit_time_out_entry.get(), \
                                                                                                                 self.visit_status.cget("text")))
+        self.visit_tree.after(3000, self.clear_visit)            
 
+    def clear_visit(self):
+        self.visit_plate_entry.delete(0, END)
+        self.visit_nume_entry.delete(0, END)
+        self.visit_id_entry.delete(0, END)
+        self.visit_destinatie_entry.delete(0, END)
+        self.visit_time_in_entry.config(state="normal")
+        self.visit_time_in_entry.delete(0, END)
+        self.visit_time_in_entry.config(state="readonly")
+        self.visit_time_out_entry.config(state="normal")
+        self.visit_time_out_entry.delete(0, END)
+        self.visit_time_out_entry.config(state="readonly")
+        self.visit_status.config(text="INREGISTARE", fg="red")
         
 
 # Testam aplicatia
