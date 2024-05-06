@@ -172,7 +172,7 @@ class Registru_parcare:
 
         # print(type(self.visit_status.cget("text")))
 
-        # Frame-ul cu butoane
+        # Frame-ul cu butoane pentru vizitatori
 
         self.visit_butt_frame = Frame(self.vizitatori_frame)
         self.visit_butt_frame.pack(pady=10)
@@ -186,7 +186,7 @@ class Registru_parcare:
         self.visit_update_button = Button(self.visit_butt_frame, text="Actualizeaza", state="disabled")
         self.visit_update_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
-        # Frame-ul cu treeview
+        # Frame-ul cu treeview pentru vizitatori
 
         self.visit_tree_frame = Frame(self.vizitatori_frame)
         self.visit_tree_frame.pack(pady=10)
