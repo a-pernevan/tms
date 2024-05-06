@@ -216,6 +216,8 @@ class Registru_parcare:
         self.visit_tree.heading("Status", text="Status", anchor=CENTER)
 
         self.visit_tree.pack()
+
+        self.visit_tree.bind("<Double-1>", self.select_visitor)
         
 
     # cautare cap tractor in lista
@@ -321,6 +323,29 @@ class Registru_parcare:
         self.visit_time_out_entry.delete(0, END)
         self.visit_time_out_entry.config(state="readonly")
         self.visit_status.config(text="INREGISTARE", fg="red")
+        self.visit_in_date_entry.delete(0, END)
+
+    
+    def select_visitor(self, e):
+        self.clear_visit()
+        self.selected = self.visit_tree.focus()
+        self.values = self.visit_tree.item(self.selected, 'values')
+        self.visit_plate_entry.insert(0, self.values[0])
+        self.visit_plate_entry.config(state="readonly")
+        self.visit_nume_entry.insert(0, self.values[1])
+        self.visit_nume_entry.config(state="readonly")
+        self.visit_id_entry.insert(0, self.values[2])
+        self.visit_id_entry.config(state="readonly")
+        self.visit_destinatie_entry.insert(0, self.values[3])
+        self.visit_destinatie_entry.config(state="readonly")
+        self.visit_in_date_entry.insert(0, self.values[4])
+        self.visit_in_date_entry.config(state="readonly")
+        self.visit_time_in_entry.config(state="normal")
+        self.visit_time_in_entry.insert(0, self.values[5])
+        self.visit_time_in_entry.config(state="readonly")
+        self.visit_time_out_entry.insert(0, self.values[7])
+        self.visit_status.config(text=self.values[8], fg="green")
+
         
 
 # Testam aplicatia
