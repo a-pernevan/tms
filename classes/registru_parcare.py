@@ -15,19 +15,19 @@ class Registru_parcare:
         # Variabila pentru adaugare manuala vizitator
         self.visit_manual = False
 
-        #Deschidem conexiunea cu baza de date
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
+        # #Deschidem conexiunea cu baza de date
+        # try:
+        #     self.tms_db = mysql.connector.connect(
+        #         host = os.getenv("HOST"),
+        #         user = os.getenv("USER"),
+        #         passwd = os.getenv("PASS"),
+        #         database = os.getenv("DB"),
+        #         auth_plugin='mysql_native_password'
+        #     )
+        # except:
+        #     print("Could not connect to MySQL")
+        #     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+        #     quit()
         
 
         # Valori demo pt nr camion
@@ -104,9 +104,9 @@ class Registru_parcare:
         self.visit_frame.pack(pady=10)
 
         self.visit_plate_label = Label(self.visit_frame, text="Nr Auto:")
-        self.visit_plate_label.grid(row=0, column=0, padx=5)
+        self.visit_plate_label.grid(row=0, column=0, padx=5, sticky="w")
 
-        self.visit_plate_entry = Entry(self.visit_frame, width=23)
+        self.visit_plate_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_plate_entry.grid(row=0, column=1, padx=5, sticky="w")
 
         self.visit_nume_label = Label(self.visit_frame, text="Nume:")
@@ -250,10 +250,23 @@ class Registru_parcare:
 
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
         # Generam un nou cursor
-        self.my_cursor = self.tms_db.cursor()
-        self.my_cursor.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
-        self.lpr_values = self.my_cursor.fetchall()
+        self.my_cursor1 = self.tms_db.cursor()
+        self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
+        self.lpr_values = self.my_cursor1.fetchall()
         
         
         if self.lpr_values:
@@ -271,7 +284,7 @@ class Registru_parcare:
                         self.main_window.select(0)
                         self.nr_auto_entry.delete(0, END)
                         self.nr_auto_entry.insert(0, plate)
-                        self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
+                        self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
                         self.tms_db.commit()
 
                 else:
@@ -279,6 +292,7 @@ class Registru_parcare:
                     print(warning)
                     if warning:
                         self.main_window.select(2)
+                        self.visit_plate_entry.config(state="normal")
                         self.visit_plate_entry.delete(0, END)
                         self.visit_plate_entry.insert(0, plate)
                         self.visit_plate_entry.config(state="readonly")
@@ -286,14 +300,15 @@ class Registru_parcare:
                         self.visit_status.config(text="INREGISTRARE", fg="red")
                         self.visit_save_button.config(state=NORMAL)
                     else:
-                        self.my_cursor.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_id = %s", (id,))
+                        self.my_cursor1.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_id = %s", (id,))
                         self.tms_db.commit()
                         messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
         
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
 
-        self.my_cursor.close()
+        self.my_cursor1.close()
+        self.tms_db.close()
     
     def cur_time(self, direction):
         self.current_time = time.strftime("%H:%M:%S")
@@ -311,6 +326,18 @@ class Registru_parcare:
 
     # Inregistram masina in treeview si baza de date.
     def tauros_visit_save(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
         global visit_manual
         self.my_cursor = self.tms_db.cursor()
         self.visit_save_button.config(state=DISABLED)
@@ -378,6 +405,7 @@ class Registru_parcare:
         self.my_cursor.execute(sql, val)
         self.tms_db.commit()
         self.my_cursor.close()
+        self.tms_db.close()
         self.visit_tree.after(3000, self.clear_visit)            
 
     # Se golesc si reseteaza campurile
@@ -409,6 +437,7 @@ class Registru_parcare:
         self.visit_delete_button.config(state=NORMAL)
         self.visit_lpr_id.config(text="")
         self.visit_time_in_but.config(state=NORMAL)
+        self.visit_time_out_but.config(state=DISABLED)
 
     
     def select_visitor(self, e):
@@ -452,6 +481,18 @@ class Registru_parcare:
 
     # Functia de actualizare a vizitatorilor
     def update_visitor(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
         self.my_cursor = self.tms_db.cursor()
         self.visit_status.config(text="IESIT", fg="blue")
         self.selected = self.visit_tree.focus()
@@ -478,11 +519,24 @@ class Registru_parcare:
         self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
         self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
         self.my_cursor.close()
+        self.tms_db.close()
         self.visit_tree.after(3000, self.clear_visit)
 
 
     # Incarcam inregistrarile din baza de date la pornirea programului
     def load_visitors(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
         self.my_cursor = self.tms_db.cursor()
         sql = "SELECT * FROM reg_visit"
         self.my_cursor.execute(sql)
@@ -490,6 +544,7 @@ class Registru_parcare:
         for i in records:
             self.visit_tree.insert(parent='', index='end', iid=i[11], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
         self.my_cursor.close()
+        self.tms_db.close()
 
     
     def new_visitor(self):
