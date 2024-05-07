@@ -28,7 +28,7 @@ class Registru_parcare:
             print("Could not connect to MySQL")
             mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
             quit()
-        self.my_cursor = self.tms_db.cursor()
+        
 
         # Valori demo pt nr camion
         self.nr_auto_cap = ["IS04GCI", "Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
@@ -254,8 +254,8 @@ class Registru_parcare:
         self.my_cursor = self.tms_db.cursor()
         self.my_cursor.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         self.lpr_values = self.my_cursor.fetchall()
-        # Il inchidem
-        self.my_cursor.close()
+        
+        
         if self.lpr_values:
             print(self.lpr_values)
             for id, plate, status in self.lpr_values:
@@ -292,6 +292,8 @@ class Registru_parcare:
         
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
+
+        self.my_cursor.close()
     
     def cur_time(self, direction):
         self.current_time = time.strftime("%H:%M:%S")
