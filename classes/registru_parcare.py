@@ -187,7 +187,7 @@ class Registru_parcare:
         self.visit_update_button = Button(self.visit_butt_frame, text="Actualizeaza", state="disabled", command=self.update_visitor)
         self.visit_update_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
-        self.visit_new_button = Button(self.visit_butt_frame, text="Nou", command=self.clear_visit)
+        self.visit_new_button = Button(self.visit_butt_frame, text="Adaugare Manual", command=self.new_visitor)
         self.visit_new_button.grid(row=0, column=3, padx=5, pady=5, sticky="w")
 
         # Frame-ul cu treeview pentru vizitatori
@@ -313,7 +313,15 @@ class Registru_parcare:
         self.my_cursor = self.tms_db.cursor()
         self.visit_save_button.config(state=DISABLED)
         self.visit_status.config(text="PARCAT", fg="green")
-        self.visit_tree.insert(parent='', index='end', iid=int(self.visit_lpr_id.cget("text")), text="", values=(self.visit_plate_entry.get(), \
+        lpr_id_value = ""
+
+        if self.visit_manual == False:
+            lpr_id_value = int(self.visit_lpr_id.cget("text"))
+            self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
+            self.tms_db.commit()
+            self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
+            self.tms_db.commit()
+            self.visit_tree.insert(parent='', index='end', iid=lpr_id_value, text="", values=(self.visit_plate_entry.get(), \
                                                                                                                 self.visit_nume_entry.get(), \
                                                                                                                 self.visit_id_entry.get(), \
                                                                                                                 self.visit_destinatie_entry.get(), \
@@ -323,12 +331,36 @@ class Registru_parcare:
                                                                                                                 self.visit_time_out_entry.get(), \
                                                                                                                 self.visit_status.cget("text")))
         
-        if self.visit_manual == False:
-            self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
+        else:
+            self.my_cursor.execute("INSERT INTO lpr_cam (plate_no, status, Date_In) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
             self.tms_db.commit()
-            self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
-            self.tms_db.commit()
-            
+            self.my_cursor.execute("SELECT * FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
+            self.result = self.my_cursor.fetchone()
+            print(self.result[0])
+            lpr_id_value = int(self.result[0])
+            self.visit_tree.insert(parent='', index='end', iid=int(self.result[0]), text="", values=(self.visit_plate_entry.get(), \
+                                                                                                                self.visit_nume_entry.get(), \
+                                                                                                                self.visit_id_entry.get(), \
+                                                                                                                self.visit_destinatie_entry.get(), \
+                                                                                                                self.visit_in_date_entry.get(), \
+                                                                                                                self.visit_time_in_entry.get(), \
+                                                                                                                "IN CURTE", \
+                                                                                                                self.visit_time_out_entry.get(), \
+                                                                                                                self.visit_status.cget("text")))
+
+        # TO DO
+
+        
+        
+        # if self.visit_manual == False:
+        #     self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
+        #     self.tms_db.commit()
+        #     self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
+        #     self.tms_db.commit()
+        
+        # else:
+        #     self.my_cursor.execute("INSERT INTO lpr_cam (plate_no, status, Date_In) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
+        #     self.tms_db.commit()
         sql = "INSERT INTO reg_visit (nr_auto, nume, buletin, dept, data_in, ora_in, visit_status, create_date, lpr_id) VALUES \
             (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (self.visit_plate_entry.get(),
@@ -339,7 +371,7 @@ class Registru_parcare:
                 self.visit_time_in_entry.get(),
                 self.visit_status.cget("text"),
                 self.visit_in_date_entry.get(),
-                self.visit_lpr_id.cget("text"))
+                lpr_id_value)
         
         self.my_cursor.execute(sql, val)
         self.tms_db.commit()
@@ -456,6 +488,14 @@ class Registru_parcare:
         for i in records:
             self.visit_tree.insert(parent='', index='end', iid=i[11], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
         self.my_cursor.close()
+
+    
+    def new_visitor(self):
+        global visit_manual
+        self.visit_manual = True
+        self.clear_visit()
+        self.visit_save_button.config(state="normal")
+
 
 
 # Testam aplicatia
