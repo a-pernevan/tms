@@ -12,7 +12,9 @@ class Registru_parcare:
     def __init__(self, master):
         super().__init__()
         load_dotenv()
-        
+        # Variabila pentru adaugare manuala vizitator
+        self.visit_manual = False
+
         #Deschidem conexiunea cu baza de date
         try:
             self.tms_db = mysql.connector.connect(
@@ -307,6 +309,7 @@ class Registru_parcare:
 
     # Inregistram masina in treeview si baza de date.
     def tauros_visit_save(self):
+        global visit_manual
         self.my_cursor = self.tms_db.cursor()
         self.visit_save_button.config(state=DISABLED)
         self.visit_status.config(text="PARCAT", fg="green")
@@ -319,10 +322,13 @@ class Registru_parcare:
                                                                                                                 "IN CURTE", \
                                                                                                                 self.visit_time_out_entry.get(), \
                                                                                                                 self.visit_status.cget("text")))
-        self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
-        self.tms_db.commit()
-        self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
-        self.tms_db.commit()
+        
+        if self.visit_manual == False:
+            self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
+            self.tms_db.commit()
+            self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
+            self.tms_db.commit()
+            
         sql = "INSERT INTO reg_visit (nr_auto, nume, buletin, dept, data_in, ora_in, visit_status, create_date, lpr_id) VALUES \
             (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (self.visit_plate_entry.get(),
