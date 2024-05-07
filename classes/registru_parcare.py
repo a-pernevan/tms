@@ -182,8 +182,11 @@ class Registru_parcare:
         self.visit_delete_button = Button(self.visit_butt_frame, text="Sterge", command=self.clear_visit)
         self.visit_delete_button.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
-        self.visit_update_button = Button(self.visit_butt_frame, text="Actualizeaza", state="disabled")
+        self.visit_update_button = Button(self.visit_butt_frame, text="Actualizeaza", state="disabled", command=self.update_visitor)
         self.visit_update_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
+
+        self.visit_new_button = Button(self.visit_butt_frame, text="Nou", command=self.clear_visit)
+        self.visit_new_button.grid(row=0, column=3, padx=5, pady=5, sticky="w")
 
         # Frame-ul cu treeview pentru vizitatori
 
@@ -217,6 +220,8 @@ class Registru_parcare:
         self.visit_tree.pack()
 
         self.visit_tree.bind("<Double-1>", self.select_visitor)
+
+        self.load_visitors()
         
 
     # cautare cap tractor in lista
@@ -243,7 +248,7 @@ class Registru_parcare:
 
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
-        self.my_cursor.execute("SELECT * FROM lpr_cam WHERE status= 'CHECK'")
+        self.my_cursor.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         self.lpr_values = self.my_cursor.fetchall()
 
         if self.lpr_values:
@@ -308,6 +313,24 @@ class Registru_parcare:
                                                                                                                 "IN CURTE", \
                                                                                                                 self.visit_time_out_entry.get(), \
                                                                                                                 self.visit_status.cget("text")))
+        self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
+        self.tms_db.commit()
+        self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
+        self.tms_db.commit()
+        sql = "INSERT INTO reg_visit (nr_auto, nume, buletin, dept, data_in, ora_in, visit_status, create_date, lpr_id) VALUES \
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (self.visit_plate_entry.get(),
+                self.visit_nume_entry.get(),
+                self.visit_id_entry.get(),
+                self.visit_destinatie_entry.get(),
+                self.visit_in_date_entry.get(),
+                self.visit_time_in_entry.get(),
+                self.visit_status.cget("text"),
+                self.visit_in_date_entry.get(),
+                self.visit_lpr_id.cget("text"))
+        
+        self.my_cursor.execute(sql, val)
+        self.tms_db.commit()
         self.visit_tree.after(3000, self.clear_visit)            
 
     def clear_visit(self):
@@ -323,29 +346,85 @@ class Registru_parcare:
         self.visit_time_out_entry.config(state="readonly")
         self.visit_status.config(text="INREGISTARE", fg="red")
         self.visit_in_date_entry.delete(0, END)
+        self.visit_save_button.config(state=NORMAL)
 
     
     def select_visitor(self, e):
         self.clear_visit()
         self.selected = self.visit_tree.focus()
         self.values = self.visit_tree.item(self.selected, 'values')
-        self.visit_plate_entry.insert(0, self.values[0])
-        self.visit_plate_entry.config(state="readonly")
-        self.visit_nume_entry.insert(0, self.values[1])
-        self.visit_nume_entry.config(state="readonly")
-        self.visit_id_entry.insert(0, self.values[2])
-        self.visit_id_entry.config(state="readonly")
-        self.visit_destinatie_entry.insert(0, self.values[3])
-        self.visit_destinatie_entry.config(state="readonly")
-        self.visit_in_date_entry.insert(0, self.values[4])
-        self.visit_in_date_entry.config(state="readonly")
-        self.visit_time_in_entry.config(state="normal")
-        self.visit_time_in_entry.insert(0, self.values[5])
-        self.visit_time_in_entry.config(state="readonly")
-        self.visit_time_out_entry.insert(0, self.values[7])
-        self.visit_status.config(text=self.values[8], fg="green")
+        if len(self.values) != 0:
+            self.visit_lpr_id.config(text = self.selected)
+            self.visit_plate_entry.insert(0, self.values[0])
+            self.visit_plate_entry.config(state="readonly")
+            self.visit_nume_entry.insert(0, self.values[1])
+            self.visit_nume_entry.config(state="readonly")
+            self.visit_id_entry.insert(0, self.values[2])
+            self.visit_id_entry.config(state="readonly")
+            self.visit_destinatie_entry.insert(0, self.values[3])
+            self.visit_destinatie_entry.config(state="readonly")
+            # self.visit_in_date_entry.insert(0, self.values[4])
+            # self.visit_in_date_entry.config(state="readonly")
+            self.visit_in_date_entry.grid_forget()
+            self.visit_in_date_entry = Label(self.visit_frame, text=self.values[4])
+            self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+            self.visit_time_in_entry.config(state="normal")
+            self.visit_time_in_entry.insert(0, self.values[5])
+            self.visit_time_in_entry.config(state="readonly")
+            self.visit_time_out_entry.config(state="normal")
+            self.visit_time_out_entry.insert(0, self.values[7])
+            self.visit_time_out_entry.config(state="readonly")
+            self.visit_status.config(text=self.values[8], fg="green")
+            self.visit_time_in_but.config(state="disabled")
+            if self.values[8] == "IESIT":
+                self.visit_time_out_but.config(state="disabled")
+                self.visit_out_date_entry.grid_forget()
+                self.visit_out_date_entry = Label(self.visit_frame, text=self.values[6])
+                self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+                self.visit_update_button.config(state="disabled")
+            else:
+                self.visit_time_out_but.config(state="normal")
+                self.visit_update_button.config(state="normal")
+            self.visit_save_button.config(state="disabled")
+            self.visit_delete_button.config(state="disabled")
 
+    # Functia de actualizare a vizitatorilor
+    def update_visitor(self):
+        self.visit_status.config(text="IESIT", fg="blue")
+        self.selected = self.visit_tree.focus()
+        self.visit_tree.item(self.selected, text="", values=(self.visit_plate_entry.get(), \
+                                                            self.visit_nume_entry.get(), \
+                                                            self.visit_id_entry.get(), \
+                                                            self.visit_destinatie_entry.get(), \
+                                                            self.visit_in_date_entry.cget("text"), \
+                                                            self.visit_time_in_entry.get(), \
+                                                            self.visit_out_date_entry.get(), \
+                                                            self.visit_time_out_entry.get(), \
+                                                            self.visit_status.cget("text")))
         
+        sql = "UPDATE reg_visit SET data_out = %s, ora_out = %s, visit_status = %s WHERE lpr_id = %s"
+        values = (self.visit_out_date_entry.get(), self.visit_time_out_entry.get(), self.visit_status.cget("text"), self.visit_lpr_id.cget("text"))
+        self.my_cursor.execute(sql, values)
+        self.tms_db.commit()
+
+        sql = "UPDATE lpr_cam SET status = 'EXITED', date_out = %s WHERE plate_id = %s"
+        values = (self.visit_out_date_entry.get(), self.visit_lpr_id.cget("text"))
+        self.my_cursor.execute(sql, values)
+        self.tms_db.commit()
+        self.visit_in_date_entry.grid_forget()
+        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+        self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        self.visit_tree.after(3000, self.clear_visit)
+
+
+    # Incarcam inregistrarile din baza de date la pornirea programului
+    def load_visitors(self):
+        sql = "SELECT * FROM reg_visit"
+        self.my_cursor.execute(sql)
+        records = self.my_cursor.fetchall()
+        for i in records:
+            self.visit_tree.insert(parent='', index='end', iid=i[11], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
+
 
 # Testam aplicatia
 
