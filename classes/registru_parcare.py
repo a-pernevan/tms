@@ -92,6 +92,41 @@ class Registru_parcare:
         # self.test_button = Button(self.tauros_frame, text="Test")
         # self.test_button.grid(row=0, column=0)
 
+        # Frame samsung - interfata
+
+        self.samsung_logo_frame = Frame(self.samsung_frame)
+        self.samsung_logo_frame.pack()
+
+        self.samsung_logo_title = Label(self.samsung_logo_frame, text="Intrari / Iesiri Samsung", font=("Arial", 20))
+        self.samsung_logo_title.pack()
+
+        self.samsung_reg_frame = Frame(self.samsung_frame)
+        self.samsung_reg_frame.pack(pady=10)
+
+        self.sam_plate_no_label = Label(self.samsung_reg_frame, text="Nr Auto:")
+        self.sam_plate_no_label.grid(row=0, column=0, padx=5, sticky="w")
+
+        self.sam_plate_no_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
+        self.sam_plate_no_entry.grid(row=0, column=1, padx=5, sticky="w")
+
+        self.park_place_label = Label(self.samsung_reg_frame, text="Loc alocat:")
+        self.park_place_label.grid(row=0, column=2, padx=5, sticky="w")
+
+        self.park_place = Entry(self.samsung_reg_frame, width=23, state="readonly")
+        self.park_place.grid(row=0, column=3, padx=5, sticky="w")
+
+        self.sam_nume_label = Label(self.samsung_reg_frame, text="Nume sofer:")
+        self.sam_nume_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+
+        self.sam_nume_entry = Entry(self.samsung_reg_frame, width=23)
+        self.sam_nume_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+        self.sam_prenume_label = Label(self.samsung_reg_frame, text="Prenume sofer:")
+        self.sam_prenume_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
+
+        self.sam_prenume_entry = Entry(self.samsung_reg_frame, width=23)
+        self.sam_prenume_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
+
         # Frame vizitatori - facem interfata
 
         self.logo_vizitatori_frame = Frame(self.vizitatori_frame)
