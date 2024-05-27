@@ -13,6 +13,7 @@ print(nine_hours_from_now)
 print(nine_hours_from_now - current_time)
 
 # Format the result as 'HH:MM:SS'
-# formatted_time = '{:%Y-%m-%d %H:%M:%S}'.format(nine_hours_from_now)
+formatted_time = '{:%Y-%m-%d %H:%M:%S}'.format(nine_hours_from_now)
+print(str(formatted_time))
 
 # print(f"Nine hours from now: {formatted_time}")
