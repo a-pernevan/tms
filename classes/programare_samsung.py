@@ -201,27 +201,33 @@ class Rezervare_parcare:
         self.my_cursor = self.tms_db.cursor()
 
         place_status = "REZERVAT"
-        plate_no = self.plate_no_entry.get()
+        truck_no = self.plate_no_entry.get()
         f_name = self.driver_name_entry.get()
         l_name = self.driver_lname_entry.get()
         company = self.company_entry.get()
-        date_entry = date_in
+        date_entry = str(date_in)
         date_exit = date_out
+        self.my_cursor.execute(f"SELECT {truck_no} FROM tauros_park_main WHERE place_status='REZERVAT' AND date_in = {date_entry}")
+        self.result = self.my_cursor.fetchall()
+
+        if self.result:
+            print(self.result)
+            messagebox.showinfo(title="Eroare", message="Mai exista o rezervare cu aceste date!")
 
         sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES \
             (%s, %s, %s, %s, %s, %s, %s)"
         values = (place_status,
-                  plate_no,
-                  f_name,
-                  l_name,
-                  company,
+                  truck_no.upper(),
+                  f_name.upper(),
+                  l_name.upper(),
+                  company.upper(),
                   date_entry,
                   date_exit)
         
-        self.my_cursor.execute(sql, values)
-        self.tms_db.commit()
-        self.my_cursor.close()
-        self.tms_db.close()
+        # self.my_cursor.execute(sql, values)
+        # self.tms_db.commit()
+        # self.my_cursor.close()
+        # self.tms_db.close()
 
 
 
