@@ -184,13 +184,58 @@ class Rezervare_parcare:
 
         self.verifica(dbtime_back, exit_date)
 
+    # def rezervare(self, date_in, date_out):
+    #     try:
+    #         self.tms_db = mysql.connector.connect(
+    #             host = os.getenv("HOST"),
+    #             user = os.getenv("USER"),
+    #             passwd = os.getenv("PASS"),
+    #             database = os.getenv("DB"),
+    #             auth_plugin='mysql_native_password'
+    #         )
+    #     except:
+    #         print("Could not connect to MySQL")
+    #         mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+    #         quit()
+
+    #     self.my_cursor = self.tms_db.cursor()
+
+    #     place_status = "REZERVAT"
+    #     truck_no = self.plate_no_entry.get()
+    #     f_name = self.driver_name_entry.get()
+    #     l_name = self.driver_lname_entry.get()
+    #     company = self.company_entry.get()
+    #     date_entry = str(date_in)
+    #     date_exit = date_out
+    #     self.my_cursor.execute(f"SELECT {truck_no} FROM tauros_park_main WHERE place_status='REZERVAT' AND date_in = {date_entry}")
+    #     self.result = self.my_cursor.fetchall()
+
+    #     if self.result:
+    #         print(self.result)
+    #         messagebox.showinfo(title="Eroare", message="Mai exista o rezervare cu aceste date!")
+
+    #     sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES \
+    #         (%s, %s, %s, %s, %s, %s, %s)"
+    #     values = (place_status,
+    #               truck_no.upper(),
+    #               f_name.upper(),
+    #               l_name.upper(),
+    #               company.upper(),
+    #               date_entry,
+    #               date_exit)
+        
+        # self.my_cursor.execute(sql, values)
+        # self.tms_db.commit()
+        # self.my_cursor.close()
+        # self.tms_db.close()
+
     def rezervare(self, date_in, date_out):
         try:
             self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
+                host=os.getenv("HOST"),
+                user=os.getenv("USER"),
+                passwd=os.getenv("PASS"),
+                database=os.getenv("DB"),
                 auth_plugin='mysql_native_password'
             )
         except:
@@ -205,29 +250,34 @@ class Rezervare_parcare:
         f_name = self.driver_name_entry.get()
         l_name = self.driver_lname_entry.get()
         company = self.company_entry.get()
-        date_entry = str(date_in)
-        date_exit = date_out
-        self.my_cursor.execute(f"SELECT {truck_no} FROM tauros_park_main WHERE place_status='REZERVAT' AND date_in = {date_entry}")
-        self.result = self.my_cursor.fetchall()
+        date_entry = str(date_in.strftime("%Y-%m-%d %H:%M"))
+        date_exit = date_out.strftime("%Y-%m-%d %H:%M")
 
-        if self.result:
-            print(self.result)
+        self.my_cursor.execute(
+            f"SELECT COUNT(*) FROM tauros_park_main WHERE place_status='REZERVAT' AND plate_no = '{truck_no}' AND date_in = '{date_entry}'"
+        )
+        count = self.my_cursor.fetchone()[0]
+        print(count)
+
+        if count > 0:
+            
             messagebox.showinfo(title="Eroare", message="Mai exista o rezervare cu aceste date!")
+            return
 
-        sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES \
-            (%s, %s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         values = (place_status,
-                  truck_no.upper(),
-                  f_name.upper(),
-                  l_name.upper(),
-                  company.upper(),
-                  date_entry,
-                  date_exit)
-        
-        # self.my_cursor.execute(sql, values)
-        # self.tms_db.commit()
-        # self.my_cursor.close()
-        # self.tms_db.close()
+                truck_no.upper(),
+                f_name.upper(),
+                l_name.upper(),
+                company.upper(),
+                date_entry,
+                date_exit)
+
+        self.my_cursor.execute(sql, values)
+        self.tms_db.commit()
+
+        self.my_cursor.close()
+        self.tms_db.close()
 
 
 
