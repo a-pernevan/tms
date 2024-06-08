@@ -277,11 +277,13 @@ class Registru_parcare:
             quit()
         # Generam un nou cursor
         self.my_cursor1 = self.tms_db.cursor()
+        # Se extrag numerele de cap tractor din baza de date
         # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         self.my_cursor1.execute("SELECT plate_no FROM tauros_truck WHERE categorie='AUTOTRACTOR'")
         self.nr_auto_cap = self.my_cursor1.fetchall()
         self.my_cursor1.close()
         self.tms_db.close()
+        # Filtram numerele de cap pentru a le afisa
         truck_plate = []
         for truck in self.nr_auto_cap:
             truck_plate.append(truck[0])
