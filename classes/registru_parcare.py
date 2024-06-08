@@ -173,19 +173,19 @@ class Registru_parcare:
         self.visit_nume_label = Label(self.visit_frame, text="Nume:")
         self.visit_nume_label.grid(row=0, column=2, padx=5, sticky="w")
 
-        self.visit_nume_entry = Entry(self.visit_frame, width=23)
+        self.visit_nume_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_nume_entry.grid(row=0, column=3, padx=5, sticky="w")
 
         self.visit_id_label = Label(self.visit_frame, text="Buletin:")
         self.visit_id_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_id_entry = Entry(self.visit_frame, width=23)
+        self.visit_id_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_id_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
         self.visit_destinatie_label = Label(self.visit_frame, text="Departament:")
         self.visit_destinatie_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-        self.visit_destinatie_entry = Entry(self.visit_frame, width=23)
+        self.visit_destinatie_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_destinatie_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
 
         self.visit_in_date = Label(self.visit_frame, text="Data intrare:")
