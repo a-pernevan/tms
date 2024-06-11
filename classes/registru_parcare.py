@@ -176,7 +176,7 @@ class Registru_parcare:
         self.visit_nume_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_nume_entry.grid(row=0, column=3, padx=5, sticky="w")
 
-        self.visit_id_label = Label(self.visit_frame, text="Buletin:")
+        self.visit_id_label = Label(self.visit_frame, text="Firma:")
         self.visit_id_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
         self.visit_id_entry = Entry(self.visit_frame, width=23, state="readonly")
@@ -257,11 +257,11 @@ class Registru_parcare:
         self.visit_tree_frame.pack(pady=10)
 
         self.visit_tree = ttk.Treeview(self.visit_tree_frame)
-        self.visit_tree["columns"] = ("Nr Auto", "Nume", "Buletin", "Departament", "Data Intrare", "Ora Intrare", "Data Iesire", "Ora Iesire", "Status")
+        self.visit_tree["columns"] = ("Nr Auto", "Nume", "Firma", "Departament", "Data Intrare", "Ora Intrare", "Data Iesire", "Ora Iesire", "Status")
         self.visit_tree.column("#0", width=0, stretch=NO)
         self.visit_tree.column("Nr Auto", anchor=CENTER, width=100)
         self.visit_tree.column("Nume", anchor=CENTER, width=100)
-        self.visit_tree.column("Buletin", anchor=CENTER, width=100)
+        self.visit_tree.column("Firma", anchor=CENTER, width=100)
         self.visit_tree.column("Departament", anchor=CENTER, width=100)
         self.visit_tree.column("Data Intrare", anchor=CENTER, width=100)
         self.visit_tree.column("Ora Intrare", anchor=CENTER, width=100)
@@ -272,7 +272,7 @@ class Registru_parcare:
         self.visit_tree.heading("#0", text="", anchor=CENTER)
         self.visit_tree.heading("Nr Auto", text="Nr Auto", anchor=CENTER)
         self.visit_tree.heading("Nume", text="Nume", anchor=CENTER)
-        self.visit_tree.heading("Buletin", text="Buletin", anchor=CENTER)
+        self.visit_tree.heading("Firma", text="Firma", anchor=CENTER)
         self.visit_tree.heading("Departament", text="Departament", anchor=CENTER)
         self.visit_tree.heading("Data Intrare", text="Data Intrare", anchor=CENTER)
         self.visit_tree.heading("Ora Intrare", text="Ora Intrare", anchor=CENTER)
@@ -283,6 +283,7 @@ class Registru_parcare:
         self.visit_tree.pack()
 
         self.visit_tree.bind("<Double-1>", self.select_visitor)
+        self.visit_tree.bind("<Return>", self.select_visitor)
 
         self.load_visitors()
         
@@ -348,14 +349,14 @@ class Registru_parcare:
         self.my_cursor1 = self.tms_db.cursor()
         # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         # self.my_cursor1.execute("SELECT id, cap_tractor, label FROM registru WHERE label='Other' ORDER BY id DESC LIMIT 1")
-        self.my_cursor1.execute("SELECT id, cap_tractor, label FROM registru ORDER BY id DESC LIMIT 1")
+        self.my_cursor1.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = self.my_cursor1.fetchall()
         
         
         if self.lpr_values:
             print(self.lpr_values)
-            for id, plate, status in self.lpr_values:
-                print(id, plate, status)
+            for id, plate, status, token in self.lpr_values:
+                print(id, plate, status, token)
                 self.lpr_input.delete(0, END)
                 self.lpr_input.insert(0, plate)
 
@@ -371,21 +372,23 @@ class Registru_parcare:
                         # self.tms_db.commit()
 
                 else:
-                    warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
-                    print(warning)
-                    if warning:
-                        self.main_window.select(2)
-                        self.visit_plate_entry.config(state="normal")
-                        self.visit_plate_entry.delete(0, END)
-                        self.visit_plate_entry.insert(0, plate)
-                        self.visit_plate_entry.config(state="readonly")
-                        self.visit_lpr_id.config(text=id)
-                        self.visit_status.config(text="INREGISTRARE", fg="red")
-                        self.visit_save_button.config(state=NORMAL)
-                    else:
-                        self.my_cursor1.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
-                        self.tms_db.commit()
-                        messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
+                    if token == "CHECK":
+                        warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
+                        print(warning)
+                        if warning:
+                            self.main_window.select(2)
+                            self.clear_visit()
+                            self.visit_plate_entry.config(state="normal")
+                            self.visit_plate_entry.delete(0, END)
+                            self.visit_plate_entry.insert(0, plate)
+                            self.visit_plate_entry.config(state="readonly")
+                            self.visit_lpr_id.config(text=id)
+                            self.visit_status.config(text="INREGISTRARE", fg="red")
+                            self.visit_save_button.config(state=NORMAL)
+                        else:
+                            self.my_cursor1.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
+                            self.tms_db.commit()
+                            messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
         
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
@@ -429,9 +432,9 @@ class Registru_parcare:
 
         if self.visit_manual == False:
             lpr_id_value = int(self.visit_lpr_id.cget("text"))
-            self.my_cursor.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (self.visit_lpr_id.cget("text"),))
+            self.my_cursor.execute("UPDATE registru SET token = 'PARKED' WHERE id = %s", (self.visit_lpr_id.cget("text"),))
             self.tms_db.commit()
-            self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
+            # self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
             self.tms_db.commit()
             self.visit_tree.insert(parent='', index='end', iid=lpr_id_value, text="", values=(self.visit_plate_entry.get(), \
                                                                                                                 self.visit_nume_entry.get(), \
