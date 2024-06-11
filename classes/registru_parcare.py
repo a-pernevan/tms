@@ -31,8 +31,33 @@ class Registru_parcare:
         
 
         # Valori demo pt nr camion
-        self.nr_auto_cap = ["IS04GCI", "Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
-        self.nr_auto_remorca = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
+        self.truck_plate = []
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
+        # Generam un nou cursor
+        self.my_cursor1 = self.tms_db.cursor()
+        # Se extrag numerele de cap tractor din baza de date
+        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        self.my_cursor1.execute("SELECT plate_no FROM tauros_truck WHERE categorie='AUTOTRACTOR'")
+        self.nr_auto_cap = self.my_cursor1.fetchall()
+        self.my_cursor1.close()
+        self.tms_db.close()
+        # Filtram numerele de cap pentru a le afisa
+
+        for truck in self.nr_auto_cap:
+            self.truck_plate.append(truck[0])
+        # self.nr_auto_cap = ["IS04GCI", "Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
+        # self.nr_auto_remorca = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
 
         # Cream interfata si notebook-ul
         # self.master = master
@@ -72,11 +97,12 @@ class Registru_parcare:
         self.remorca_label = Label(self.truck_frame, text="Remorca:")
         self.remorca_label.grid(row=0, column=2, padx=5, sticky="w")
 
-        # self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto)
-        # self.nr_auto_combo.grid(row=0, column=1)
+        self.n = StringVar()
+        self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto, textvariable=self.n)
+        self.nr_auto_combo.grid(row=0, column=1)
 
-        self.nr_auto_entry = Entry(self.truck_frame, width=23)
-        self.nr_auto_entry.grid(row=0, column=1, padx=5, sticky="w")
+        # self.nr_auto_entry = Entry(self.truck_frame, width=23)
+        # self.nr_auto_entry.grid(row=0, column=1, padx=5, sticky="w")
 
         self.remorca_combo = ttk.Combobox(self.truck_frame, width=23, postcommand=self.search_remorca)
         self.remorca_combo.grid(row=0, column=3, sticky="w")
@@ -147,19 +173,19 @@ class Registru_parcare:
         self.visit_nume_label = Label(self.visit_frame, text="Nume:")
         self.visit_nume_label.grid(row=0, column=2, padx=5, sticky="w")
 
-        self.visit_nume_entry = Entry(self.visit_frame, width=23)
+        self.visit_nume_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_nume_entry.grid(row=0, column=3, padx=5, sticky="w")
 
         self.visit_id_label = Label(self.visit_frame, text="Buletin:")
         self.visit_id_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_id_entry = Entry(self.visit_frame, width=23)
+        self.visit_id_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_id_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
         self.visit_destinatie_label = Label(self.visit_frame, text="Departament:")
         self.visit_destinatie_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-        self.visit_destinatie_entry = Entry(self.visit_frame, width=23)
+        self.visit_destinatie_entry = Entry(self.visit_frame, width=23, state="readonly")
         self.visit_destinatie_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
 
         self.visit_in_date = Label(self.visit_frame, text="Data intrare:")
@@ -263,25 +289,46 @@ class Registru_parcare:
 
     # cautare cap tractor in lista
     def search_auto(self):
-        # global nr_auto_cap
+        global truck_plate
         self.query = self.nr_auto_combo.get()
         if self.query:
             # Perform search based on the query and update the combobox options
-            filtered_values = [value for value in self.nr_auto_cap if self.query.lower() in value.lower()]
+            filtered_values = [value for value in self.truck_plate if self.query.lower() in value.lower()]
             self.nr_auto_combo['values'] = filtered_values
         else:
-            self.nr_auto_combo['values'] = self.nr_auto_cap
-
+            self.nr_auto_combo['values'] = self.truck_plate
     # cautare remorca in lista
     def search_remorca(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
+        # Generam un nou cursor
+        self.my_cursor1 = self.tms_db.cursor()
+        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        self.my_cursor1.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
+        self.nr_auto_remorca = self.my_cursor1.fetchall()
+        self.my_cursor1.close()
+        self.tms_db.close()
+        remorca_plate = []
+        for remorca in self.nr_auto_remorca:
+            remorca_plate.append(remorca[0])
         # global nr_auto_cap
         self.query = self.remorca_combo.get()
         if self.query:
             # Perform search based on the query and update the combobox options
-            filtered_values = [value for value in self.nr_auto_remorca if self.query.lower() in value.lower()]
+            filtered_values = [value for value in remorca_plate if self.query.lower() in value.lower()]
             self.remorca_combo['values'] = filtered_values
         else:
-            self.remorca_combo['values'] = self.nr_auto_remorca
+            self.remorca_combo['values'] = remorca_plate
 
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
@@ -299,8 +346,9 @@ class Registru_parcare:
             quit()
         # Generam un nou cursor
         self.my_cursor1 = self.tms_db.cursor()
-        self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
-        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
+        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        # self.my_cursor1.execute("SELECT id, cap_tractor, label FROM registru WHERE label='Other' ORDER BY id DESC LIMIT 1")
+        self.my_cursor1.execute("SELECT id, cap_tractor, label FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = self.my_cursor1.fetchall()
         
         
@@ -313,14 +361,14 @@ class Registru_parcare:
 
                 # Verificam daca este camion Tauros
 
-                if plate in self.nr_auto_cap:
+                if plate in self.truck_plate:
                     tauros_truck = messagebox.showinfo(title="Camion Tauros", message=f"{plate} este camion Tauros")
                     if tauros_truck == "ok":
                         self.main_window.select(0)
-                        self.nr_auto_entry.delete(0, END)
-                        self.nr_auto_entry.insert(0, plate)
-                        self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
-                        self.tms_db.commit()
+                        self.n = plate
+                        self.nr_auto_combo.set(self.n)
+                        # self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
+                        # self.tms_db.commit()
 
                 else:
                     warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
