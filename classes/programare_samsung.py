@@ -230,6 +230,40 @@ class Rezervare_parcare:
         # self.tms_db.close()
 
     def rezervare(self, date_in, date_out):
+        def confirm(place_status, truck_no, f_name, l_name, company, date_entry, date_exit):
+            try:
+                self.tms_db = mysql.connector.connect(
+                    host=os.getenv("HOST"),
+                    user=os.getenv("USER"),
+                    passwd=os.getenv("PASS"),
+                    database=os.getenv("DB"),
+                    auth_plugin='mysql_native_password'
+                )
+            except:
+                print("Could not connect to MySQL")
+                mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+                quit()
+
+            self.my_cursor = self.tms_db.cursor()
+            sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            values = (place_status,
+                    truck_no.upper(),
+                    f_name.upper(),
+                    l_name.upper(),
+                    company.upper(),
+                    date_entry,
+                    date_exit)
+
+            self.my_cursor.execute(sql, values)
+            self.tms_db.commit()
+
+            self.my_cursor.close()
+            self.tms_db.close()
+
+            messagebox.showinfo(title="Rezervare", message="Rezervarea a fost facuta cu succes!")
+            self.make_rezervation.destroy()
+
+
         try:
             self.tms_db = mysql.connector.connect(
                 host=os.getenv("HOST"),
@@ -264,23 +298,29 @@ class Rezervare_parcare:
             messagebox.showinfo(title="Eroare", message="Mai exista o rezervare cu aceste date!")
             return
 
-        sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        values = (place_status,
-                truck_no.upper(),
-                f_name.upper(),
-                l_name.upper(),
-                company.upper(),
-                date_entry,
-                date_exit)
-
-        self.my_cursor.execute(sql, values)
-        self.tms_db.commit()
 
         self.my_cursor.close()
         self.tms_db.close()
+        self.make_rezervation = Toplevel(self.main_window)
+        self.make_rezervation.transient(self.main_window)
+        self.make_rezervation.grab_set()
+        self.make_rezervation.title("Confirmare rezervare")
 
+        self.confirm_info = Label(self.make_rezervation, text="Verificati datele!")
+        self.confirm_info.grid(row=0, column=0, padx=10, pady=10)
+        rez_plate = Label(self.make_rezervation, text=f"Numar auto: {truck_no}")
+        rez_plate.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+        rez_nume = Label(self.make_rezervation, text=f"Nume: {f_name}, {l_name}")
+        rez_nume.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        rez_company = Label(self.make_rezervation, text=f"Companie: {company}")
+        rez_company.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+        rez_date_in = Label(self.make_rezervation, text=f"Data intrare: {date_entry}")
+        rez_date_in.grid(row=4, column=0, padx=10, pady=10, sticky="w")
+        rez_date_out = Label(self.make_rezervation, text=f"Data iesire: {date_exit}")
+        rez_date_out.grid(row=5, column=0, padx=10, pady=10, sticky="w")
 
-
+        btn_confirm = Button(self.make_rezervation, text="Confirmare", command= lambda: confirm(place_status, truck_no, f_name, l_name, company, date_entry, date_exit))
+        btn_confirm.grid(row=6, column=0, padx=10, pady=10)
 
 
 if __name__ == "__main__":
