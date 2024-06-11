@@ -383,7 +383,7 @@ class Registru_parcare:
                         self.visit_status.config(text="INREGISTRARE", fg="red")
                         self.visit_save_button.config(state=NORMAL)
                     else:
-                        self.my_cursor1.execute("UPDATE lpr_cam SET status = 'DENIED' WHERE plate_id = %s", (id,))
+                        self.my_cursor1.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
                         self.tms_db.commit()
                         messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
         
