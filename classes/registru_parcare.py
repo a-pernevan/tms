@@ -372,8 +372,8 @@ class Registru_parcare:
                             self.visit_status.config(text="INREGISTRARE", fg="red")
                             self.visit_save_button.config(state=NORMAL)
                         else:
-                            self.my_cursor1.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
-                            self.tms_db.commit()
+                            cursor.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
+                            connection.commit()
                             messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
                         
                     # Verificam daca este camion Samsung si populam campurile. 
@@ -430,30 +430,18 @@ class Registru_parcare:
 
     # Inregistram masina in treeview si baza de date.
     def tauros_visit_save(self):
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
         global visit_manual
-        self.my_cursor = self.tms_db.cursor()
+
         self.visit_save_button.config(state=DISABLED)
         self.visit_status.config(text="PARCAT", fg="green")
         lpr_id_value = ""
 
         if self.visit_manual == False:
             lpr_id_value = int(self.visit_lpr_id.cget("text"))
-            self.my_cursor.execute("UPDATE registru SET token = 'PARKED' WHERE id = %s", (self.visit_lpr_id.cget("text"),))
-            self.tms_db.commit()
+            cursor.execute("UPDATE registru SET token = 'PARKED' WHERE id = %s", (self.visit_lpr_id.cget("text"),))
+            connection.commit()
             # self.my_cursor.execute("UPDATE lpr_cam SET Date_In = %s WHERE plate_id = %s", (self.visit_in_date_entry.get(), self.visit_lpr_id.cget("text")))
-            self.tms_db.commit()
+            connection.commit()
             self.visit_tree.insert(parent='', index='end', iid=lpr_id_value, text="", values=(self.visit_plate_entry.get(), \
                                                                                                                 self.visit_nume_entry.get(), \
                                                                                                                 self.visit_id_entry.get(), \
@@ -465,10 +453,10 @@ class Registru_parcare:
                                                                                                                 self.visit_status.cget("text")))
         
         else:
-            self.my_cursor.execute("INSERT INTO lpr_cam (plate_no, status, Date_In) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
-            self.tms_db.commit()
-            self.my_cursor.execute("SELECT * FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
-            self.result = self.my_cursor.fetchone()
+            cursor.execute("INSERT INTO lpr_cam (plate_no, status, Date_In) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
+            connection.commit()
+            cursor.execute("SELECT * FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
+            self.result = cursor.fetchone()
             print(self.result[0])
             lpr_id_value = int(self.result[0])
             self.visit_tree.insert(parent='', index='end', iid=int(self.result[0]), text="", values=(self.visit_plate_entry.get(), \
@@ -506,10 +494,9 @@ class Registru_parcare:
                 self.visit_in_date_entry.get(),
                 lpr_id_value)
         
-        self.my_cursor.execute(sql, val)
-        self.tms_db.commit()
-        self.my_cursor.close()
-        self.tms_db.close()
+        cursor.execute(sql, val)
+        connection.commit()
+
         self.visit_tree.after(3000, self.clear_visit)            
 
     # Se golesc si reseteaza campurile
@@ -585,19 +572,6 @@ class Registru_parcare:
 
     # Functia de actualizare a vizitatorilor
     def update_visitor(self):
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
-        self.my_cursor = self.tms_db.cursor()
         self.visit_status.config(text="IESIT", fg="blue")
         self.selected = self.visit_tree.focus()
         self.visit_tree.item(self.selected, text="", values=(self.visit_plate_entry.get(), \
@@ -612,68 +586,40 @@ class Registru_parcare:
         
         sql = "UPDATE reg_visit SET data_out = %s, ora_out = %s, visit_status = %s WHERE lpr_id = %s"
         values = (self.visit_out_date_entry.get(), self.visit_time_out_entry.get(), self.visit_status.cget("text"), self.visit_lpr_id.cget("text"))
-        self.my_cursor.execute(sql, values)
-        self.tms_db.commit()
+        cursor.execute(sql, values)
+        connection.commit()
 
         sql = "UPDATE lpr_cam SET status = 'EXITED', date_out = %s WHERE plate_id = %s"
         values = (self.visit_out_date_entry.get(), self.visit_lpr_id.cget("text"))
-        self.my_cursor.execute(sql, values)
-        self.tms_db.commit()
+        cursor.execute(sql, values)
+        connection.commit()
         self.visit_in_date_entry.grid_forget()
         self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
         self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
-        self.my_cursor.close()
-        self.tms_db.close()
         self.visit_tree.after(3000, self.clear_visit)
 
 
     # Incarcam inregistrarile din baza de date la pornirea programului
     def load_visitors(self):
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
-        self.my_cursor = self.tms_db.cursor()
+
         sql = "SELECT * FROM reg_visit"
-        self.my_cursor.execute(sql)
-        records = self.my_cursor.fetchall()
+        cursor.execute(sql)
+        records = cursor.fetchall()
         for i in records:
             self.visit_tree.insert(parent='', index='end', iid=i[11], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
-        self.my_cursor.close()
-        self.tms_db.close()
+
 
 
     # Incarcam inregistrarile din baza de date pentru samsung la pornirea programului
     def load_samsung(self):
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
-        self.my_cursor = self.tms_db.cursor()
+
         sql = "SELECT * FROM tauros_park_main"
-        self.my_cursor.execute(sql)
-        records = self.my_cursor.fetchall()
+        cursor.execute(sql)
+        records = cursor.fetchall()
         for i in records:
             print(i)
             self.sam_table.insert(parent='', index='end', iid=i[0], text=i[0], values=(i[2], i[5], i[3], i[4], i[8], i[6], i[7], i[9], i[1]))
-        self.my_cursor.close()
-        self.tms_db.close()
+
     
     def new_visitor(self):
         global visit_manual
