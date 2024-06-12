@@ -2,8 +2,8 @@ from calendar import c
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import mysql.connector
-import os
+# import mysql.connector
+# import os
 from dotenv import load_dotenv
 from tkcalendar import DateEntry
 import time
@@ -16,10 +16,9 @@ except:
 
 def on_closing():
     print("Closing")
-    root.destroy()
     cursor.close()
     connection.close()
-
+    root.destroy()
 
 class Registru_parcare:
     def __init__(self, master):
