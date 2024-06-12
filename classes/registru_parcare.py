@@ -12,6 +12,15 @@ try:
 except:
     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
     quit()
+
+
+def on_closing():
+    print("Closing")
+    root.destroy()
+    cursor.close()
+    connection.close()
+
+
 class Registru_parcare:
     def __init__(self, master):
         super().__init__()
@@ -640,6 +649,7 @@ if __name__ == "__main__":
     root = Tk()
     root.title("Registru parcare")
     registru = Registru_parcare(root)
+    root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
 
 
