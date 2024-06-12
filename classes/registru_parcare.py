@@ -14,6 +14,7 @@ except:
     quit()
 
 
+# functia de iesire
 def on_closing():
     print("Closing")
     cursor.close()
