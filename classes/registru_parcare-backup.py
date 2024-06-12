@@ -24,6 +24,8 @@ class Registru_parcare:
         cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='AUTOTRACTOR' OR categorie='AUTOTURISM'")
 
         self.nr_auto_cap = cursor.fetchall()
+        # cursor.close()
+        # connection.close()
         # Filtram numerele de cap pentru a le afisa
 
         for truck in self.nr_auto_cap:
@@ -316,10 +318,26 @@ class Registru_parcare:
             self.nr_auto_combo['values'] = self.truck_plate
     # cautare remorca in lista
     def search_remorca(self):
+        # try:
+        #     self.tms_db = mysql.connector.connect(
+        #         host = os.getenv("HOST"),
+        #         user = os.getenv("USER"),
+        #         passwd = os.getenv("PASS"),
+        #         database = os.getenv("DB"),
+        #         auth_plugin='mysql_native_password'
+        #     )
+        # except:
+        #     print("Could not connect to MySQL")
+        #     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+        #     quit()
+        # # Generam un nou cursor
+        # self.my_cursor1 = self.tms_db.cursor()
+        # # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         # Selectam remorcile din tabel. 
         cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
         self.nr_auto_remorca = cursor.fetchall()
-
+        # cursor.close()
+        # connection.close()
         remorca_plate = []
         for remorca in self.nr_auto_remorca:
             remorca_plate.append(remorca[0])
@@ -334,9 +352,28 @@ class Registru_parcare:
 
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
         # Generam un nou cursor
+        # self.my_cursor1 = self.tms_db.cursor()
+        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        # self.my_cursor1.execute("SELECT id, cap_tractor, label FROM registru WHERE label='Other' ORDER BY id DESC LIMIT 1")
+        # self.my_cursor1.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
         cursor.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = cursor.fetchall()
+        
+        # self.my_cursor1.close()
+        # self.tms_db.close()
         
         if self.lpr_values:
             print(self.lpr_values)
@@ -380,6 +417,19 @@ class Registru_parcare:
                     if status =="Samsung":
                         samsung_truck = messagebox.showinfo(title="Camion Samsung", message=f"{plate} este camion Samsung")
                         if samsung_truck == "ok":
+                            # try:
+                            #     self.tms_db = mysql.connector.connect(
+                            #         host = os.getenv("HOST"),
+                            #         user = os.getenv("USER"),
+                            #         passwd = os.getenv("PASS"),
+                            #         database = os.getenv("DB"),
+                            #         auth_plugin='mysql_native_password'
+                            #     )
+                            # except:
+                            #     print("Could not connect to MySQL")
+                            #     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+                            #     quit()
+                            # self.my_cursor = self.tms_db.cursor()
                             sql = "SELECT * from tauros_park_main WHERE plate_no = %s AND place_status = 'REZERVAT'"
                             values = (plate, )
                             cursor.execute(sql, values)
@@ -407,7 +457,8 @@ class Registru_parcare:
                                 self.sam_seal_entry.config(state="normal")
                                 self.sam_id_label.config(text=f"ID: {self.result[0][0]}")
                                 self.sam_save_button.config(state=NORMAL)
-
+                            # self.my_cursor.close()
+                            # self.tms_db.close()
 
                     self.lpr_input.delete(0, END)
         else:
