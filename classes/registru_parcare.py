@@ -7,57 +7,30 @@ import os
 from dotenv import load_dotenv
 from tkcalendar import DateEntry
 import time
-
+try:
+    from database.datab import connection, cursor
+except:
+    mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
+    quit()
 class Registru_parcare:
     def __init__(self, master):
         super().__init__()
         load_dotenv()
         # Variabila pentru adaugare manuala vizitator
-        self.visit_manual = False
-
-        # #Deschidem conexiunea cu baza de date
-        # try:
-        #     self.tms_db = mysql.connector.connect(
-        #         host = os.getenv("HOST"),
-        #         user = os.getenv("USER"),
-        #         passwd = os.getenv("PASS"),
-        #         database = os.getenv("DB"),
-        #         auth_plugin='mysql_native_password'
-        #     )
-        # except:
-        #     print("Could not connect to MySQL")
-        #     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-        #     quit()
-        
+        self.visit_manual = False        
 
         # Valori demo pt nr camion
         self.truck_plate = []
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
-        # Generam un nou cursor
-        self.my_cursor1 = self.tms_db.cursor()
-        # Se extrag numerele de cap tractor din baza de date
-        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
-        self.my_cursor1.execute("SELECT plate_no FROM tauros_truck WHERE categorie='AUTOTRACTOR' OR categorie='AUTOTURISM'")
-        self.nr_auto_cap = self.my_cursor1.fetchall()
-        self.my_cursor1.close()
-        self.tms_db.close()
+        cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='AUTOTRACTOR' OR categorie='AUTOTURISM'")
+
+        self.nr_auto_cap = cursor.fetchall()
+        # cursor.close()
+        # connection.close()
         # Filtram numerele de cap pentru a le afisa
 
         for truck in self.nr_auto_cap:
             self.truck_plate.append(truck[0])
-        # self.nr_auto_cap = ["IS04GCI", "Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
-        # self.nr_auto_remorca = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Yusen"]
+
 
         # Cream interfata si notebook-ul
         # self.master = master
@@ -345,26 +318,26 @@ class Registru_parcare:
             self.nr_auto_combo['values'] = self.truck_plate
     # cautare remorca in lista
     def search_remorca(self):
-        try:
-            self.tms_db = mysql.connector.connect(
-                host = os.getenv("HOST"),
-                user = os.getenv("USER"),
-                passwd = os.getenv("PASS"),
-                database = os.getenv("DB"),
-                auth_plugin='mysql_native_password'
-            )
-        except:
-            print("Could not connect to MySQL")
-            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
-            quit()
-        # Generam un nou cursor
-        self.my_cursor1 = self.tms_db.cursor()
-        # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        # try:
+        #     self.tms_db = mysql.connector.connect(
+        #         host = os.getenv("HOST"),
+        #         user = os.getenv("USER"),
+        #         passwd = os.getenv("PASS"),
+        #         database = os.getenv("DB"),
+        #         auth_plugin='mysql_native_password'
+        #     )
+        # except:
+        #     print("Could not connect to MySQL")
+        #     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+        #     quit()
+        # # Generam un nou cursor
+        # self.my_cursor1 = self.tms_db.cursor()
+        # # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         # Selectam remorcile din tabel. 
-        self.my_cursor1.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
-        self.nr_auto_remorca = self.my_cursor1.fetchall()
-        self.my_cursor1.close()
-        self.tms_db.close()
+        cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
+        self.nr_auto_remorca = cursor.fetchall()
+        # cursor.close()
+        # connection.close()
         remorca_plate = []
         for remorca in self.nr_auto_remorca:
             remorca_plate.append(remorca[0])
@@ -392,14 +365,15 @@ class Registru_parcare:
             mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
             quit()
         # Generam un nou cursor
-        self.my_cursor1 = self.tms_db.cursor()
+        # self.my_cursor1 = self.tms_db.cursor()
         # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
         # self.my_cursor1.execute("SELECT id, cap_tractor, label FROM registru WHERE label='Other' ORDER BY id DESC LIMIT 1")
-        self.my_cursor1.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
-        self.lpr_values = self.my_cursor1.fetchall()
+        # self.my_cursor1.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
+        cursor.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
+        self.lpr_values = cursor.fetchall()
         
-        self.my_cursor1.close()
-        self.tms_db.close()
+        # self.my_cursor1.close()
+        # self.tms_db.close()
         
         if self.lpr_values:
             print(self.lpr_values)
