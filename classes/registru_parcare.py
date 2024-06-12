@@ -162,7 +162,7 @@ class Registru_parcare:
         self.sam_id_label = Label(self.samsung_reg_frame, text="ID:")
         self.sam_id_label.grid(row=2, column=2, padx=5, pady=5, sticky="w")
 
-        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled")
+        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled", command=self.samsung_save)
         self.sam_save_button.grid(row=2, column=3, padx=5, pady=5, sticky="w")
 
         # Frame samsung - tabelul treeview
@@ -758,6 +758,11 @@ class Registru_parcare:
         self.clear_visit()
         self.visit_save_button.config(state="normal")
 
+    def samsung_save(self):
+        column = self.sam_table.focus(34)
+        self.sam_table.selection_set(34)
+        values = self.sam_table.item(34, 'values')
+        print(f"Valori: {values}")
 
 
 # Testam aplicatia
