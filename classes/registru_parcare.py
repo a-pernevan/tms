@@ -159,8 +159,11 @@ class Registru_parcare:
         self.sam_seal_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
         self.sam_seal_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
+        self.sam_id_label = Label(self.samsung_reg_frame, text="ID:")
+        self.sam_id_label.grid(row=2, column=2, padx=5, pady=5, sticky="w")
+
         self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled")
-        self.sam_save_button.grid(row=2, column=2, padx=5, pady=5, sticky="w")
+        self.sam_save_button.grid(row=2, column=3, padx=5, pady=5, sticky="w")
 
         # Frame samsung - tabelul treeview
 
@@ -478,6 +481,8 @@ class Registru_parcare:
                                 self.sam_prenume_entry.insert(0, self.result[0][4])
                                 self.sam_prenume_entry.config(state="readonly")
                                 self.sam_seal_entry.config(state="normal")
+                                self.sam_id_label.config(text=f"ID: {self.result[0][0]}")
+                                self.sam_save_button.config(state=NORMAL)
                             self.my_cursor.close()
                             self.tms_db.close()
 
