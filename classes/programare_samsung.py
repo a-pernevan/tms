@@ -230,7 +230,7 @@ class Rezervare_parcare:
         # self.tms_db.close()
 
     def rezervare(self, date_in, date_out):
-        def confirm(place_status, truck_no, f_name, l_name, company, date_entry, date_exit):
+        def confirm(place_status, truck_no, f_name, l_name, company, date_entry, date_exit, durata):
             try:
                 self.tms_db = mysql.connector.connect(
                     host=os.getenv("HOST"),
@@ -245,14 +245,15 @@ class Rezervare_parcare:
                 quit()
 
             self.my_cursor = self.tms_db.cursor()
-            sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out, durata) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             values = (place_status,
                     truck_no.upper(),
                     f_name.upper(),
                     l_name.upper(),
                     company.upper(),
                     date_entry,
-                    date_exit)
+                    date_exit,
+                    durata)
 
             self.my_cursor.execute(sql, values)
             self.tms_db.commit()
@@ -286,6 +287,7 @@ class Rezervare_parcare:
         company = self.company_entry.get()
         date_entry = str(date_in.strftime("%Y-%m-%d %H:%M"))
         date_exit = date_out.strftime("%Y-%m-%d %H:%M")
+        durata = self.reservation_period_combo.get()
 
         self.my_cursor.execute(
             f"SELECT COUNT(*) FROM tauros_park_main WHERE place_status='REZERVAT' AND plate_no = '{truck_no}' AND date_in = '{date_entry}'"
@@ -319,7 +321,7 @@ class Rezervare_parcare:
         rez_date_out = Label(self.make_rezervation, text=f"Data iesire: {date_exit}")
         rez_date_out.grid(row=5, column=0, padx=10, pady=10, sticky="w")
 
-        btn_confirm = Button(self.make_rezervation, text="Confirmare", command= lambda: confirm(place_status, truck_no, f_name, l_name, company, date_entry, date_exit))
+        btn_confirm = Button(self.make_rezervation, text="Confirmare", command= lambda: confirm(place_status, truck_no, f_name, l_name, company, date_entry, date_exit, durata))
         btn_confirm.grid(row=6, column=0, padx=10, pady=10)
 
 

@@ -62,7 +62,7 @@ class Registru_parcare:
         # Cream interfata si notebook-ul
         # self.master = master
         # self.master.title("Registru parcare")
-        self.main_window = ttk.Notebook(master, width=900, height=600)
+        self.main_window = ttk.Notebook(master, width=1280, height=800)
         self.main_window.pack(pady=0)
 
         # Cream cele trei frame-uri
@@ -135,8 +135,8 @@ class Registru_parcare:
         self.sam_plate_no_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
         self.sam_plate_no_entry.grid(row=0, column=1, padx=5, sticky="w")
 
-        self.park_place_label = Label(self.samsung_reg_frame, text="Loc alocat:")
-        self.park_place_label.grid(row=0, column=2, padx=5, sticky="w")
+        self.park_place_label = Label(self.samsung_reg_frame, text="Transportator:")
+        self.park_place_label.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
         self.park_place = Entry(self.samsung_reg_frame, width=23, state="readonly")
         self.park_place.grid(row=0, column=3, padx=5, sticky="w")
@@ -144,14 +144,56 @@ class Registru_parcare:
         self.sam_nume_label = Label(self.samsung_reg_frame, text="Nume sofer:")
         self.sam_nume_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
-        self.sam_nume_entry = Entry(self.samsung_reg_frame, width=23)
+        self.sam_nume_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
         self.sam_nume_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
         self.sam_prenume_label = Label(self.samsung_reg_frame, text="Prenume sofer:")
         self.sam_prenume_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-        self.sam_prenume_entry = Entry(self.samsung_reg_frame, width=23)
+        self.sam_prenume_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
         self.sam_prenume_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
+
+        self.sam_seal_label = Label(self.samsung_reg_frame, text="Sigiliu:")
+        self.sam_seal_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+
+        self.sam_seal_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
+        self.sam_seal_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
+        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled")
+        self.sam_save_button.grid(row=2, column=2, padx=5, pady=5, sticky="w")
+
+        # Frame samsung - tabelul treeview
+
+        self.sam_table_frame = Frame(self.samsung_frame)
+        self.sam_table_frame.pack(pady=10)
+
+        self.sam_table = ttk.Treeview(self.sam_table_frame)
+        self.sam_table["columns"] = ("Nr Auto", "Transportator", "Nume sofer", "Prenume sofer", "Sigiliu", "Data intrare", "Data iesire", "Durata parcare", "Status")
+        self.sam_table.column("#0", width=50, stretch=NO)
+        self.sam_table.column("Nr Auto", anchor=CENTER, width=100)
+        self.sam_table.column("Transportator", anchor=CENTER, width=100)
+        self.sam_table.column("Nume sofer", anchor=CENTER, width=100)
+        self.sam_table.column("Prenume sofer", anchor=CENTER, width=100)
+        self.sam_table.column("Sigiliu", anchor=CENTER, width=100)
+        self.sam_table.column("Data intrare", anchor=CENTER, width=100)
+        self.sam_table.column("Data iesire", anchor=CENTER, width=100)
+        self.sam_table.column("Durata parcare", anchor=CENTER, width=100)
+        self.sam_table.column("Status", anchor=CENTER, width=100)
+
+        self.sam_table.heading("#0", text="ID Rezervare", anchor=CENTER)
+        self.sam_table.heading("Nr Auto", text="Nr Auto", anchor=CENTER)
+        self.sam_table.heading("Transportator", text="Transportator", anchor=CENTER)
+        self.sam_table.heading("Nume sofer", text="Nume sofer", anchor=CENTER)
+        self.sam_table.heading("Prenume sofer", text="Prenume sofer", anchor=CENTER)
+        self.sam_table.heading("Sigiliu", text="Sigiliu", anchor=CENTER)
+        self.sam_table.heading("Data intrare", text="Data intrare", anchor=CENTER)
+        self.sam_table.heading("Data iesire", text="Data iesire", anchor=CENTER)
+        self.sam_table.heading("Durata parcare", text="Durata parcare", anchor=CENTER)
+        self.sam_table.heading("Status", text="Status", anchor=CENTER)
+
+        self.sam_table.pack()
+        self.load_samsung()
+
 
         # Frame vizitatori - facem interfata
 
@@ -315,6 +357,7 @@ class Registru_parcare:
         # Generam un nou cursor
         self.my_cursor1 = self.tms_db.cursor()
         # self.my_cursor1.execute("SELECT plate_id, plate_no, status FROM lpr_cam WHERE status= 'CHECK'")
+        # Selectam remorcile din tabel. 
         self.my_cursor1.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
         self.nr_auto_remorca = self.my_cursor1.fetchall()
         self.my_cursor1.close()
@@ -352,6 +395,8 @@ class Registru_parcare:
         self.my_cursor1.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = self.my_cursor1.fetchall()
         
+        self.my_cursor1.close()
+        self.tms_db.close()
         
         if self.lpr_values:
             print(self.lpr_values)
@@ -372,7 +417,8 @@ class Registru_parcare:
                         # self.tms_db.commit()
 
                 else:
-                    if token == "CHECK":
+                    # Verificare token in functie de ce spune camera. 
+                    if status == "Other":
                         warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
                         print(warning)
                         if warning:
@@ -389,12 +435,56 @@ class Registru_parcare:
                             self.my_cursor1.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
                             self.tms_db.commit()
                             messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
-        
+                        
+                    # Verificam daca este camion Samsung si populam campurile. 
+                    if status =="Samsung":
+                        samsung_truck = messagebox.showinfo(title="Camion Samsung", message=f"{plate} este camion Samsung")
+                        if samsung_truck == "ok":
+                            try:
+                                self.tms_db = mysql.connector.connect(
+                                    host = os.getenv("HOST"),
+                                    user = os.getenv("USER"),
+                                    passwd = os.getenv("PASS"),
+                                    database = os.getenv("DB"),
+                                    auth_plugin='mysql_native_password'
+                                )
+                            except:
+                                print("Could not connect to MySQL")
+                                mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+                                quit()
+                            self.my_cursor = self.tms_db.cursor()
+                            sql = "SELECT * from tauros_park_main WHERE plate_no = %s AND place_status = 'REZERVAT'"
+                            values = (plate, )
+                            self.my_cursor.execute(sql, values)
+                            self.result = self.my_cursor.fetchall()
+                            if self.result:
+                                print(self.result)
+                                # activam modulul samsung si se completeaza datele.
+                                self.main_window.select(1)
+                                self.sam_plate_no_entry.config(state="normal")
+                                self.sam_plate_no_entry.delete(0, END)
+                                self.sam_plate_no_entry.insert(0, plate)
+                                self.sam_plate_no_entry.config(state="readonly")
+                                self.park_place.config(state="normal")
+                                self.park_place.delete(0, END)
+                                self.park_place.insert(0, self.result[0][5])
+                                self.park_place.config(state="readonly")
+                                self.sam_nume_entry.config(state="normal")
+                                self.sam_nume_entry.delete(0, END)
+                                self.sam_nume_entry.insert(0, self.result[0][3])
+                                self.sam_nume_entry.config(state="readonly")
+                                self.sam_prenume_entry.config(state="normal")
+                                self.sam_prenume_entry.delete(0, END)
+                                self.sam_prenume_entry.insert(0, self.result[0][4])
+                                self.sam_prenume_entry.config(state="readonly")
+                                self.sam_seal_entry.config(state="normal")
+                            self.my_cursor.close()
+                            self.tms_db.close()
+
+                    self.lpr_input.delete(0, END)
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
 
-        self.my_cursor1.close()
-        self.tms_db.close()
     
     def cur_time(self, direction):
         self.current_time = time.strftime("%H:%M:%S")
@@ -632,6 +722,30 @@ class Registru_parcare:
         self.my_cursor.close()
         self.tms_db.close()
 
+
+    # Incarcam inregistrarile din baza de date pentru samsung la pornirea programului
+    def load_samsung(self):
+        try:
+            self.tms_db = mysql.connector.connect(
+                host = os.getenv("HOST"),
+                user = os.getenv("USER"),
+                passwd = os.getenv("PASS"),
+                database = os.getenv("DB"),
+                auth_plugin='mysql_native_password'
+            )
+        except:
+            print("Could not connect to MySQL")
+            mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            quit()
+        self.my_cursor = self.tms_db.cursor()
+        sql = "SELECT * FROM tauros_park_main"
+        self.my_cursor.execute(sql)
+        records = self.my_cursor.fetchall()
+        for i in records:
+            print(i)
+            self.sam_table.insert(parent='', index='end', iid=i[0], text=i[0], values=(i[2], i[5], i[3], i[4], i[8], i[6], i[7], i[9], i[1]))
+        self.my_cursor.close()
+        self.tms_db.close()
     
     def new_visitor(self):
         global visit_manual
