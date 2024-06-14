@@ -134,16 +134,18 @@ class Registru_parcare:
         self.sam_prenume_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
 
         self.sam_seal_label = Label(self.samsung_reg_frame, text="Sigiliu:")
-        self.sam_seal_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+        self.sam_seal_label.grid(row=0, column=4, padx=5, pady=5, sticky="w")
 
         self.sam_seal_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
-        self.sam_seal_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        self.sam_seal_entry.grid(row=0, column=5, padx=5, pady=5, sticky="w")
 
         self.sam_id_label = Label(self.samsung_reg_frame, text="ID:")
-        self.sam_id_label.grid(row=2, column=2, padx=5, pady=5, sticky="w")
+        self.sam_id_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
 
         self.sam_id_no = Label(self.samsung_reg_frame, text="N/A", state="active")
-        self.sam_id_no.grid(row=2, column=3, padx=5, pady=5, sticky="w")
+        self.sam_id_no.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+
+
 
         self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled", command=self.samsung_save)
         self.sam_save_button.grid(row=2, column=4, padx=5, pady=5, sticky="w")
