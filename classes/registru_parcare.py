@@ -344,13 +344,13 @@ class Registru_parcare:
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
         # Generam un nou cursor
-        cursor.execute("SELECT id, cap_tractor, label, token FROM registru ORDER BY id DESC LIMIT 1")
+        cursor.execute("SELECT id, cap_tractor, directie, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = cursor.fetchall()
         
         if self.lpr_values:
             print(self.lpr_values)
-            for id, plate, status, token in self.lpr_values:
-                print(id, plate, status, token)
+            for id, plate, direction, status, token in self.lpr_values:
+                print(id, plate, direction, status, token)
                 self.lpr_input.delete(0, END)
                 self.lpr_input.insert(0, plate)
 
@@ -368,23 +368,69 @@ class Registru_parcare:
                 else:
                     # Verificare token in functie de ce spune camera. 
                     if status == "Other":
-                        warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
-                        print(warning)
-                        if warning:
+                        if direction == "IN":
+                            warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
+                            print(warning)
+                            if warning:
+                                self.main_window.select(2)
+                                self.clear_visit()
+                                self.visit_plate_entry.config(state="normal")
+                                self.visit_plate_entry.delete(0, END)
+                                self.visit_plate_entry.insert(0, plate)
+                                self.visit_plate_entry.config(state="readonly")
+                                self.visit_lpr_id.config(text=id)
+                                self.visit_status.config(text="INREGISTRARE", fg="red")
+                                self.visit_save_button.config(state=NORMAL)
+                            else:
+                                cursor.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
+                                connection.commit()
+                                messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
+                        if direction == "OUT":
+                            cursor.execute("SELECT visitor_id, lpr_id FROM reg_visit WHERE nr_auto = %s AND visit_status = 'PARCAT'", (plate,))
+                            self.result = cursor.fetchall()
                             self.main_window.select(2)
-                            self.clear_visit()
-                            self.visit_plate_entry.config(state="normal")
-                            self.visit_plate_entry.delete(0, END)
-                            self.visit_plate_entry.insert(0, plate)
-                            self.visit_plate_entry.config(state="readonly")
-                            self.visit_lpr_id.config(text=id)
-                            self.visit_status.config(text="INREGISTRARE", fg="red")
-                            self.visit_save_button.config(state=NORMAL)
-                        else:
-                            cursor.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
-                            connection.commit()
-                            messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
-                        
+                            column = self.visit_tree.focus(self.result[0][1])
+                            self.visit_tree.selection_set(self.result[0][1])
+                            values = self.visit_tree.item(self.result[0][1], 'values')
+                            print(values[0])
+                            if len(values) != 0:
+                                self.clear_visit()
+                                self.visit_lpr_id.config(text = self.result[0][1])
+                                self.visit_plate_entry.insert(0, values[0])
+                                self.visit_plate_entry.config(state="readonly")
+                                self.visit_nume_entry.insert(0, values[1])
+                                self.visit_nume_entry.config(state="readonly")
+                                self.visit_id_entry.insert(0, values[2])
+                                self.visit_id_entry.config(state="readonly")
+                                self.visit_destinatie_entry.insert(0, values[3])
+                                self.visit_destinatie_entry.config(state="readonly")
+                                # self.visit_in_date_entry.insert(0, self.values[4])
+                                # self.visit_in_date_entry.config(state="readonly")
+                                self.visit_in_date_entry.grid_forget()
+                                self.visit_in_date_entry = Label(self.visit_frame, text=values[4])
+                                self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+                                self.visit_time_in_entry.config(state="normal")
+                                self.visit_time_in_entry.insert(0, values[5])
+                                self.visit_time_in_entry.config(state="readonly")
+                                self.visit_time_out_entry.config(state="normal")
+                                self.visit_time_out_entry.insert(0, values[7])
+                                self.visit_time_out_entry.config(state="readonly")
+                                self.visit_status.config(text=values[8], fg="green")
+                                self.visit_time_in_but.config(state="disabled")
+                                self.visit_lpr_id.config(text=id)
+                                if values[8] == "IESIT":
+                                    self.visit_time_out_but.config(state="disabled")
+                                    self.visit_out_date_entry.grid_forget()
+                                    self.visit_out_date_entry = Label(self.visit_frame, text=values[6])
+                                    self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+                                    self.visit_update_button.config(state="disabled")
+                                else:
+                                    self.visit_time_out_but.config(state="normal")
+                                    self.visit_update_button.config(state="normal")
+                                    cursor.execute("UPDATE reg_visit SET lpr_id = %s WHERE lpr_id = %s", (id, self.result[0][1]))
+                                self.visit_save_button.config(state="disabled")
+                                self.visit_delete_button.config(state="disabled")
+
                     # Verificam daca este camion Samsung si populam campurile. 
                     if status =="Samsung":
                         samsung_truck = messagebox.showinfo(title="Camion Samsung", message=f"{plate} este camion Samsung")
@@ -598,8 +644,8 @@ class Registru_parcare:
         cursor.execute(sql, values)
         connection.commit()
 
-        sql = "UPDATE lpr_cam SET status = 'EXITED', date_out = %s WHERE plate_id = %s"
-        values = (self.visit_out_date_entry.get(), self.visit_lpr_id.cget("text"))
+        sql = "UPDATE registru SET token = 'EXITED' WHERE id = %s"
+        values = (self.visit_lpr_id.cget("text"),)
         cursor.execute(sql, values)
         connection.commit()
         self.visit_in_date_entry.grid_forget()
