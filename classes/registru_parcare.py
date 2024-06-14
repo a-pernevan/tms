@@ -142,8 +142,11 @@ class Registru_parcare:
         self.sam_id_label = Label(self.samsung_reg_frame, text="ID:")
         self.sam_id_label.grid(row=2, column=2, padx=5, pady=5, sticky="w")
 
+        self.sam_id_no = Label(self.samsung_reg_frame, text="N/A", state="active")
+        self.sam_id_no.grid(row=2, column=3, padx=5, pady=5, sticky="w")
+
         self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled", command=self.samsung_save)
-        self.sam_save_button.grid(row=2, column=3, padx=5, pady=5, sticky="w")
+        self.sam_save_button.grid(row=2, column=4, padx=5, pady=5, sticky="w")
 
         # Frame samsung - tabelul treeview
 
@@ -346,7 +349,8 @@ class Registru_parcare:
         # Generam un nou cursor
         cursor.execute("SELECT id, cap_tractor, directie, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = cursor.fetchall()
-        
+        connection.close()
+        connection._open_connection()
         if self.lpr_values:
             print(self.lpr_values)
             for id, plate, direction, status, token in self.lpr_values:
@@ -367,8 +371,10 @@ class Registru_parcare:
 
                 else:
                     # Verificare token in functie de ce spune camera. 
-                    if status == "Other":
-                        if direction == "IN":
+                    # pentru camion neavizat
+                    if status == "Other" :
+                        # Verificam directia anuntata de camere
+                        if direction == "IN" and token == "CHECK":
                             warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
                             print(warning)
                             if warning:
@@ -385,51 +391,58 @@ class Registru_parcare:
                                 cursor.execute("UPDATE registru SET token = 'DENIED' WHERE id = %s", (id,))
                                 connection.commit()
                                 messagebox.showinfo(title="Camion Respins", message="Nr. auto respins, necesar a parasi curtea.")
-                        if direction == "OUT":
+                        if direction == "OUT" and token == "CHECK":
                             cursor.execute("SELECT visitor_id, lpr_id FROM reg_visit WHERE nr_auto = %s AND visit_status = 'PARCAT'", (plate,))
                             self.result = cursor.fetchall()
-                            self.main_window.select(2)
-                            column = self.visit_tree.focus(self.result[0][1])
-                            self.visit_tree.selection_set(self.result[0][1])
-                            values = self.visit_tree.item(self.result[0][1], 'values')
-                            print(values[0])
-                            if len(values) != 0:
-                                self.clear_visit()
-                                self.visit_lpr_id.config(text = self.result[0][1])
-                                self.visit_plate_entry.insert(0, values[0])
-                                self.visit_plate_entry.config(state="readonly")
-                                self.visit_nume_entry.insert(0, values[1])
-                                self.visit_nume_entry.config(state="readonly")
-                                self.visit_id_entry.insert(0, values[2])
-                                self.visit_id_entry.config(state="readonly")
-                                self.visit_destinatie_entry.insert(0, values[3])
-                                self.visit_destinatie_entry.config(state="readonly")
-                                # self.visit_in_date_entry.insert(0, self.values[4])
-                                # self.visit_in_date_entry.config(state="readonly")
-                                self.visit_in_date_entry.grid_forget()
-                                self.visit_in_date_entry = Label(self.visit_frame, text=values[4])
-                                self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
-                                self.visit_time_in_entry.config(state="normal")
-                                self.visit_time_in_entry.insert(0, values[5])
-                                self.visit_time_in_entry.config(state="readonly")
-                                self.visit_time_out_entry.config(state="normal")
-                                self.visit_time_out_entry.insert(0, values[7])
-                                self.visit_time_out_entry.config(state="readonly")
-                                self.visit_status.config(text=values[8], fg="green")
-                                self.visit_time_in_but.config(state="disabled")
-                                self.visit_lpr_id.config(text=id)
-                                if values[8] == "IESIT":
-                                    self.visit_time_out_but.config(state="disabled")
-                                    self.visit_out_date_entry.grid_forget()
-                                    self.visit_out_date_entry = Label(self.visit_frame, text=values[6])
-                                    self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
-                                    self.visit_update_button.config(state="disabled")
-                                else:
-                                    self.visit_time_out_but.config(state="normal")
-                                    self.visit_update_button.config(state="normal")
-                                    cursor.execute("UPDATE reg_visit SET lpr_id = %s WHERE lpr_id = %s", (id, self.result[0][1]))
-                                self.visit_save_button.config(state="disabled")
-                                self.visit_delete_button.config(state="disabled")
+                            if self.result:
+                                self.main_window.select(2)
+                                column = self.visit_tree.focus(self.result[0][1])
+                                self.visit_tree.selection_set(self.result[0][1])
+                                values = self.visit_tree.item(self.result[0][1], 'values')
+                                print(values[0])
+                                if len(values) != 0:
+                                    self.clear_visit()
+                                    self.visit_lpr_id.config(text = self.result[0][1])
+                                    self.visit_plate_entry.insert(0, values[0])
+                                    self.visit_plate_entry.config(state="readonly")
+                                    self.visit_nume_entry.insert(0, values[1])
+                                    self.visit_nume_entry.config(state="readonly")
+                                    self.visit_id_entry.insert(0, values[2])
+                                    self.visit_id_entry.config(state="readonly")
+                                    self.visit_destinatie_entry.insert(0, values[3])
+                                    self.visit_destinatie_entry.config(state="readonly")
+                                    # self.visit_in_date_entry.insert(0, self.values[4])
+                                    # self.visit_in_date_entry.config(state="readonly")
+                                    self.visit_in_date_entry.grid_forget()
+                                    self.visit_in_date_entry = Label(self.visit_frame, text=values[4])
+                                    self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+                                    self.visit_time_in_entry.config(state="normal")
+                                    self.visit_time_in_entry.insert(0, values[5])
+                                    self.visit_time_in_entry.config(state="readonly")
+                                    self.visit_time_out_entry.config(state="normal")
+                                    self.visit_time_out_entry.insert(0, values[7])
+                                    self.visit_time_out_entry.config(state="readonly")
+                                    self.visit_status.config(text=values[8], fg="green")
+                                    self.visit_time_in_but.config(state="disabled")
+                                    self.visit_lpr_id.config(text=id)
+                                    if values[8] == "IESIT":
+                                        self.visit_time_out_but.config(state="disabled")
+                                        self.visit_out_date_entry.grid_forget()
+                                        self.visit_out_date_entry = Label(self.visit_frame, text=values[6])
+                                        self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+                                        self.visit_update_button.config(state="disabled")
+                                    else:
+                                        self.visit_time_out_but.config(state="normal")
+                                        self.visit_update_button.config(state="normal")
+                                        cursor.execute("UPDATE reg_visit SET lpr_id = %s WHERE lpr_id = %s", (id, self.result[0][1]))
+                                    self.visit_save_button.config(state="disabled")
+                                    self.visit_delete_button.config(state="disabled")
+                            else:
+                                messagebox.showinfo(title="Eroare avizare", message="Camionul a intrat neautorizat! - Incident raportat")
+                                cursor.execute("UPDATE registru SET token = 'UNAUTHORISED' WHERE id = %s", (id,))
+                                connection.commit()
+                                connection.close()
+                                connection._open_connection()
 
                     # Verificam daca este camion Samsung si populam campurile. 
                     if status =="Samsung":
@@ -460,7 +473,7 @@ class Registru_parcare:
                                 self.sam_prenume_entry.insert(0, self.result[0][4])
                                 self.sam_prenume_entry.config(state="readonly")
                                 self.sam_seal_entry.config(state="normal")
-                                self.sam_id_label.config(text=f"ID: {self.result[0][0]}")
+                                self.sam_id_no.config(text=self.result[0][0])
                                 self.sam_save_button.config(state=NORMAL)
 
 
