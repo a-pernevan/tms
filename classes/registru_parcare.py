@@ -145,10 +145,26 @@ class Registru_parcare:
         self.sam_id_no = Label(self.samsung_reg_frame, text="N/A", state="active")
         self.sam_id_no.grid(row=1, column=5, padx=5, pady=5, sticky="w")
 
+        self.lpr_in_label = Label(self.samsung_reg_frame, text="Data intrare:")
+        self.lpr_in_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
+        self.lpr_in_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
+        self.lpr_in_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
-        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled", command=self.samsung_save)
-        self.sam_save_button.grid(row=2, column=4, padx=5, pady=5, sticky="w")
+        self.lpr_out_label = Label(self.samsung_reg_frame, text="Data iesire:")
+        self.lpr_out_label.grid(row=2, column=2, padx=5, pady=5, sticky="w")
+
+        self.lpr_out_entry = Entry(self.samsung_reg_frame, width=23, state="readonly")
+        self.lpr_out_entry.grid(row=2, column=3, padx=5, pady=5, sticky="w")
+
+        self.sam_lpr_id_label = Label(self.samsung_reg_frame, text="ID LPR:")
+        self.sam_lpr_id_label.grid(row=2, column=4, padx=5, pady=5, sticky="w")
+
+        self.sam_lpr_id_no = Label(self.samsung_reg_frame, text="N/A")
+        self.sam_lpr_id_no.grid(row=2, column=5, padx=5, pady=5, sticky="w")
+
+        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="normal", command=self.samsung_save)
+        self.sam_save_button.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
         # Frame samsung - tabelul treeview
 
@@ -349,14 +365,14 @@ class Registru_parcare:
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
         # Generam un nou cursor
-        cursor.execute("SELECT id, cap_tractor, directie, label, token FROM registru ORDER BY id DESC LIMIT 1")
+        cursor.execute("SELECT id, cap_tractor, data_reg, time_reg, directie, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = cursor.fetchall()
         connection.close()
         connection._open_connection()
         if self.lpr_values:
             print(self.lpr_values)
-            for id, plate, direction, status, token in self.lpr_values:
-                print(id, plate, direction, status, token)
+            for id, plate, date_in, time_in, direction, status, token in self.lpr_values:
+                print(id, plate, date_in, time_in, direction, status, token)
                 self.lpr_input.delete(0, END)
                 self.lpr_input.insert(0, plate)
 
@@ -450,33 +466,40 @@ class Registru_parcare:
                     if status =="Samsung":
                         samsung_truck = messagebox.showinfo(title="Camion Samsung", message=f"{plate} este camion Samsung")
                         if samsung_truck == "ok":
-                            sql = "SELECT * from tauros_park_main WHERE plate_no = %s AND place_status = 'REZERVAT'"
-                            values = (plate, )
-                            cursor.execute(sql, values)
-                            self.result = cursor.fetchall()
-                            if self.result:
-                                print(self.result)
-                                # activam modulul samsung si se completeaza datele.
-                                self.main_window.select(1)
-                                self.sam_plate_no_entry.config(state="normal")
-                                self.sam_plate_no_entry.delete(0, END)
-                                self.sam_plate_no_entry.insert(0, plate)
-                                self.sam_plate_no_entry.config(state="readonly")
-                                self.park_place.config(state="normal")
-                                self.park_place.delete(0, END)
-                                self.park_place.insert(0, self.result[0][5])
-                                self.park_place.config(state="readonly")
-                                self.sam_nume_entry.config(state="normal")
-                                self.sam_nume_entry.delete(0, END)
-                                self.sam_nume_entry.insert(0, self.result[0][3])
-                                self.sam_nume_entry.config(state="readonly")
-                                self.sam_prenume_entry.config(state="normal")
-                                self.sam_prenume_entry.delete(0, END)
-                                self.sam_prenume_entry.insert(0, self.result[0][4])
-                                self.sam_prenume_entry.config(state="readonly")
-                                self.sam_seal_entry.config(state="normal")
-                                self.sam_id_no.config(text=self.result[0][0])
-                                self.sam_save_button.config(state=NORMAL)
+                            if direction == "IN":
+                                sql = "SELECT * from tauros_park_main WHERE plate_no = %s AND place_status = 'REZERVAT'"
+                                values = (plate, )
+                                cursor.execute(sql, values)
+                                self.result = cursor.fetchall()
+                                if self.result:
+                                    print(self.result)
+                                    # activam modulul samsung si se completeaza datele.
+                                    self.main_window.select(1)
+                                    self.sam_plate_no_entry.config(state="normal")
+                                    self.sam_plate_no_entry.delete(0, END)
+                                    self.sam_plate_no_entry.insert(0, plate)
+                                    self.sam_plate_no_entry.config(state="readonly")
+                                    self.park_place.config(state="normal")
+                                    self.park_place.delete(0, END)
+                                    self.park_place.insert(0, self.result[0][5])
+                                    self.park_place.config(state="readonly")
+                                    self.sam_nume_entry.config(state="normal")
+                                    self.sam_nume_entry.delete(0, END)
+                                    self.sam_nume_entry.insert(0, self.result[0][3])
+                                    self.sam_nume_entry.config(state="readonly")
+                                    self.sam_prenume_entry.config(state="normal")
+                                    self.sam_prenume_entry.delete(0, END)
+                                    self.sam_prenume_entry.insert(0, self.result[0][4])
+                                    self.sam_prenume_entry.config(state="readonly")
+                                    self.sam_seal_entry.config(state="normal")
+                                    self.sam_id_no.config(text=self.result[0][0])
+                                    self.sam_save_button.config(state=NORMAL)
+                                    data_intrare_samsung = date_in + " " + time_in
+                                    self.lpr_in_entry.config(state="normal")
+                                    self.lpr_in_entry.delete(0, END)
+                                    self.lpr_in_entry.insert(0, data_intrare_samsung)
+                                    self.lpr_in_entry.config(state="readonly")
+                                    self.sam_lpr_id_no.config(text=id)
 
 
                     self.lpr_input.delete(0, END)
@@ -698,10 +721,22 @@ class Registru_parcare:
         self.visit_save_button.config(state="normal")
 
     def samsung_save(self):
-        column = self.sam_table.focus(34)
-        self.sam_table.selection_set(34)
-        values = self.sam_table.item(34, 'values')
+        column = self.sam_table.focus(self.sam_id_no.config.cget("text"))
+        self.sam_table.selection_set(self.sam_id_no.config.cget("text"))
+        values = self.sam_table.item(self.sam_id_no.config.cget("text"), 'values')
         print(f"Valori: {values}")
+        sql = "UPDATE tauros_park_main SET place_status = 'PARCAT', sigiliu = %s, date_in_real = %s WHERE place_id = %s"
+        values = (self.sam_seal_entry.get(), self.lpr_in_entry.get())
+        cursor.execute(sql, values)
+        connection.commit()
+        sql = "UPDATE registru SET token = 'PARKED' id = %s"
+        values = (self.sam_lpr_id_no.config.cget("text"),)
+        cursor.execute(sql, values)
+        connection.commit()
+        cursor.close()
+        connection.close()
+        connection._open_connection()
+
 
 
 # Testam aplicatia
