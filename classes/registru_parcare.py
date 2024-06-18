@@ -510,13 +510,13 @@ class Registru_parcare:
                                 if self.result:
                                     self.main_window.select(1)
                                     self.enable_samsung()
-                                    print(self.result[0][0])
+                                    # print(self.result[0][0])
                                     self.sam_id_no.config(text=self.result[0][0])
                                     data_iesire_samsung = str(date_in) + " " + time_in
                                     sam_out_date = datetime.strptime(data_iesire_samsung, "%Y-%m-%d %H:%M:%S")
-                                    print(type(sam_out_date))
+                                    # print(type(sam_out_date))
                                     stay = sam_out_date - self.result[0][11]
-                                    print(stay)
+                                    # print(stay)
                                     self.lpr_out_entry.config(state="normal")
                                     self.lpr_out_entry.delete(0, END)
                                     self.lpr_out_entry.insert(0, data_iesire_samsung)
@@ -548,9 +548,10 @@ class Registru_parcare:
                                     values = (id, )
                                     cursor.execute(sql, values)
                                     connection.commit()
-                                    connection.close()
-                                    connection._open_connection()
                                     self.disable_samsung()
+                                    for i in self.sam_table.get_children():
+                                        self.sam_table.delete(i)
+                                    self.load_samsung()
 
                     self.lpr_input.delete(0, END)
         else:
@@ -760,7 +761,7 @@ class Registru_parcare:
         cursor.execute(sql)
         records = cursor.fetchall()
         for i in records:
-            print(i)
+            # print(i)
             self.sam_table.insert(parent='', index='end', iid=i[0], text=i[0], values=(i[2], i[5], i[3], i[4], i[8], i[6], i[7], i[9], i[1]))
 
     
@@ -774,7 +775,7 @@ class Registru_parcare:
         column = self.sam_table.focus(int(self.sam_id_no.cget("text")))
         self.sam_table.selection_set(self.sam_id_no.cget("text"))
         values = self.sam_table.item(self.sam_id_no.cget("text"), 'values')
-        print(f"Valori: {values}")
+        # print(f"Valori: {values}")
         sql = "UPDATE tauros_park_main SET place_status = 'PARCAT', sigiliu = %s, date_in_real = %s WHERE place_id = %s"
         values = (self.sam_seal_entry.get(), self.lpr_in_entry.get(), self.sam_id_no.cget("text"))
         cursor.execute(sql, values)
