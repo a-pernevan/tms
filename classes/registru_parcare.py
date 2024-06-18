@@ -6,6 +6,7 @@ from tkinter import messagebox
 # import os
 from dotenv import load_dotenv
 from tkcalendar import DateEntry
+from datetime import datetime, timedelta
 import time
 try:
     from database.datab import connection, cursor
@@ -463,7 +464,7 @@ class Registru_parcare:
                                 connection._open_connection()
 
                     # Verificam daca este camion Samsung si populam campurile. 
-                    if status =="Samsung":
+                    if status =="Samsung" and token == "CHECK":
                         samsung_truck = messagebox.showinfo(title="Camion Samsung", message=f"{plate} este camion Samsung")
                         if samsung_truck == "ok":
                             if direction == "IN":
@@ -494,13 +495,63 @@ class Registru_parcare:
                                     self.sam_seal_entry.config(state="normal")
                                     self.sam_id_no.config(text=self.result[0][0])
                                     self.sam_save_button.config(state=NORMAL)
-                                    data_intrare_samsung = date_in + " " + time_in
+                                    data_intrare_samsung = str(date_in) + " " + time_in
                                     self.lpr_in_entry.config(state="normal")
                                     self.lpr_in_entry.delete(0, END)
                                     self.lpr_in_entry.insert(0, data_intrare_samsung)
                                     self.lpr_in_entry.config(state="readonly")
                                     self.sam_lpr_id_no.config(text=id)
 
+                            if direction == "OUT":
+                                sql = "SELECT * from tauros_park_main WHERE plate_no = %s AND place_status = 'PARCAT'"
+                                values = (plate, )
+                                cursor.execute(sql, values)
+                                self.result = cursor.fetchall()
+                                if self.result:
+                                    self.main_window.select(1)
+                                    self.enable_samsung()
+                                    print(self.result[0][0])
+                                    self.sam_id_no.config(text=self.result[0][0])
+                                    data_iesire_samsung = str(date_in) + " " + time_in
+                                    sam_out_date = datetime.strptime(data_iesire_samsung, "%Y-%m-%d %H:%M:%S")
+                                    print(type(sam_out_date))
+                                    stay = sam_out_date - self.result[0][11]
+                                    print(stay)
+                                    self.lpr_out_entry.config(state="normal")
+                                    self.lpr_out_entry.delete(0, END)
+                                    self.lpr_out_entry.insert(0, data_iesire_samsung)
+                                    self.lpr_out_entry.config(state="readonly")
+                                    self.sam_plate_no_entry.delete(0, END)
+                                    self.sam_plate_no_entry.insert(0, self.result[0][2])
+                                    self.park_place.delete(0, END)
+                                    self.park_place.insert(0, self.result[0][5])
+                                    self.sam_nume_entry.delete(0, END)
+                                    self.sam_nume_entry.insert(0, self.result[0][3])
+                                    self.sam_prenume_entry.delete(0, END)
+                                    self.sam_prenume_entry.insert(0, self.result[0][4])
+                                    self.sam_seal_entry.delete(0, END)
+                                    self.sam_seal_entry.insert(0, self.result[0][6])
+                                    self.sam_save_button.config(state=NORMAL)
+                                    self.lpr_in_entry.delete(0, END)
+                                    self.lpr_in_entry.insert(0, self.result[0][11])
+                                    self.sam_lpr_id_no.config(text=id)
+                                    sql = "UPDATE tauros_park_main SET place_status = 'PLECAT' WHERE place_id = %s"
+                                    values = (self.result[0][0], )
+                                    cursor.execute(sql, values)
+                                    sql = "UPDATE tauros_park_main SET date_in_out = %s WHERE place_id = %s"
+                                    values = (data_iesire_samsung, self.result[0][0])
+                                    cursor.execute(sql, values)
+                                    sql = "UPDATE tauros_park_main SET park_real = %s WHERE place_id = %s"
+                                    values = (stay, self.result[0][0])
+                                    cursor.execute(sql, values)
+                                    sql = "UPDATE registru SET token = 'EXIT' WHERE id = %s"
+                                    values = (id, )
+                                    cursor.execute(sql, values)
+                                    connection.commit()
+                                    cursor.close()
+                                    connection.close()
+                                    connection._open_connection()
+                                    self.disable_samsung()
 
                     self.lpr_input.delete(0, END)
         else:
@@ -721,22 +772,39 @@ class Registru_parcare:
         self.visit_save_button.config(state="normal")
 
     def samsung_save(self):
-        column = self.sam_table.focus(self.sam_id_no.config.cget("text"))
-        self.sam_table.selection_set(self.sam_id_no.config.cget("text"))
-        values = self.sam_table.item(self.sam_id_no.config.cget("text"), 'values')
+        column = self.sam_table.focus(self.sam_id_no.cget("text"))
+        self.sam_table.selection_set(self.sam_id_no.cget("text"))
+        values = self.sam_table.item(self.sam_id_no.cget("text"), 'values')
         print(f"Valori: {values}")
         sql = "UPDATE tauros_park_main SET place_status = 'PARCAT', sigiliu = %s, date_in_real = %s WHERE place_id = %s"
-        values = (self.sam_seal_entry.get(), self.lpr_in_entry.get())
+        values = (self.sam_seal_entry.get(), self.lpr_in_entry.get(), self.sam_id_no.cget("text"))
         cursor.execute(sql, values)
         connection.commit()
         sql = "UPDATE registru SET token = 'PARKED' id = %s"
-        values = (self.sam_lpr_id_no.config.cget("text"),)
+        values = (self.sam_lpr_id_no.cget("text"),)
         cursor.execute(sql, values)
         connection.commit()
         cursor.close()
         connection.close()
         connection._open_connection()
 
+    def enable_samsung(self):
+        self.sam_plate_no_entry.config(state="normal")
+        self.park_place.config(state="normal")
+        self.sam_nume_entry.config(state="normal")
+        self.sam_prenume_entry.config(state="normal")
+        self.sam_seal_entry.config(state="normal")
+        self.lpr_in_entry.config(state="normal")
+        self.lpr_out_entry.config(state="normal")
+
+    def disable_samsung(self):
+        self.sam_plate_no_entry.config(state="disabled")
+        self.park_place.config(state="disabled")
+        self.sam_nume_entry.config(state="disabled")
+        self.sam_prenume_entry.config(state="disabled")
+        self.sam_seal_entry.config(state="disabled")
+        self.lpr_in_entry.config(state="disabled")
+        self.lpr_out_entry.config(state="disabled")
 
 
 # Testam aplicatia
