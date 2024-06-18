@@ -548,7 +548,6 @@ class Registru_parcare:
                                     values = (id, )
                                     cursor.execute(sql, values)
                                     connection.commit()
-                                    cursor.close()
                                     connection.close()
                                     connection._open_connection()
                                     self.disable_samsung()
@@ -772,7 +771,7 @@ class Registru_parcare:
         self.visit_save_button.config(state="normal")
 
     def samsung_save(self):
-        column = self.sam_table.focus(self.sam_id_no.cget("text"))
+        column = self.sam_table.focus(int(self.sam_id_no.cget("text")))
         self.sam_table.selection_set(self.sam_id_no.cget("text"))
         values = self.sam_table.item(self.sam_id_no.cget("text"), 'values')
         print(f"Valori: {values}")
@@ -780,13 +779,17 @@ class Registru_parcare:
         values = (self.sam_seal_entry.get(), self.lpr_in_entry.get(), self.sam_id_no.cget("text"))
         cursor.execute(sql, values)
         connection.commit()
-        sql = "UPDATE registru SET token = 'PARKED' id = %s"
+        sql = "UPDATE registru SET token = 'PARKED' WHERE id = %s"
         values = (self.sam_lpr_id_no.cget("text"),)
         cursor.execute(sql, values)
         connection.commit()
-        cursor.close()
-        connection.close()
-        connection._open_connection()
+        sql = "SELECT * from tauros_park_main WHERE place_id = %s"
+        values = (self.sam_id_no.cget("text"),)
+        cursor.execute(sql, values)
+        result = cursor.fetchone()
+        self.sam_table.item(int(self.sam_id_no.cget("text")), text=self.sam_id_no.cget('text'), values=(result[2], result[5], result[3], result[4], result[8], result[6], result[7], result[9], result[1]))
+                                                                            
+        # self.load_samsung()
 
     def enable_samsung(self):
         self.sam_plate_no_entry.config(state="normal")

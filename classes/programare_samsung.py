@@ -134,7 +134,7 @@ class Rezervare_parcare:
 
         self.my_cursor = self.tms_db.cursor()
 
-        sql = ("SELECT date_out FROM tauros_park_main WHERE date_out > %s")
+        sql = ("SELECT date_out FROM tauros_park_main WHERE date_out > %s AND place_status <> 'PLECAT'")
         values = ((date_in, ))
 
         self.my_cursor.execute(sql, values)
