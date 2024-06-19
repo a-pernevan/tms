@@ -457,6 +457,13 @@ class Registru_parcare:
                         tauros_data = str(date_in) + " " + time_in
                         self.tauros_date_entry.delete(0, END)
                         self.tauros_date_entry.insert(0, tauros_data)
+                        if direction == "IN":
+                            self.directie_tauros_combo.current(0)
+
+                        elif direction == "OUT":
+                            self.directie_tauros_combo.current(1)
+                        self.directie_tauros_combo.config(state="disabled")
+                        self.tauros_date_entry.config(state="disabled")
                         # self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
                         # self.tms_db.commit()
 
