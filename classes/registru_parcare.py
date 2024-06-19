@@ -2,6 +2,7 @@ from calendar import c
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter.tix import ComboBox
 # import mysql.connector
 # import os
 from dotenv import load_dotenv
@@ -43,10 +44,17 @@ class Registru_parcare:
         # Cream interfata si notebook-ul
         # self.master = master
         # self.master.title("Registru parcare")
-        self.main_window = ttk.Notebook(master, width=1280, height=800)
+
+        self.main_window = ttk.Notebook(master, width=1280, height=700)
         self.main_window.pack(pady=0)
 
-        # Cream cele trei frame-uri
+        self.copyright = Label(master, text="Copyright © 2024 Andrei Pernevan. All rights reserved.", bd=1, relief=SUNKEN, anchor=W)
+        self.copyright.pack(side=BOTTOM, fill=X)
+
+        # Cream cele patru frame-uri
+
+        self.main_frame = Frame(self.main_window)
+        self.main_frame.pack(fill=BOTH, expand=1, anchor=W)
 
         self.tauros_frame = Frame(self.main_window)
         self.tauros_frame.pack(fill=BOTH, expand=1, anchor=W)
@@ -57,9 +65,26 @@ class Registru_parcare:
         self.vizitatori_frame = Frame(self.main_window)
         self.vizitatori_frame.pack(fill=BOTH, expand=1, anchor=W)
 
+        self.main_window.add(self.main_frame, text="Tauros - Parking System")
         self.main_window.add(self.tauros_frame, text="Tauros")
         self.main_window.add(self.samsung_frame, text="Samsung")
         self.main_window.add(self.vizitatori_frame, text="Vizitatori")
+
+        # Frame-ul principal
+
+        self.software_frame = LabelFrame(self.main_frame, text="Gestionare parcare Tauros", padx=10, pady=10)
+        self.software_frame.pack()
+
+        self.test_label = Label(self.software_frame, text="Gestionare parcare Tauros", font=("Arial", 20))
+        self.test_label.grid(row=0, column=0, padx=10, pady=10, columnspan=3)
+
+        self.lpr_label = Label(self.software_frame, text="LPR:")
+        self.lpr_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+        self.lpr_input = Entry(self.software_frame, width=23)
+        self.lpr_input.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
+        self.test_button = Button(self.software_frame, text="Verifica nr auto", command=self.search_lpr)
+        self.test_button.grid(row=2, column=2, padx=5, pady=5, sticky="w", columnspan=2)
 
         # Frame-ul parcare tauros
 
@@ -72,6 +97,7 @@ class Registru_parcare:
         self.truck_frame = Frame(self.tauros_frame)
         self.truck_frame.pack(pady=10)
 
+
         self.nr_auto_label = Label(self.truck_frame, text="Nr auto:")
         self.nr_auto_label.grid(row=0, column=0, padx=5)
 
@@ -79,25 +105,48 @@ class Registru_parcare:
         self.remorca_label.grid(row=0, column=2, padx=5, sticky="w")
 
         self.n = StringVar()
-        self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto, textvariable=self.n)
+        self.nr_auto_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_auto, textvariable=self.n, state="disabled")
         self.nr_auto_combo.grid(row=0, column=1)
 
         # self.nr_auto_entry = Entry(self.truck_frame, width=23)
         # self.nr_auto_entry.grid(row=0, column=1, padx=5, sticky="w")
 
-        self.remorca_combo = ttk.Combobox(self.truck_frame, width=23, postcommand=self.search_remorca)
+        self.remorca_combo = ttk.Combobox(self.truck_frame, postcommand=self.search_remorca, state="disabled")
         self.remorca_combo.grid(row=0, column=3, sticky="w")
 
-        self.lpr_label = Label(self.truck_frame, text="LPR:")
-        self.lpr_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.lpr_input = Entry(self.truck_frame, width=23)
-        self.lpr_input.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.directie_tauros_label = Label(self.truck_frame, text="Directie:")
+        self.directie_tauros_label.grid(row=0, column=4, padx=5, pady=5, sticky="w")
 
-        self.test_button = Button(self.truck_frame, text="Verifica nr auto", command=self.search_lpr)
-        self.test_button.grid(row=1, column=2, padx=5, pady=5, sticky="w", columnspan=2)
+        self.directie_tauros_combo = ttk.Combobox(self.truck_frame, width=20, values=["Intrare", "Iesire"], state="disabled")
+        self.directie_tauros_combo.grid(row=0, column=5, padx=5, pady=5, sticky="w")
 
-        # self.test_button = Button(self.tauros_frame, text="Test")
-        # self.test_button.grid(row=0, column=0)
+        self.km_tauros_label = Label(self.truck_frame, text="KM:")
+        self.km_tauros_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.km_tauros_entry = Entry(self.truck_frame, width=23, state="disabled")
+        self.km_tauros_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+        trailer_var = StringVar()
+
+        self.tauros_trailer_label = Label(text="Plin / Gol:", master=self.truck_frame)
+        self.tauros_trailer_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
+
+        self.tauros_trailer = Checkbutton(self.truck_frame, text="", variable=trailer_var, onvalue="Plin", offvalue="Gol", state="disabled")
+        self.tauros_trailer.grid(row=1, column=3, padx=5, pady=5, sticky="w")
+
+        self.tauros_date_label = Label(self.truck_frame, text="Data:")
+        self.tauros_date_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
+
+        self.tauros_date_entry = Entry(self.truck_frame, width=23, state="disabled")
+        self.tauros_date_entry.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+
+        self.tauros_butt_frame = Frame(self.tauros_frame)
+        self.tauros_butt_frame.pack(pady=10)
+
+        self.tauros_save_button = Button(self.tauros_butt_frame, text="Salveaza")
+        self.tauros_save_button.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+        self.tauros_update_button = Button(self.tauros_butt_frame, text="Actualizeaza")
+        self.tauros_update_button.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
         # Frame samsung - interfata
 
@@ -164,7 +213,7 @@ class Registru_parcare:
         self.sam_lpr_id_no = Label(self.samsung_reg_frame, text="N/A")
         self.sam_lpr_id_no.grid(row=2, column=5, padx=5, pady=5, sticky="w")
 
-        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="normal", command=self.samsung_save)
+        self.sam_save_button = Button(self.samsung_reg_frame, text="Salveaza", state="disabled", command=self.samsung_save)
         self.sam_save_button.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
         # Frame samsung - tabelul treeview
@@ -172,7 +221,18 @@ class Registru_parcare:
         self.sam_table_frame = Frame(self.samsung_frame)
         self.sam_table_frame.pack(pady=10)
 
-        self.sam_table = ttk.Treeview(self.sam_table_frame)
+        # Cream scrollbar-ul Samsung
+        samsung_tree_scroll = Scrollbar(self.sam_table_frame)
+        samsung_tree_scroll.pack(side=RIGHT, fill=Y)
+
+
+        self.sam_table = ttk.Treeview(self.sam_table_frame, yscrollcommand=samsung_tree_scroll.set, selectmode="extended")
+
+        
+        # Configuram scrollbar-ul
+        samsung_tree_scroll.config(command=self.sam_table.yview)
+
+
         self.sam_table["columns"] = ("Nr Auto", "Transportator", "Nume sofer", "Prenume sofer", "Sigiliu", "Data intrare", "Data iesire", "Durata parcare", "Status")
         self.sam_table.column("#0", width=50, stretch=NO)
         self.sam_table.column("Nr Auto", anchor=CENTER, width=100)
@@ -303,7 +363,15 @@ class Registru_parcare:
         self.visit_tree_frame = Frame(self.vizitatori_frame)
         self.visit_tree_frame.pack(pady=10)
 
-        self.visit_tree = ttk.Treeview(self.visit_tree_frame)
+        # Cream scrollbar-ul
+        visit_tree_scroll = Scrollbar(self.visit_tree_frame)
+        visit_tree_scroll.pack(side=RIGHT, fill=Y)
+
+        self.visit_tree = ttk.Treeview(self.visit_tree_frame, yscrollcommand=visit_tree_scroll.set, selectmode="extended")
+
+        # Configuram scrollbar-ul
+        visit_tree_scroll.config(command=self.visit_tree.yview)
+
         self.visit_tree["columns"] = ("Nr Auto", "Nume", "Firma", "Departament", "Data Intrare", "Ora Intrare", "Data Iesire", "Ora Iesire", "Status")
         self.visit_tree.column("#0", width=0, stretch=NO)
         self.visit_tree.column("Nr Auto", anchor=CENTER, width=100)
@@ -382,9 +450,13 @@ class Registru_parcare:
                 if plate in self.truck_plate:
                     tauros_truck = messagebox.showinfo(title="Camion Tauros", message=f"{plate} este camion Tauros")
                     if tauros_truck == "ok":
-                        self.main_window.select(0)
+                        self.main_window.select(1)
+                        self.tauros_enable()
                         self.n = plate
                         self.nr_auto_combo.set(self.n)
+                        tauros_data = str(date_in) + " " + time_in
+                        self.tauros_date_entry.delete(0, END)
+                        self.tauros_date_entry.insert(0, tauros_data)
                         # self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
                         # self.tms_db.commit()
 
@@ -397,7 +469,7 @@ class Registru_parcare:
                             warning = messagebox.askyesno(title="Neavizat", message="Nr. auto neavizat, vizitator?")
                             print(warning)
                             if warning:
-                                self.main_window.select(2)
+                                self.main_window.select(3)
                                 self.clear_visit()
                                 self.visit_plate_entry.config(state="normal")
                                 self.visit_plate_entry.delete(0, END)
@@ -414,7 +486,7 @@ class Registru_parcare:
                             cursor.execute("SELECT visitor_id, lpr_id FROM reg_visit WHERE nr_auto = %s AND visit_status = 'PARCAT'", (plate,))
                             self.result = cursor.fetchall()
                             if self.result:
-                                self.main_window.select(2)
+                                self.main_window.select(3)
                                 column = self.visit_tree.focus(self.result[0][1])
                                 self.visit_tree.selection_set(self.result[0][1])
                                 values = self.visit_tree.item(self.result[0][1], 'values')
@@ -475,7 +547,7 @@ class Registru_parcare:
                                 if self.result:
                                     print(self.result)
                                     # activam modulul samsung si se completeaza datele.
-                                    self.main_window.select(1)
+                                    self.main_window.select(2)
                                     self.sam_plate_no_entry.config(state="normal")
                                     self.sam_plate_no_entry.delete(0, END)
                                     self.sam_plate_no_entry.insert(0, plate)
@@ -508,7 +580,7 @@ class Registru_parcare:
                                 cursor.execute(sql, values)
                                 self.result = cursor.fetchall()
                                 if self.result:
-                                    self.main_window.select(1)
+                                    self.main_window.select(2)
                                     self.enable_samsung()
                                     # print(self.result[0][0])
                                     self.sam_id_no.config(text=self.result[0][0])
@@ -552,10 +624,14 @@ class Registru_parcare:
                                     for i in self.sam_table.get_children():
                                         self.sam_table.delete(i)
                                     self.load_samsung()
+                                    self.new_method()
 
                     self.lpr_input.delete(0, END)
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
+
+    def new_method(self):
+        self.samsung_clear.after(5000, self.samsung_clear)
 
     
     def cur_time(self, direction):
@@ -790,7 +866,7 @@ class Registru_parcare:
         result = cursor.fetchone()
         self.sam_table.item(int(self.sam_id_no.cget("text")), text=self.sam_id_no.cget('text'), values=(result[2], result[5], result[3], result[4], result[8], result[6], result[7], result[9], result[1]))
                                                                             
-        # self.load_samsung()
+        self.samsung_clear()
 
     def enable_samsung(self):
         self.sam_plate_no_entry.config(state="normal")
@@ -809,6 +885,33 @@ class Registru_parcare:
         self.sam_seal_entry.config(state="disabled")
         self.lpr_in_entry.config(state="disabled")
         self.lpr_out_entry.config(state="disabled")
+
+    
+    def samsung_select(self):
+        pass
+
+
+    def samsung_clear(self):
+        self.enable_samsung()
+        self.sam_plate_no_entry.delete(0, END)
+        self.park_place.delete(0, END)
+        self.sam_nume_entry.delete(0, END)
+        self.sam_prenume_entry.delete(0, END)
+        self.sam_seal_entry.delete(0, END)
+        self.lpr_in_entry.delete(0, END)
+        self.lpr_out_entry.delete(0, END)
+        self.disable_samsung()
+        self.sam_id_no.config(text="N/A")
+        self.sam_lpr_id_no.config(text="N/A")
+
+
+    def tauros_enable(self):
+        self.nr_auto_combo.config(state="normal")
+        self.remorca_combo.config(state="normal")
+        self.directie_tauros_combo.config(state="normal")
+        self.km_tauros_entry.config(state="normal")
+        self.tauros_trailer.config(state="normal")
+        self.tauros_date_entry.config(state="normal")
 
 
 # Testam aplicatia
