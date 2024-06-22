@@ -1,12 +1,11 @@
-from calendar import c
+# from calendar import Calendar
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from tkinter.tix import ComboBox
 # import mysql.connector
 # import os
 from dotenv import load_dotenv
-from tkcalendar import DateEntry
+from tkcalendar import DateEntry, Calendar
 from datetime import datetime, timedelta
 import time
 try:
@@ -48,8 +47,8 @@ class Registru_parcare:
         self.main_window = ttk.Notebook(master, width=1280, height=700)
         self.main_window.pack(pady=0)
 
-        self.copyright = Label(master, text="Copyright © 2024 Andrei Pernevan. All rights reserved.", bd=1, relief=SUNKEN, anchor=W)
-        self.copyright.pack(side=BOTTOM, fill=X)
+        # self.copyright = Label(self.main_window, text="Copyright © 2024 Andrei Pernevan. All rights reserved.", bd=1, relief=SUNKEN, anchor=W)
+        # self.copyright.pack(side=BOTTOM, fill=X)
 
         # Cream cele patru frame-uri
 
@@ -138,6 +137,18 @@ class Registru_parcare:
 
         self.tauros_date_entry = Entry(self.truck_frame, width=23, state="disabled")
         self.tauros_date_entry.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+
+        self.tauros_driver1_label = Label(self.truck_frame, text="Sofer 1:")
+        self.tauros_driver1_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+
+        self.tauros_driver1_entry = Entry(self.truck_frame, width=40, state="disabled")
+        self.tauros_driver1_entry.grid(row=2, column=1, columnspan=3, padx=5, pady=5, sticky="w")
+
+        self.tauros_driver2_label = Label(self.truck_frame, text="Sofer 2:")
+        self.tauros_driver2_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+
+        self.tauros_driver2_entry = Entry(self.truck_frame, width=40, state="disabled")
+        self.tauros_driver2_entry.grid(row=3, column=1, columnspan=3, padx=5, pady=5, sticky="w")
 
         self.tauros_butt_frame = Frame(self.tauros_frame)
         self.tauros_butt_frame.pack(pady=10)
@@ -358,10 +369,37 @@ class Registru_parcare:
         self.visit_new_button = Button(self.visit_butt_frame, text="Adaugare Manual", command=self.new_visitor)
         self.visit_new_button.grid(row=0, column=3, padx=5, pady=5, sticky="w")
 
+
         # Frame-ul cu treeview pentru vizitatori
 
         self.visit_tree_frame = Frame(self.vizitatori_frame)
         self.visit_tree_frame.pack(pady=10)
+
+        
+        # Frame-ul pentru selectarea intervalului de date
+
+        self.visit_date_interval_frame = LabelFrame(self.visit_tree_frame, text="Filtrare date")
+        self.visit_date_interval_frame.pack(pady=10, fill="x", expand="yes")
+
+        self.visit_min_date = Label(self.visit_date_interval_frame, text="Data de la:")
+        self.visit_min_date_entry = DateEntry(self.visit_date_interval_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+
+        # Setam data initiala
+        from_date = datetime.now() - timedelta(days=30)
+        self.visit_min_date_entry.set_date(from_date)
+
+        # Setam data finala
+        self.visit_max_date = Label(self.visit_date_interval_frame, text="pana la: ")
+        self.visit_max_date_entry = DateEntry(self.visit_date_interval_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+
+        # Butonul de actualizare
+        self.visit_date_refresh_int = Button(self.visit_date_interval_frame, text="Aplica", command=self.visit_refresh)
+
+        self.visit_min_date.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        self.visit_min_date_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        self.visit_max_date.grid(row=0, column=2, padx=5, pady=5, sticky="w")
+        self.visit_max_date_entry.grid(row=0, column=3, padx=5, pady=5, sticky="w")
+        self.visit_date_refresh_int.grid(row=0, column=4, padx=5, pady=5, sticky="w")
 
         # Cream scrollbar-ul
         visit_tree_scroll = Scrollbar(self.visit_tree_frame)
@@ -394,6 +432,7 @@ class Registru_parcare:
         self.visit_tree.heading("Data Iesire", text="Data Iesire", anchor=CENTER)
         self.visit_tree.heading("Ora Iesire", text="Ora Iesire", anchor=CENTER)
         self.visit_tree.heading("Status", text="Status", anchor=CENTER)
+
 
         self.visit_tree.pack()
 
@@ -830,8 +869,12 @@ class Registru_parcare:
     # Incarcam inregistrarile din baza de date la pornirea programului
     def load_visitors(self):
 
-        sql = "SELECT * FROM reg_visit"
-        cursor.execute(sql)
+        from_date = self.visit_min_date_entry.get_date()
+        to_date = self.visit_max_date_entry.get_date()
+
+        sql = "SELECT * FROM reg_visit WHERE data_in > %s AND data_in <= %s"
+        values = (from_date, to_date)
+        cursor.execute(sql, values)
         records = cursor.fetchall()
         for i in records:
             self.visit_tree.insert(parent='', index='end', iid=i[11], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
@@ -920,6 +963,14 @@ class Registru_parcare:
         self.km_tauros_entry.config(state="normal")
         self.tauros_trailer.config(state="normal")
         self.tauros_date_entry.config(state="normal")
+        self.tauros_driver1_entry.config(state="normal")
+        self.tauros_driver2_entry.config(state="normal")
+
+
+    def visit_refresh(self):
+        for i in self.visit_tree.get_children():
+            self.visit_tree.delete(i)
+        self.load_visitors()
 
 
 # Testam aplicatia
