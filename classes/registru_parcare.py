@@ -434,6 +434,7 @@ class Registru_parcare:
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
         # Generam un nou cursor
+        connection._open_connection()
         cursor.execute("SELECT id, cap_tractor, data_reg, time_reg, directie, label, token FROM registru ORDER BY id DESC LIMIT 1")
         self.lpr_values = cursor.fetchall()
         connection.close()
