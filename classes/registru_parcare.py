@@ -124,12 +124,12 @@ class Registru_parcare:
         self.km_tauros_entry = Entry(self.truck_frame, width=23, state="disabled")
         self.km_tauros_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
-        trailer_var = StringVar()
+        self.trailer_var = IntVar()
 
         self.tauros_trailer_label = Label(text="Plin / Gol:", master=self.truck_frame)
         self.tauros_trailer_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-        self.tauros_trailer = Checkbutton(self.truck_frame, text="", variable=trailer_var, onvalue="Plin", offvalue="Gol", state="disabled")
+        self.tauros_trailer = Checkbutton(self.truck_frame, text="", variable=self.trailer_var, command=self.tauros_trailer_full)
         self.tauros_trailer.grid(row=1, column=3, padx=5, pady=5, sticky="w")
 
         self.tauros_date_label = Label(self.truck_frame, text="Data:")
@@ -149,6 +149,12 @@ class Registru_parcare:
 
         self.tauros_driver2_entry = Entry(self.truck_frame, width=40, state="disabled")
         self.tauros_driver2_entry.grid(row=3, column=1, columnspan=3, padx=5, pady=5, sticky="w")
+
+        self.tauros_load_dest_label = Label(self.truck_frame, text="Destinatie:")
+        self.tauros_load_dest_label.grid(row=2, column=4, padx=5, pady=5, sticky="w")
+
+        self.tauros_load_dest_entry = Entry(self.truck_frame, width=23, state="disabled")
+        self.tauros_load_dest_entry.grid(row=2, column=5, padx=5, pady=5, sticky="w")
 
         self.tauros_butt_frame = Frame(self.tauros_frame)
         self.tauros_butt_frame.pack(pady=10)
@@ -972,6 +978,14 @@ class Registru_parcare:
             self.visit_tree.delete(i)
         self.load_visitors()
 
+
+    # Activam field-ul de destinatie in cazul in care remorca tauros e plina
+    def tauros_trailer_full(self):
+        if self.trailer_var.get() == 1:
+            self.tauros_load_dest_entry.config(state="normal")
+
+        elif self.trailer_var.get() == 0:
+            self.tauros_load_dest_entry.config(state="disabled")
 
 # Testam aplicatia
 
