@@ -129,7 +129,7 @@ class Registru_parcare:
         self.tauros_trailer_label = Label(text="Plin / Gol:", master=self.truck_frame)
         self.tauros_trailer_label.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-        self.tauros_trailer = Checkbutton(self.truck_frame, text="", variable=self.trailer_var, command=self.tauros_trailer_full)
+        self.tauros_trailer = Checkbutton(self.truck_frame, text="", variable=self.trailer_var, command=self.tauros_trailer_full, state="disabled")
         self.tauros_trailer.grid(row=1, column=3, padx=5, pady=5, sticky="w")
 
         self.tauros_date_label = Label(self.truck_frame, text="Data:")
