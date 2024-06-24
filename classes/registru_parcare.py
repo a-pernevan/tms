@@ -133,10 +133,10 @@ class Registru_parcare:
         self.tauros_trailer.grid(row=1, column=3, padx=5, pady=5, sticky="w")
 
         self.tauros_date_label = Label(self.truck_frame, text="Data:")
-        self.tauros_date_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
+        self.tauros_date_label.grid(row=2, column=4, padx=5, pady=5, sticky="w")
 
         self.tauros_date_entry = Entry(self.truck_frame, width=23, state="disabled")
-        self.tauros_date_entry.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+        self.tauros_date_entry.grid(row=2, column=5, padx=5, pady=5, sticky="w")
 
         self.tauros_driver1_label = Label(self.truck_frame, text="Sofer 1:")
         self.tauros_driver1_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
@@ -151,10 +151,18 @@ class Registru_parcare:
         self.tauros_driver2_entry.grid(row=3, column=1, columnspan=3, padx=5, pady=5, sticky="w")
 
         self.tauros_load_dest_label = Label(self.truck_frame, text="Destinatie:")
-        self.tauros_load_dest_label.grid(row=2, column=4, padx=5, pady=5, sticky="w")
+        self.tauros_load_dest_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
 
         self.tauros_load_dest_entry = Entry(self.truck_frame, width=23, state="disabled")
-        self.tauros_load_dest_entry.grid(row=2, column=5, padx=5, pady=5, sticky="w")
+        self.tauros_load_dest_entry.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+
+        self.tauros_trailer_location_label = Label(self.truck_frame, text="Locatie remorca:")
+        self.tauros_trailer_location_label.grid(row=3, column=4, padx=5, pady=5, sticky="w")
+
+        self.tauros_trailer_location_entry = ttk.Combobox(self.truck_frame, width=20, values=["Parcare 1", "Parcare 2", "Parcare KM23"], state="disabled")
+        self.tauros_trailer_location_entry.grid(row=3, column=5, padx=5, pady=5, sticky="w")
+
+        # Cream un frame pentru butoanele parcarii tauros
 
         self.tauros_butt_frame = Frame(self.tauros_frame)
         self.tauros_butt_frame.pack(pady=10)
@@ -164,6 +172,9 @@ class Registru_parcare:
 
         self.tauros_update_button = Button(self.tauros_butt_frame, text="Actualizeaza")
         self.tauros_update_button.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
+        self.tauros_cancel_button = Button(self.tauros_butt_frame, text="Anuleaza", command=self.tauros_disable)
+        self.tauros_cancel_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
         # Frame samsung - interfata
 
@@ -971,7 +982,40 @@ class Registru_parcare:
         self.tauros_date_entry.config(state="normal")
         self.tauros_driver1_entry.config(state="normal")
         self.tauros_driver2_entry.config(state="normal")
+        self.tauros_trailer_location_entry.config(state="normal")
 
+
+    def tauros_disable(self):
+        """
+        Disables all the widgets related to the Tauros section of the interface.
+
+        This function disables all the widgets related to the Tauros section of the interface. It sets the state of the following widgets to "disabled":
+        - `self.nr_auto_combo`: The combobox for selecting the truck number.
+        - `self.remorca_combo`: The combobox for selecting the trailer.
+        - `self.directie_tauros_combo`: The combobox for selecting the direction.
+        - `self.km_tauros_entry`: The entry field for entering the kilometers.
+        - `self.tauros_trailer`: The checkbox for selecting if a trailer is present.
+        - `self.tauros_date_entry`: The entry field for entering the date.
+        - `self.tauros_driver1_entry`: The entry field for entering the first driver's name.
+        - `self.tauros_driver2_entry`: The entry field for entering the second driver's name.
+        - `self.tauros_trailer_location_entry`: The entry field for entering the trailer's location.
+
+        Parameters:
+        - self: The instance of the class.
+
+        Returns:
+        - None
+        """
+        self.nr_auto_combo.config(state="disabled")
+        self.remorca_combo.config(state="disabled")
+        self.directie_tauros_combo.set('')
+        self.directie_tauros_combo.config(state="disabled")
+        self.km_tauros_entry.config(state="disabled")
+        self.tauros_trailer.config(state="disabled")
+        self.tauros_date_entry.config(state="disabled")
+        self.tauros_driver1_entry.config(state="disabled")
+        self.tauros_driver2_entry.config(state="disabled")
+        self.tauros_trailer_location_entry.config(state="disabled")
 
     def visit_refresh(self):
         for i in self.visit_tree.get_children():
