@@ -14,7 +14,7 @@ class Angajati_firma:
         # self.master = Toplevel(master)
         # self.master.title("Gestionare angajati")
         self.master = master
-        # self.master.title("Gestionare angajati")
+        self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
         self.get_filiale = Filiala(self.master)
@@ -28,6 +28,7 @@ class Angajati_firma:
         elif not self.lista_filiale:
             messagebox.showerror(title="Error", message="No data found")
             self.get_filiale.adauga_filiala(self.master)
+            self.interfata()
 
     # Pentur a introduce o noua functie si a actualiza lista
     def refresh_angajati(self):
@@ -44,7 +45,8 @@ class Angajati_firma:
     # Interfata de adaugare angajat nou. 
     def interfata(self):
         self.main_window = LabelFrame(self.master, text="Angajati")
-        self.main_window.grid(row=0, column=0, padx=10, pady=10)
+        # self.main_window.grid(row=0, column=0, padx=10, pady=10)
+        self.main_window.pack(padx=10, pady=10)
         self.detalii_angajat = LabelFrame(self.main_window, text="Detalii Angajat")
         self.detalii_angajat.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
 
