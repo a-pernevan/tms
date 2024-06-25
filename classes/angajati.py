@@ -28,7 +28,6 @@ class Angajati_firma:
         elif not self.lista_filiale:
             messagebox.showerror(title="Error", message="No data found")
             self.get_filiale.adauga_filiala(self.master)
-            self.interfata()
 
     # Pentur a introduce o noua functie si a actualiza lista
     def refresh_angajati(self):
