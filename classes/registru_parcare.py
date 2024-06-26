@@ -1006,15 +1006,20 @@ class Registru_parcare:
         Returns:
         - None
         """
+        self.nr_auto_combo.set('')
         self.nr_auto_combo.config(state="disabled")
+        self.remorca_combo.set('')
         self.remorca_combo.config(state="disabled")
         self.directie_tauros_combo.set('')
         self.directie_tauros_combo.config(state="disabled")
         self.km_tauros_entry.config(state="disabled")
         self.tauros_trailer.config(state="disabled")
+        self.tauros_date_entry.config(state="normal")
+        self.tauros_date_entry.delete(0, END)
         self.tauros_date_entry.config(state="disabled")
         self.tauros_driver1_entry.config(state="disabled")
         self.tauros_driver2_entry.config(state="disabled")
+        self.tauros_trailer_location_entry.set("")
         self.tauros_trailer_location_entry.config(state="disabled")
 
     def visit_refresh(self):
