@@ -1,10 +1,17 @@
 Babel==2.14.0
 certifi==2024.2.2
 charset-normalizer==3.3.2
+dnspython==2.6.1
 idna==3.6
+ldap3==2.9.1
+ms_active_directory==1.13.0
 mysql-connector-python==8.3.0
 pillow==10.3.0
+pyasn1==0.6.0
+pycryptodome==3.20.0
 python-dotenv==1.0.1
+pytz==2024.1
 requests==2.31.0
+six==1.16.0
 tkcalendar==1.6.1
 urllib3==2.2.1
