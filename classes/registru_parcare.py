@@ -285,6 +285,10 @@ class Registru_parcare:
         self.sam_table.heading("Status", text="Status", anchor=CENTER)
 
         self.sam_table.pack()
+
+        self.sam_table.bind("<Double-1>", self.samsung_select)
+        self.sam_table.bind("<Return>", self.samsung_select)
+
         self.load_samsung()
 
 
@@ -679,6 +683,7 @@ class Registru_parcare:
                                     cursor.execute(sql, values)
                                     sql = "UPDATE tauros_park_main SET park_real = %s WHERE place_id = %s"
                                     values = (stay, self.result[0][0])
+                                    sql = "UPDATE tauros_park_main SET "
                                     cursor.execute(sql, values)
                                     sql = "UPDATE registru SET token = 'EXIT' WHERE id = %s"
                                     values = (id, )
@@ -955,9 +960,13 @@ class Registru_parcare:
         self.lpr_out_entry.config(state="disabled")
 
     
-    def samsung_select(self):
-        pass
-
+    def samsung_select(self, e):
+        self.samsung_clear()
+        selected = self.sam_table.focus()
+        values = self.sam_table.item(selected, 'values')
+        print(values)
+        print(selected)
+        self.enable_samsung()
 
     def samsung_clear(self):
         self.enable_samsung()
