@@ -31,6 +31,7 @@ class Anaf:
     def check_anaf(self):
         self.response = requests.post(self.api_addr, data=json.dumps(self.query_params), headers=self.headers)
         self.data = self.response.json()
+        # if self.data["found"]:
         if self.data["found"]:
             return self.data
         else:
