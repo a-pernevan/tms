@@ -39,7 +39,9 @@ class Registru_parcare:
         for truck in self.nr_auto_cap:
             self.truck_plate.append(truck[0])
 
+        self.super_window(master, 0)
 
+    def super_window(self, master, user_level):
         # Cream interfata si notebook-ul
         # self.master = master
         # self.master.title("Registru parcare")
@@ -68,6 +70,8 @@ class Registru_parcare:
         self.main_window.add(self.tauros_frame, text="Tauros")
         self.main_window.add(self.samsung_frame, text="Samsung")
         self.main_window.add(self.vizitatori_frame, text="Vizitatori")
+
+        
 
         # Frame-ul principal
 
@@ -502,6 +506,9 @@ class Registru_parcare:
         self.visit_tree.bind("<Return>", self.select_visitor)
 
         self.load_visitors()
+
+        if user_level == 1:
+            self.test_button.config(state=DISABLED)
         
 
     # cautare cap tractor in lista

@@ -215,7 +215,9 @@ def check_anaf():
             rezultat = Anaf(cui_anaf_number)
             data = rezultat.check_anaf()
 
-        if data["found"]:
+        print(data)
+
+        if data:
             nume_firma_input.insert(0, data["found"][0]["date_generale"]["denumire"])
             reg_com_input.insert(0, data["found"][0]["date_generale"]["nrRegCom"])
             oras_input.insert(0, data["found"][0]["adresa_sediu_social"]["sdenumire_Localitate"])
