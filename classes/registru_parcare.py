@@ -176,6 +176,47 @@ class Registru_parcare:
         self.tauros_cancel_button = Button(self.tauros_butt_frame, text="Anuleaza", command=self.tauros_disable)
         self.tauros_cancel_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
+        # Scrollbar pentru camioane Tauros
+        tauros_tree_scroll = Scrollbar(self.tauros_frame)
+        tauros_tree_scroll.pack(side=RIGHT, fill=Y)
+
+        # Cream treeview pentru camioane Tauros
+
+        self.tauros_tree = ttk.Treeview(self.tauros_frame, yscrollcommand=tauros_tree_scroll.set, selectmode="extended")
+
+        # Confirguram scrollbar-ul
+
+        tauros_tree_scroll.config(command=self.tauros_tree.yview)
+
+        # Adaugam columnele
+
+        self.tauros_tree["columns"] = ("ID", "Cap Tractor", "Remorca", "Directie", "KM", "Destinatie", "Sofer 1", "Sofer2", "Data", "Loc. Remorca")
+        self.tauros_tree.column("#0", width=0, stretch=NO)
+        self.tauros_tree.column("ID", anchor=CENTER, width=50)
+        self.tauros_tree.column("Cap Tractor", anchor=CENTER, width=100)
+        self.tauros_tree.column("Remorca", anchor=CENTER, width=100)
+        self.tauros_tree.column("Directie", anchor=CENTER, width=100)
+        self.tauros_tree.column("KM", anchor=CENTER, width=100)
+        self.tauros_tree.column("Destinatie", anchor=CENTER, width=100)
+        self.tauros_tree.column("Sofer 1", anchor=CENTER, width=100)
+        self.tauros_tree.column("Sofer2", anchor=CENTER, width=100)
+        self.tauros_tree.column("Data", anchor=CENTER, width=100)
+        self.tauros_tree.column("Loc. Remorca", anchor=CENTER, width=100)
+
+        self.tauros_tree.heading("#0", text="", anchor=CENTER)
+        self.tauros_tree.heading("ID", text="ID", anchor=CENTER)
+        self.tauros_tree.heading("Cap Tractor", text="Cap Tractor", anchor=CENTER)
+        self.tauros_tree.heading("Remorca", text="Remorca", anchor=CENTER)
+        self.tauros_tree.heading("Directie", text="Directie", anchor=CENTER)
+        self.tauros_tree.heading("KM", text="KM", anchor=CENTER)
+        self.tauros_tree.heading("Destinatie", text="Destinatie", anchor=CENTER)
+        self.tauros_tree.heading("Sofer 1", text="Sofer 1", anchor=CENTER)
+        self.tauros_tree.heading("Sofer2", text="Sofer2", anchor=CENTER)
+        self.tauros_tree.heading("Data", text="Data", anchor=CENTER)
+        self.tauros_tree.heading("Loc. Remorca", text="Loc. Remorca", anchor=CENTER)
+
+        self.tauros_tree.pack()
+
         # Frame samsung - interfata
 
         self.samsung_logo_frame = Frame(self.samsung_frame)
