@@ -1015,6 +1015,15 @@ class Registru_parcare:
         print(values)
         print(selected)
         self.enable_samsung()
+        self.sam_plate_no_entry.insert(0, values[0])
+        self.park_place.insert(0, values[1])
+        self.sam_nume_entry.insert(0, values[2])
+        self.sam_prenume_entry.insert(0, values[3])
+        self.sam_seal_entry.insert(0, values[4])
+        self.lpr_in_entry.insert(0, values[5])
+        self.lpr_out_entry.insert(0, values[6])
+        self.sam_id_no.config(text=selected)
+        self.disable_samsung()
 
     def samsung_clear(self):
         self.enable_samsung()
