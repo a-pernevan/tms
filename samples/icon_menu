@@ -1,0 +1,16 @@
+import tkinter as tk
+from tkinter import Menu
+
+root = tk.Tk()
+
+# Create a menu
+menu_bar = Menu(root)
+root.config(menu=menu_bar)
+
+# Create a menu option with an icon
+icon_image = tk.PhotoImage(file="samples/paste.png")  # Replace "icon.png" with the path to your icon image
+menu_option = Menu(menu_bar, tearoff=0)
+menu_option.add_command(label="Option with Icon", compound="left", image=icon_image, , image_pady=0)
+menu_bar.add_cascade(label="Menu", menu=menu_option)
+
+root.mainloop()

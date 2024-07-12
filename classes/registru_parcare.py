@@ -85,6 +85,7 @@ class Registru_parcare:
         self.lpr_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
         self.lpr_input = Entry(self.software_frame, width=23)
         self.lpr_input.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        self.create_context_menu(self.lpr_input)
 
         self.test_button = Button(self.software_frame, text="Verifica nr auto", command=self.search_lpr)
         self.test_button.grid(row=2, column=2, padx=5, pady=5, sticky="w", columnspan=2)
@@ -746,6 +747,7 @@ class Registru_parcare:
                     self.lpr_input.delete(0, END)
         else:
             messagebox.showinfo(title="Negasit", message="Nu s-a citit nici un numar auto!")
+        self.lpr_input.delete(0, END)
 
     def new_method(self):
         self.samsung_clear.after(5000, self.samsung_clear)
@@ -1101,6 +1103,28 @@ class Registru_parcare:
 
         elif self.trailer_var.get() == 0:
             self.tauros_load_dest_entry.config(state="disabled")
+
+
+    # Meniul de copy, cut, paste
+    def create_context_menu(self, entry_widget):
+        def copy_text():
+            entry_widget.event_generate('<<Copy>>')
+
+        def cut_text():
+            entry_widget.event_generate('<<Cut>>')
+
+        def paste_text():
+            entry_widget.event_generate('<<Paste>>')
+
+        context_menu = Menu(entry_widget, tearoff=0)
+        context_menu.add_command(label="Copy", command=copy_text)
+        context_menu.add_command(label="Cut", command=cut_text)
+        context_menu.add_command(label="Paste", command=paste_text)
+
+        def show_context_menu(event):
+            context_menu.post(event.x_root, event.y_root)
+
+        entry_widget.bind("<Button-3>", show_context_menu)
 
 # Testam aplicatia
 
