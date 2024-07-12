@@ -181,13 +181,18 @@ class Registru_parcare:
         self.tauros_cancel_button = Button(self.tauros_butt_frame, text="Anuleaza", command=self.tauros_disable)
         self.tauros_cancel_button.grid(row=0, column=2, padx=5, pady=5, sticky="w")
 
+        # Frame-ul pt treeview tauros
+
+        self.tauros_tree_frame = Frame(self.tauros_frame)
+        self.tauros_tree_frame.pack()
+
         # Scrollbar pentru camioane Tauros
-        tauros_tree_scroll = Scrollbar(self.tauros_frame)
+        tauros_tree_scroll = Scrollbar(self.tauros_tree_frame)
         tauros_tree_scroll.pack(side=RIGHT, fill=Y)
 
         # Cream treeview pentru camioane Tauros
 
-        self.tauros_tree = ttk.Treeview(self.tauros_frame, yscrollcommand=tauros_tree_scroll.set, selectmode="extended")
+        self.tauros_tree = ttk.Treeview(self.tauros_tree_frame, yscrollcommand=tauros_tree_scroll.set, selectmode="extended")
 
         # Confirguram scrollbar-ul
 
