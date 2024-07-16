@@ -27,7 +27,10 @@ class Registru_parcare:
         super().__init__()
         load_dotenv()
         # Variabila pentru adaugare manuala vizitator
-        self.visit_manual = False        
+        self.visit_manual = False
+
+        # Variabila id camera tauros"
+        self.tauros_lpr_id = None
 
         # Valori demo pt nr camion
         self.truck_plate = []
@@ -542,6 +545,7 @@ class Registru_parcare:
 
     # VErificare numere auto detectate de LPR.
     def search_lpr(self):
+        global tauros_lpr_id
         # Generam un nou cursor
         connection._open_connection()
         cursor.execute("SELECT id, cap_tractor, data_reg, time_reg, directie, label, token FROM registru ORDER BY id DESC LIMIT 1")
@@ -572,8 +576,12 @@ class Registru_parcare:
 
                         elif direction == "OUT":
                             self.directie_tauros_combo.current(1)
+                            self.tauros_trailer_location_entry.config(state="disabled")
                         self.directie_tauros_combo.config(state="disabled")
                         self.tauros_date_entry.config(state="disabled")
+                        tauros_lpr_id = id
+                        print(tauros_lpr_id)
+                        
                         # self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
                         # self.tms_db.commit()
 
