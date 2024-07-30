@@ -1,5 +1,6 @@
 # from calendar import Calendar
 # from telnetlib import STATUS
+from sre_parse import State
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -393,7 +394,7 @@ class Registru_parcare:
         self.visit_in_date = Label(self.visit_frame, text="Data intrare:")
         self.visit_in_date.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="disabled")
         self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
         # print(self.visit_in_date_entry.get())
@@ -410,7 +411,7 @@ class Registru_parcare:
         self.visit_out_date = Label(self.visit_frame, text="Data iesire:")
         self.visit_out_date.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
-        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="readonly")
+        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="disabled")
         self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
         self.visit_time_out_label = Label(self.visit_frame, text=f"Ora iesire:")
@@ -881,14 +882,16 @@ class Registru_parcare:
         self.visit_time_out_entry.delete(0, END)
         self.visit_time_out_entry.config(state="readonly")
         self.visit_status.config(text="INREGISTARE", fg="red")
-        self.visit_in_date_entry.grid_forget()
-        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
-        self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
-        self.visit_in_date_entry.delete(0, END)
-        self.visit_out_date_entry.grid_forget()
-        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="readonly")
-        self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
-        self.visit_out_date_entry.delete(0, END)
+        self.visit_in_date_entry.config(state="normal")
+        self.visit_out_date_entry.config(state="normal")
+        # self.visit_in_date_entry.grid_forget()
+        # self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+        # self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        # self.visit_in_date_entry.delete(0, END)
+        # self.visit_out_date_entry.grid_forget()
+        # self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="readonly")
+        # self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        # self.visit_out_date_entry.delete(0, END)
         self.visit_save_button.config(state=DISABLED)
         self.visit_delete_button.config(state=NORMAL)
         self.visit_lpr_id.config(text="")
