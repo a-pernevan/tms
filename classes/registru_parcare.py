@@ -1,5 +1,5 @@
 # from calendar import Calendar
-from telnetlib import STATUS
+# from telnetlib import STATUS
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -162,7 +162,9 @@ class Registru_parcare:
         self.tauros_load_dest_label = Label(self.truck_frame, text="Destinatie:")
         self.tauros_load_dest_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
 
-        self.tauros_load_dest_entry = Entry(self.truck_frame, width=23, state="disabled")
+        self.tauros_load_dest_entry = Entry(self.truck_frame, width=23)
+        self.tauros_load_dest_entry.insert(0, "GOALA")
+        self.tauros_load_dest_entry.config(state="readonly")
         self.tauros_load_dest_entry.grid(row=1, column=5, padx=5, pady=5, sticky="w")
 
         self.tauros_trailer_location_label = Label(self.truck_frame, text="Locatie remorca:")
@@ -176,7 +178,7 @@ class Registru_parcare:
         self.tauros_butt_frame = Frame(self.tauros_frame)
         self.tauros_butt_frame.pack(pady=10)
 
-        self.tauros_save_button = Button(self.tauros_butt_frame, text="Salveaza")
+        self.tauros_save_button = Button(self.tauros_butt_frame, text="Salveaza", command=self.tauros_truck_save)
         self.tauros_save_button.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
         self.tauros_update_button = Button(self.tauros_butt_frame, text="Actualizeaza")
@@ -595,7 +597,8 @@ class Registru_parcare:
                         self.tauros_lpr_input.config(state="normal")
                         self.tauros_lpr_input.insert(0, tauros_lpr_id)
                         self.tauros_lpr_input.config(state="readonly")
-                        print(tauros_lpr_id)
+                        # print(tauros_lpr_id)
+                        # print(self.nr_auto_combo.get())
                         
                         # self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
                         # self.tms_db.commit()
@@ -1124,12 +1127,28 @@ class Registru_parcare:
 
     # Activam field-ul de destinatie in cazul in care remorca tauros e plina
     def tauros_trailer_full(self):
-        if self.trailer_var.get() == 1:
+        if self.trailer_var.get() == 1:            
             self.tauros_load_dest_entry.config(state="normal")
+            self.tauros_load_dest_entry.delete(0, END)
 
         elif self.trailer_var.get() == 0:
+            self.tauros_load_dest_entry.config(state="normal")
+            self.tauros_load_dest_entry.insert(0, "GOALA")
             self.tauros_load_dest_entry.config(state="disabled")
 
+
+    # Functia de salvare in baza de date a camioanelor Tauros
+    def tauros_truck_save(self):
+        self.tauros_tree.insert(parent="", index="end", iid=int(self.tauros_lpr_input.get()), text=self.tauros_lpr_input.get(), values=(self.tauros_lpr_input.get(), \
+                                                                                                                                    self.nr_auto_combo.get(), \
+                                                                                                                                    self.remorca_combo.get(), \
+                                                                                                                                    self.directie_tauros_combo.get(), \
+                                                                                                                                    self.km_tauros_entry.get(), \
+                                                                                                                                    self.tauros_load_dest_entry.get(), \
+                                                                                                                                    self.tauros_driver1_entry.get(), \
+                                                                                                                                    self.tauros_driver2_entry.get(), \
+                                                                                                                                    self.tauros_date_entry.get(), \
+                                                                                                                                    self.tauros_trailer_location_entry.get()))
 
     # Meniul de copy, cut, paste
     def create_context_menu(self, entry_widget):
