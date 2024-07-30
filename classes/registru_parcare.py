@@ -1,7 +1,9 @@
 # from calendar import Calendar
+from telnetlib import STATUS
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from turtle import color
 # import mysql.connector
 # import os
 from dotenv import load_dotenv
@@ -81,7 +83,7 @@ class Registru_parcare:
         self.software_frame = LabelFrame(self.main_frame, text="Gestionare parcare Tauros", padx=10, pady=10)
         self.software_frame.pack()
 
-        self.test_label = Label(self.software_frame, text="Gestionare parcare Tauros", font=("Arial", 20))
+        self.test_label = Label(self.software_frame, text="Gestionare parcare Tauros", font=("Sans-Serif", 20, "italic"), fg="#880f0d")
         self.test_label.grid(row=0, column=0, padx=10, pady=10, columnspan=3)
 
         self.lpr_label = Label(self.software_frame, text="LPR:")
@@ -103,8 +105,7 @@ class Registru_parcare:
 
         self.truck_frame = Frame(self.tauros_frame)
         self.truck_frame.pack(pady=10)
-
-
+        
         self.nr_auto_label = Label(self.truck_frame, text="Nr auto:")
         self.nr_auto_label.grid(row=0, column=0, padx=5)
 
@@ -229,6 +230,12 @@ class Registru_parcare:
         self.tauros_tree.heading("Loc. Remorca", text="Loc. Remorca", anchor=CENTER)
 
         self.tauros_tree.pack()
+
+        self.tauros_lpr_label = Label(self.tauros_tree_frame, text="ID:")
+        self.tauros_lpr_label.pack(pady=10, anchor=W, side=LEFT)
+
+        self.tauros_lpr_input = Entry(self.tauros_tree_frame, state="readonly", width=5)
+        self.tauros_lpr_input.pack(pady=10, anchor=W, side=LEFT)
 
         # Frame samsung - interfata
 
@@ -584,7 +591,10 @@ class Registru_parcare:
                             self.tauros_trailer_location_entry.config(state="disabled")
                         self.directie_tauros_combo.config(state="disabled")
                         self.tauros_date_entry.config(state="disabled")
-                        tauros_lpr_id = id
+                        tauros_lpr_id = id # tauros_lpr_id = id
+                        self.tauros_lpr_input.config(state="normal")
+                        self.tauros_lpr_input.insert(0, tauros_lpr_id)
+                        self.tauros_lpr_input.config(state="readonly")
                         print(tauros_lpr_id)
                         
                         # self.my_cursor1.execute("UPDATE lpr_cam SET status = 'PARKED' WHERE plate_id = %s", (id,))
@@ -1102,6 +1112,9 @@ class Registru_parcare:
         self.tauros_driver2_entry.config(state="disabled")
         self.tauros_trailer_location_entry.set("")
         self.tauros_trailer_location_entry.config(state="disabled")
+        self.tauros_lpr_input.config(state="normal")
+        self.tauros_lpr_input.delete(0, END)
+        self.tauros_lpr_input.config(state="disabled")
 
     def visit_refresh(self):
         for i in self.visit_tree.get_children():
