@@ -1,7 +1,5 @@
 # from calendar import Calendar
 # from telnetlib import STATUS
-# from sre_parse import State
-from optparse import Values
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
