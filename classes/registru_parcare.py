@@ -100,7 +100,7 @@ class Registru_parcare:
         self.logo_frame = Frame(self.tauros_frame)
         self.logo_frame.pack()
 
-        self.logo_title = Label(self.logo_frame, text="Intrari / Iesiri Parcare Principala TAUROS", font=("Arial", 20))
+        self.logo_title = Label(self.logo_frame, text="Intrari / Iesiri Camioane TAUROS", font=("Arial", 20))
         self.logo_title.pack()
 
         self.truck_frame = Frame(self.tauros_frame)
@@ -603,7 +603,7 @@ class Registru_parcare:
 
                 # Verificam daca este camion Tauros
 
-                if plate in self.truck_plate:
+                if plate in self.truck_plate and token == 'CHECK':
                     tauros_truck = messagebox.showinfo(title="Camion Tauros", message=f"{plate} este camion Tauros")
                     if tauros_truck == "ok":
                         self.main_window.select(1)
@@ -844,9 +844,9 @@ class Registru_parcare:
                                                                                                                 "IN CURTE", \
                                                                                                                 self.visit_time_out_entry.get(), \
                                                                                                                 self.visit_status.cget("text")))
-        
+        # TODO!!!
         else:
-            cursor.execute("INSERT INTO lpr_cam (plate_no, status, Date_In) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
+            cursor.execute("INSERT INTO registru (cap_tractor, data_reg, time_reg, label, token) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
             connection.commit()
             cursor.execute("SELECT * FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
             self.result = cursor.fetchone()
@@ -1214,12 +1214,22 @@ class Registru_parcare:
         
         try: 
             cursor.execute(sql, values)
-            connection.close()
             messagebox.showinfo(title="Salvare", message="Inregistrare salvata.")
         except:
             messagebox.showerror(title="Eroare", message="Eroare la salvare.")
 
+        sql = "UPDATE registru SET token = 'OK' WHERE id = %s"
+        values = (self.tauros_lpr_input.get(),)
+
+        try:
+            cursor.execute(sql, values)
+        except:
+            messagebox.showerror(title="Eroare", message="Eroare actualizare token.")
+
+        connection.commit()
+        connection.close()
         self.tauros_tree.after(3000, self.tauros_disable)
+
     # Meniul de copy, cut, paste
     def create_context_menu(self, entry_widget):
         def copy_text():
