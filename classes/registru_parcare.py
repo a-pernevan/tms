@@ -1,6 +1,7 @@
 # from calendar import Calendar
 # from telnetlib import STATUS
-from sre_parse import State
+# from sre_parse import State
+from optparse import Values
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -193,6 +194,32 @@ class Registru_parcare:
         self.tauros_tree_frame = Frame(self.tauros_frame)
         self.tauros_tree_frame.pack()
 
+        # Frame-ul pentru selectarea intervalului de date
+
+        self.tauros_date_frame = LabelFrame(self.tauros_tree_frame, text="Filtrare date")
+        self.tauros_date_frame.pack(fill="x", expand="yes", pady=10)
+
+        # Data initiala
+        self.tauros_from_date = Label(self.tauros_date_frame, text="Data de la:")
+        self.tauros_from_date_entry = DateEntry(self.tauros_date_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+
+        tauros_from_date = datetime.now() - timedelta(days=30)
+        self.tauros_from_date_entry.set_date(tauros_from_date)
+
+        # Data finala
+        self.tauros_to_date = Label(self.tauros_date_frame, text="pana la:")
+        self.tauros_to_date_entry = DateEntry(self.tauros_date_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+
+        # Butonul de actualizare
+        self.tauros_date_refresh = Button(self.tauros_date_frame, text="Aplica", command=self.tauros_date_update)
+
+        self.tauros_from_date.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        self.tauros_from_date_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        self.tauros_to_date.grid(row=0, column=2, padx=5, pady=5, sticky="w")
+        self.tauros_to_date_entry.grid(row=0, column=3, padx=5, pady=5, sticky="w")
+        self.tauros_date_refresh.grid(row=0, column=4, padx=5, pady=5, sticky="w")  
+
+
         # Scrollbar pentru camioane Tauros
         tauros_tree_scroll = Scrollbar(self.tauros_tree_frame)
         tauros_tree_scroll.pack(side=RIGHT, fill=Y)
@@ -239,6 +266,8 @@ class Registru_parcare:
 
         self.tauros_lpr_input = Entry(self.tauros_tree_frame, state="readonly", width=5)
         self.tauros_lpr_input.pack(pady=10, anchor=W, side=LEFT)
+
+        self.load_tauros_trucks()
 
         # Frame samsung - interfata
 
@@ -980,6 +1009,18 @@ class Registru_parcare:
         for i in records:
             self.visit_tree.insert(parent='', index='end', iid=i[11], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
 
+    def load_tauros_trucks(self):
+
+        from_date = self.tauros_from_date_entry.get_date()
+        to_date = self.tauros_to_date_entry.get_date()
+
+        connection._open_connection()
+        sql = "SELECT * FROM tauros_truck_park WHERE data_in_out > %s AND data_in_out <= %s"
+        values = (from_date, to_date)
+        cursor.execute(sql, values)
+        records = cursor.fetchall()
+        for i in records:
+            self.tauros_tree.insert(parent='', index='end', iid=i[1], text="", values=(i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10]))
 
 
     # Incarcam inregistrarile din baza de date pentru samsung la pornirea programului
@@ -1127,6 +1168,11 @@ class Registru_parcare:
             self.visit_tree.delete(i)
         self.load_visitors()
 
+    def tauros_date_update(self):
+        for i in self.tauros_tree.get_children():
+            self.tauros_tree.delete(i)
+        self.load_tauros_trucks()
+
 
     # Activam field-ul de destinatie in cazul in care remorca tauros e plina
     def tauros_trailer_full(self):
@@ -1153,6 +1199,29 @@ class Registru_parcare:
                                                                                                                                     self.tauros_date_entry.get(), \
                                                                                                                                     self.tauros_trailer_location_entry.get()))
 
+        # Deschidem conexiune la baza de date
+        connection._open_connection()
+        sql = "INSERT INTO tauros_truck_park (lpr_id, truck, trailer, directie, km, destinatie, sofer1, sofer2, data_in_out, parcare_rem) VALUES \
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        values = (self.tauros_lpr_input.get(), \
+                  self.nr_auto_combo.get(), \
+                  self.remorca_combo.get(), \
+                  self.directie_tauros_combo.get(), \
+                  self.km_tauros_entry.get(), \
+                  self.tauros_load_dest_entry.get(), \
+                  self.tauros_driver1_entry.get(), \
+                  self.tauros_driver2_entry.get(), \
+                  self.tauros_date_entry.get(), \
+                  self.tauros_trailer_location_entry.get())
+        
+        try: 
+            cursor.execute(sql, values)
+            connection.close()
+            messagebox.showinfo(title="Salvare", message="Inregistrare salvata.")
+        except:
+            messagebox.showerror(title="Eroare", message="Eroare la salvare.")
+
+        self.tauros_tree.after(3000, self.tauros_disable)
     # Meniul de copy, cut, paste
     def create_context_menu(self, entry_widget):
         def copy_text():
