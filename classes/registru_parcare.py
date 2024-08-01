@@ -846,9 +846,16 @@ class Registru_parcare:
                                                                                                                 self.visit_status.cget("text")))
         # TODO!!!
         else:
-            cursor.execute("INSERT INTO registru (cap_tractor, data_reg, time_reg, label, token) VALUES (%s, %s, %s)", (self.visit_plate_entry.get(), "PARKED", self.visit_in_date_entry.get()))
+            connection._open_connection()
+            sql = "INSERT INTO registru (cap_tractor, data_reg, time_reg, label, token) VALUES (%s, %s, %s, %s, %s)"
+            values = (self.visit_plate_entry.get(), \
+                      self.visit_in_date_entry.get(), \
+                      self.visit_time_in_entry.get(), \
+                        "Other", \
+                        "PARKED")
+            cursor.execute(sql, values)
             connection.commit()
-            cursor.execute("SELECT * FROM lpr_cam ORDER BY plate_id DESC LIMIT 1")
+            cursor.execute("SELECT * FROM registru ORDER BY id DESC LIMIT 1")
             self.result = cursor.fetchone()
             print(self.result[0])
             lpr_id_value = int(self.result[0])
@@ -911,14 +918,14 @@ class Registru_parcare:
         self.visit_status.config(text="INREGISTARE", fg="red")
         self.visit_in_date_entry.config(state="normal")
         self.visit_out_date_entry.config(state="normal")
-        # self.visit_in_date_entry.grid_forget()
-        # self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
-        # self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
-        # self.visit_in_date_entry.delete(0, END)
-        # self.visit_out_date_entry.grid_forget()
-        # self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="readonly")
-        # self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
-        # self.visit_out_date_entry.delete(0, END)
+        self.visit_in_date_entry.grid_forget()
+        self.visit_in_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd')
+        self.visit_in_date_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        self.visit_in_date_entry.delete(0, END)
+        self.visit_out_date_entry.grid_forget()
+        self.visit_out_date_entry = DateEntry(self.visit_frame, locale='ro_RO', date_pattern='yyyy-MM-dd', state="disabled")
+        self.visit_out_date_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        self.visit_out_date_entry.delete(0, END)
         self.visit_save_button.config(state=DISABLED)
         self.visit_delete_button.config(state=NORMAL)
         self.visit_lpr_id.config(text="")
@@ -953,6 +960,7 @@ class Registru_parcare:
             self.visit_time_out_entry.config(state="readonly")
             self.visit_status.config(text=self.values[8], fg="green")
             self.visit_time_in_but.config(state="disabled")
+            self.visit_out_date_entry.config(state="normal")
             if self.values[8] == "IESIT":
                 self.visit_time_out_but.config(state="disabled")
                 self.visit_out_date_entry.grid_forget()
