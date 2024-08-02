@@ -112,17 +112,16 @@ class Main_Window:
 
 
     def admin_parcare(self):
-        def close_frame(event):
-            frame = event.widget
-            frame.forget()
         # cream un frame nou un notebook
         self.parcare_frame = ttk.Frame(self.main_window, width=1300, height=800)
         self.main_window.add(self.parcare_frame, text="Gestionare parcare")
         self.main_window.select(self.parcare_frame)
         self.inchide_parcare_button = Button(self.parcare_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.parcare_frame)), self.parcare_but.configure(state=NORMAL)))
-        self.inchide_parcare_button.grid(row=0, column=0, sticky="ne")
+        # self.inchide_parcare_button.grid(row=0, column=0, sticky="nw", pady=5, padx=5)
+        self.inchide_parcare_button.pack(padx=5, pady=5, side=TOP, anchor=NW)
         self.modul_parcare_frame = Frame(self.parcare_frame)
-        self.modul_parcare_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nw")
+        # self.modul_parcare_frame.grid(row=1, column=0, padx=5, pady=5)
+        self.modul_parcare_frame.pack(padx=5, pady=5)
         registru_parcare.Registru_parcare(self.modul_parcare_frame)
         self.parcare_but.configure(state=DISABLED)
 

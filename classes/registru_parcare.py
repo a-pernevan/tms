@@ -846,7 +846,6 @@ class Registru_parcare:
                                                                                                                 "IN CURTE", \
                                                                                                                 self.visit_time_out_entry.get(), \
                                                                                                                 self.visit_status.cget("text")))
-        # TODO!!!
         else:
             connection._open_connection()
             sql = "INSERT INTO registru (cap_tractor, data_reg, time_reg, label, token) VALUES (%s, %s, %s, %s, %s)"
@@ -1020,7 +1019,7 @@ class Registru_parcare:
     def load_tauros_trucks(self):
 
         from_date = self.tauros_from_date_entry.get_date()
-        to_date = self.tauros_to_date_entry.get_date()
+        to_date = self.tauros_to_date_entry.get_date() + timedelta(days=1)
 
         connection._open_connection()
         sql = "SELECT * FROM tauros_truck_park WHERE data_in_out > %s AND data_in_out <= %s"

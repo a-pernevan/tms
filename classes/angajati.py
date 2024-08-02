@@ -45,7 +45,14 @@ class Angajati_firma:
         self.lista_functii = self.get_functii.afisare_functii()
         self.angajat_functie_entry.configure(values=self.lista_functii)
         
-        
+    def refresh_filiale(self):
+        window = Toplevel(self.master)
+        window.transient(self.master)
+        window.grab_set()
+        self.get_filiale.adauga_filiala(window)
+        window.wait_window()
+        lista_filiale = self.get_filiale.afisare_filiale()
+        self.angajat_filiala.configure(values=lista_filiale)    
         
     # Interfata de adaugare angajat nou. 
     def interfata(self):
@@ -79,6 +86,7 @@ class Angajati_firma:
         self.angajat_functie_entry.grid(row=2, column=1, sticky="nw", pady=10, padx=10)
 
         self.angajat_filiala = ttk.Combobox(self.detalii_angajat, values=self.lista_filiale)
+        self.angajat_filiala.bind("<Double-1>", lambda event: self.refresh_filiale())
         self.angajat_filiala.grid(row=3, column=1, sticky="nw", pady=10, padx=10)
         
 
