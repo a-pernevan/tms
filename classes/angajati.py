@@ -5,6 +5,12 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 from liste import Functii, Filiala
+from tkcalendar import DateEntry
+try:
+    from database.datab import connection, cursor
+except:
+    mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
+    quit()
 
 load_dotenv()
 
@@ -53,7 +59,7 @@ class Angajati_firma:
         self.angajat_nume_label.grid(row=0, column=0, sticky="nw", pady=10)
 
         self.angajat_prenume_label = Label(self.detalii_angajat, text="Prenume: ")
-        self.angajat_prenume_label.grid(row=1, column=0, sticky="nw", pady=10)
+        self.angajat_prenume_label.grid(row=0, column=2, sticky="nw", pady=10)
 
         self.angajat_functie_label = Label(self.detalii_angajat, text="Functie: ")
         self.angajat_functie_label.grid(row=2, column=0, sticky="nw", pady=10)
@@ -65,7 +71,7 @@ class Angajati_firma:
         self.angajat_nume_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=10)
 
         self.angajat_prenume_entry = Entry(self.detalii_angajat)
-        self.angajat_prenume_entry.grid(row=1, column=1, sticky="nw", pady=10, padx=10)
+        self.angajat_prenume_entry.grid(row=0, column=3, sticky="nw", pady=10, padx=10)
 
         self.angajat_functie_entry = ttk.Combobox(self.detalii_angajat, values=self.lista_functii)
         # Facem bind la double click pentru a actualiza lista

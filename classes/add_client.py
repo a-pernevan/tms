@@ -4,7 +4,7 @@ from datetime import date
 import mysql.connector
 import os
 from dotenv import load_dotenv
-from classes.check_vat import *
+from check_vat import *
 
 
 root = Tk()

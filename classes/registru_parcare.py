@@ -46,12 +46,14 @@ class Registru_parcare:
 
         self.super_window(master, 0)
 
+
     def super_window(self, master, user_level):
         # Cream interfata si notebook-ul
         # self.master = master
         # self.master.title("Registru parcare")
 
-        self.main_window = ttk.Notebook(master, width=1280, height=700)
+        # self.main_window = ttk.Notebook(master, width=1280, height=700)
+        self.main_window = ttk.Notebook(master, width=1200, height=600)
         self.main_window.pack(pady=0)
 
         # self.copyright = Label(self.main_window, text="Copyright © 2024 Andrei Pernevan. All rights reserved.", bd=1, relief=SUNKEN, anchor=W)

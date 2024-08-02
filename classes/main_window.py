@@ -7,10 +7,12 @@ from angajati import Angajati_firma
 import mysql.connector
 import os
 from dotenv import load_dotenv
+import registru_parcare
+import os
 
 class Main_Window:
     def __init__(self, root):
-        self.main_window = ttk.Notebook(root, width=900, height=600)
+        self.main_window = ttk.Notebook(root, width=1300, height=800)
         self.main_window.pack(pady=0)
         
 
@@ -20,7 +22,7 @@ class Main_Window:
         
         # self.main_frame = Frame(self.main_window)
         # self.client_frame = Frame(self.main_window)
-        self.main_frame = Frame(self.main_window, width=900, height=600)
+        self.main_frame = ttk.Frame(self.main_window, width=1300, height=800)
         # self.client_frame = Frame(self.main_window, width=900, height=600)
         # self.angajat_frame = Frame(self.main_window, width=900, height=600)
 
@@ -37,6 +39,12 @@ class Main_Window:
 
         self.angajati_button = Button(self.main_frame, text="Gestionare angajati", command=self.admin_angajati)
         self.angajati_button.grid(row=1, column=0, pady=5)
+
+        self.parcare_but = Button(self.main_frame, text="Gestionare parcare", command=self.admin_parcare)
+        self.parcare_but.grid(row=2, column=0, pady=5)
+
+        self.new_client_but = Button(self.main_frame, text="Adaugare client", command=lambda: os.system("python classes/add_client.py"))
+        self.new_client_but.grid(row=3, column=0, pady=5)
 
 
 
@@ -58,13 +66,16 @@ class Main_Window:
             quit()
         self.my_cursor = self.tms_db.cursor()
 
+    
+   
+
     def show_clients(self):
-        self.client_frame = Frame(self.main_window, width=900, height=600)
+        self.client_frame = ttk.Frame(self.main_window, width=1300, height=800)
         self.main_window.add(self.client_frame, text="Gestionare firme")
         self.main_window.select(1)
-        self.show_client_frame = LabelFrame(self.client_frame, text= "Afisare clienti", width=800, height=700)
+        self.show_client_frame = LabelFrame(self.client_frame, text= "Afisare clienti", width=1300, height=800)
         self.show_client_frame.grid(row=0, column=0, sticky="nw")
-        self.close = Button(self.show_client_frame, text="inchidere", command=lambda:self.main_window.hide(1))
+        self.close = Button(self.show_client_frame, text="inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.client_frame))))
         self.close.grid(row=0, column=0)
         self.list_clients()
         # self.list_all = ttk.Treeview(self.client_frame)
@@ -85,7 +96,7 @@ class Main_Window:
         
     def admin_angajati(self):
         # cream un frame nou un notebook
-        self.angajat_frame = Frame(self.main_window, width=900, height=600)
+        self.angajat_frame = ttk.Frame(self.main_window, width=1300, height=800)
         # Il adaugam la notebook
         self.main_window.add(self.angajat_frame, text="Gestionare angajati")
         # il selectam
@@ -98,8 +109,25 @@ class Main_Window:
         self.angajati_button.configure(state=DISABLED)
         self.inchide_angajati_button = Button(self.angajat_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.angajat_frame)), self.angajati_button.configure(state=NORMAL)))
         self.inchide_angajati_button.grid(row=1, column=0)
-        
 
+
+    def admin_parcare(self):
+        def close_frame(event):
+            frame = event.widget
+            frame.forget()
+        # cream un frame nou un notebook
+        self.parcare_frame = ttk.Frame(self.main_window, width=1300, height=800)
+        self.main_window.add(self.parcare_frame, text="Gestionare parcare")
+        self.main_window.select(self.parcare_frame)
+        self.inchide_parcare_button = Button(self.parcare_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.parcare_frame)), self.parcare_but.configure(state=NORMAL)))
+        self.inchide_parcare_button.grid(row=0, column=0, sticky="ne")
+        self.modul_parcare_frame = Frame(self.parcare_frame)
+        self.modul_parcare_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nw")
+        registru_parcare.Registru_parcare(self.modul_parcare_frame)
+        self.parcare_but.configure(state=DISABLED)
+
+
+    
 if __name__ == "__main__":
     root = Tk()
     root.title("TMS")

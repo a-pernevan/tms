@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 # from classes.clients import Clients
+from classes import registru_parcare
 from classes.liste import Functii, Filiala
 root = Tk()
 root.title("TMS Project 2024")
@@ -30,6 +31,9 @@ def refresh_window_functii(root):
 # hello = Clients(root)
 hello = Functii(root)
 sediu = Filiala(root)
+
+parcare = registru_parcare.Registru_parcare(root)
+
 
 lista_functii = hello.afisare_functii()
 # Verificam daca exista inregistrari, in caz contrar adaugam una noua.

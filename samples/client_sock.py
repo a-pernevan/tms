@@ -1,14 +1,26 @@
-import socket
+import tkinter as tk
+from tkinter import ttk
 
-def send_message():
-    host = '192.168.200.179'
-    port = 12345
+def close_frame(event):
+    frame = event.widget
+    frame.forget()
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((host, port))
-        while True:
-            message = input("Enter a message: ")
-            s.sendall(message.encode())
+root = tk.Tk()
+root.geometry("400x400")
 
-if __name__ == "__main__":
-    send_message()
+notebook = ttk.Notebook(root)
+notebook.pack()
+
+frame1 = ttk.Frame(notebook)
+frame1.pack()
+
+frame2 = ttk.Frame(notebook)
+frame2.pack()
+
+notebook.add(frame1, text="Frame 1")
+notebook.add(frame2, text="Frame 2")
+
+frame1.bind("<Button-1>", close_frame)
+frame2.bind("<Button-1>", close_frame)
+
+root.mainloop()
