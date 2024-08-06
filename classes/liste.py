@@ -5,6 +5,12 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 
+try:
+    from database.datab import connection, cursor
+except:
+    mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
+    quit()
+
 load_dotenv()
 
 # Se definesc functiile ocupate de angajati in cadrul companiei
@@ -157,3 +163,49 @@ class Filiala():
         for self.filiala in self.result:
                 self.lista_filiale.append(self.filiala[1])
         self.afisare_filiale()
+
+
+class Remorci():
+    def __init__(self, master):
+        super().__init__()
+        self.main_window = master
+
+    def afisare_remorci(self):
+        lista_remorci = []
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
+                           
+        except:
+            messagebox.messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        self.nr_remorca = cursor.fetchall()
+        connection.close()
+        for remorca in self.nr_remorca:
+            lista_remorci.append(remorca[0])
+        return lista_remorci
+    
+class Auto():
+    pass
+
+class Clienti():
+    def __init__(self, master):
+        super().__init__()
+        self.main_window = master
+
+    def afisare_clienti(self):
+        lista_clienti = []
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT client_id, denumire, cui_tara, cui_nr FROM clienti")
+                           
+        except:
+            messagebox.messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        self.clienti = cursor.fetchall()
+        connection.close()
+        for client in self.clienti:
+            lista_clienti.append(client)
+
+        return lista_clienti  
+        

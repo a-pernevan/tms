@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 def search_for_value():
-    search_value = int(search_entry.get())
+    search_value = search_entry.get()
     found = False
     for item in tree.get_children():
         values = tree.item(item, "values")

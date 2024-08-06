@@ -7,7 +7,7 @@ from angajati import Angajati_firma
 import mysql.connector
 import os
 from dotenv import load_dotenv
-import registru_parcare
+import registru_parcare, add_vehicle
 import os
 
 class Main_Window:
@@ -46,7 +46,8 @@ class Main_Window:
         self.new_client_but = Button(self.main_frame, text="Adaugare client", command=lambda: os.system("python classes/add_client.py"))
         self.new_client_but.grid(row=3, column=0, pady=5)
 
-
+        self.flota_but = Button(self.main_frame, text="Gestionare flota", command=self.admin_flota)
+        self.flota_but.grid(row=4, column=0, pady=5)
 
         # self.main_window.hide(1)
         # self.main_window.hide(2)
@@ -125,7 +126,17 @@ class Main_Window:
         registru_parcare.Registru_parcare(self.modul_parcare_frame)
         self.parcare_but.configure(state=DISABLED)
 
-
+    def admin_flota(self):
+        # Frame-ul pentru gestionare flota
+        self.flota_frame = ttk.Frame(self.main_window, width=1300, height=800)
+        self.main_window.add(self.flota_frame, text="Gestionare flota")
+        self.main_window.select(self.flota_frame)
+        self.inchide_flota_but = Button(self.flota_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.flota_frame)), self.flota_but.configure(state=NORMAL)))
+        self.inchide_flota_but.pack(padx=5, pady=5, side=TOP, anchor=NW)
+        self.modul_flota_frame = Frame(self.flota_frame)
+        self.modul_flota_frame.pack(padx=5, pady=5)
+        add_vehicle.Vehicule(self.modul_flota_frame)
+        self.flota_but.configure(state=DISABLED)
     
 if __name__ == "__main__":
     root = Tk()

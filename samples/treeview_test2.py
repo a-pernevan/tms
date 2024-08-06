@@ -16,7 +16,7 @@ def on_edit(event):
     entry.insert(0, current_value)
     
     # Place the entry widget in the cell for editing
-    entry.place(relx=0, rely=0, relwidth=1, relheight=1)
+    entry.place(relx=0, rely=0, relwidth=0.5, relheight=0.5)
     
     # Function to update the value when editing is done
     def update_value(event):
