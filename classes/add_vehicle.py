@@ -75,7 +75,7 @@ class Vehicule:
 
         # self.detalii_remorca()
 
-    def detalii_remorca(self, date_rem):
+    def detalii_remorca(self, date_rem, id):
 
         self.frame_detalii.pack(padx=10, pady=10, anchor=W)
 
@@ -103,6 +103,18 @@ class Vehicule:
         self.an_fabricatie = Label(self.frame_detalii, text=date_rem[3])
         self.an_fabricatie.grid(row=3, column=1, sticky="w", padx=10, pady=5)
 
+        self.id_label = Label(self.frame_detalii, text="ID TMS:")
+        self.id_label.grid(row=4, column=0, sticky="w", padx=10, pady=5)
+
+        self.id = Label(self.frame_detalii, text=id)
+        self.id.grid(row=4, column=1, sticky="w", padx=10, pady=5)
+
+        remorci = self.incarca_remorci()
+        
+        for remorca in remorci:
+            if str(id) == str(remorca[0]):
+                print(remorca)
+
         
 
         
@@ -120,7 +132,7 @@ class Vehicule:
         connection.close()
         for remorca in remorci:
             self.remorca_table.insert('', 'end', text=str(remorca[0]), values=(remorca[1], remorca[5], remorca[2], remorca[6]))
-            lista_remorci.append((remorca[0], remorca[1], remorca[5], remorca[2], remorca[6]))
+            lista_remorci.append((remorca[0], remorca[1], remorca[5], remorca[2], remorca[6], remorca[8]))
 
         return lista_remorci
 
@@ -142,9 +154,11 @@ class Vehicule:
     def incarca_detalii(self, e):
         selected = self.remorca_table.focus()
         values = self.remorca_table.item(selected, 'values')
+        id = self.remorca_table.item(selected, 'text')
+        print(id)
         print(values)
         self.frame_detalii.pack_forget()
-        self.detalii_remorca(values)
+        self.detalii_remorca(values, id)
 
 if __name__ == "__main__":
     root = Tk()
