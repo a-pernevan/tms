@@ -227,7 +227,7 @@ class Documente_remorci():
         self.documente = cursor.fetchall()
         connection.close()
         for document in self.documente:
-            lista_documente.append(document)
+            lista_documente.append(document[1])
 
         return lista_documente
 
