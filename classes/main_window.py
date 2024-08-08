@@ -12,7 +12,7 @@ import os
 
 class Main_Window:
     def __init__(self, root):
-        self.main_window = ttk.Notebook(root, width=1300, height=800)
+        self.main_window = ttk.Notebook(root, width=1300, height=950)
         self.main_window.pack(pady=0)
         
 
@@ -73,7 +73,7 @@ class Main_Window:
     def show_clients(self):
         self.client_frame = ttk.Frame(self.main_window, width=1300, height=800)
         self.main_window.add(self.client_frame, text="Gestionare firme")
-        self.main_window.select(1)
+        self.main_window.select(self.client_frame)
         self.show_client_frame = LabelFrame(self.client_frame, text= "Afisare clienti", width=1300, height=800)
         self.show_client_frame.grid(row=0, column=0, sticky="nw")
         self.close = Button(self.show_client_frame, text="inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.client_frame))))
@@ -128,7 +128,7 @@ class Main_Window:
 
     def admin_flota(self):
         # Frame-ul pentru gestionare flota
-        self.flota_frame = ttk.Frame(self.main_window, width=1300, height=800)
+        self.flota_frame = ttk.Frame(self.main_window, width=1300, height=950)
         self.main_window.add(self.flota_frame, text="Gestionare flota")
         self.main_window.select(self.flota_frame)
         self.inchide_flota_but = Button(self.flota_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.flota_frame)), self.flota_but.configure(state=NORMAL)))

@@ -17,7 +17,8 @@ class Vehicule:
         self.root = root
         self.lista_remorci = []
         
-        self.main_frame = ttk.Notebook(self.root, width=1200, height=600)
+        self.main_frame = ttk.Notebook(self.root, width=1300, height=600)
+        # self.main_frame = ttk.Notebook(self.root)
         self.main_frame.pack(fill=BOTH, expand=1)
 
         self.frame_remorci()
