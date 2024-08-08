@@ -36,6 +36,7 @@ class Registru_parcare:
 
         # Valori demo pt nr camion
         self.truck_plate = []
+        connection._open_connection()
         cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='AUTOTRACTOR' OR categorie='AUTOTURISM'")
 
         self.nr_auto_cap = cursor.fetchall()
