@@ -1,5 +1,5 @@
 import tempfile
-import time
+import sys
 import subprocess
 import tkinter as tk
 from tkinter import Toplevel, ttk
