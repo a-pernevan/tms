@@ -177,7 +177,7 @@ class Remorci():
             cursor.execute("SELECT plate_no FROM tauros_truck WHERE categorie='SEMIREMORCA'")
                            
         except:
-            messagebox.messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
 
         self.nr_remorca = cursor.fetchall()
         connection.close()
@@ -200,7 +200,7 @@ class Clienti():
             cursor.execute("SELECT client_id, denumire, cui_tara, cui_nr FROM clienti")
                            
         except:
-            messagebox.messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
 
         self.clienti = cursor.fetchall()
         connection.close()
@@ -214,21 +214,88 @@ class Documente_remorci():
     def __init__(self, master):
         super().__init__()
         self.main_window = master
+        self.lista_documente = []
 
-    def afisare_documente(self):
-        lista_documente = []
+    # def incarca_documente(self):
+        
         try:
             connection._open_connection()
             cursor.execute("SELECT * FROM tip_documente_remorci")
                            
         except:
-            messagebox.messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
 
         self.documente = cursor.fetchall()
         connection.close()
-        for document in self.documente:
-            lista_documente.append(document)
+        
+        if self.documente:
 
-        return lista_documente
+            for document in self.documente:
+                self.lista_documente.append(document[1])
+            print(self.lista_documente)
+            self.afisare_doc()
+            # return self.lista_documente
+        
+        else:
+            messagebox.showerror(title="Error", message="No data found")
+
+
+    def afisare_doc(self):
+        return self.lista_documente    
+    
+    # Functie de adaugare tip nou de documente
+    def adauga_tip_doc(self, master):
+        self.adauga_doc_window = master
+        self.adauga_doc_window.title("Adauga tip document")
+        
+        self.adauga_doc_frame = LabelFrame(self.adauga_doc_window, text="Document nou")
+        self.adauga_doc_frame.pack(padx=5, pady=5)
+
+        self.doc_nou_label = Label(self.adauga_doc_frame, text="Tip document:")
+        self.doc_nou_label.grid(row=0, column=0, sticky="nw")
+
+        self.doc_nou_entry = Entry(self.adauga_doc_frame)
+        self.doc_nou_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=5)
+
+        self.adauga_doc_button = Button(self.adauga_doc_frame, text="Adauga", command=self.adauga_doc)
+        self.adauga_doc_button.grid(row=2, column=1, sticky="nw")
 
         
+
+    def adauga_doc(self):
+        try:
+            connection._open_connection()
+            sql = "INSERT INTO tip_documente_remorci (nume_doc) VALUES (%s)"
+            values = (self.doc_nou_entry.get().upper(),)
+            cursor.execute(sql, values)
+            connection.commit()
+
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+        
+        finally:
+            connection.close()
+            messagebox.showinfo(title="Success", message="Tip document adaugat")
+
+        self.actualizare_doc()
+
+        self.adauga_doc_window.destroy()
+
+    def actualizare_doc(self):
+        self.lista_documente = []
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT * FROM tip_documente_remorci")
+            result = cursor.fetchall()
+        
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        finally:
+            connection.close()
+        if result:
+            for document in result:
+                self.lista_documente.append(document[1])
+
+            self.afisare_doc()
+

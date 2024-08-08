@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 # from tkinter.tix import ComboBox
 from liste import Remorci
 from datetime import datetime, timedelta, date
+from upload_download_docs import Documente
 try:
     from database.datab import connection, cursor
 except:
@@ -209,6 +210,8 @@ class Vehicule:
             for widget in self.frame_detalii_tehnice.winfo_children():
                 widget.destroy()
 
+            self.frame_detalii_tehnice.grid_forget()
+
             # self.frame_detalii_tehnice = LabelFrame(self.frame_detalii, text="Detalii Tehnice")
             # self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=10)
 
@@ -302,6 +305,12 @@ class Vehicule:
                 else:
                     Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="green").grid(row=i, column=0, sticky="w", padx=10, pady=5)
 
+
+        self.documente_frame = Frame(self.frame_detalii)
+        self.documente_frame.grid(row=0, column=3, pady=5, sticky="nw")
+
+        Documente(self.documente_frame, id, date_rem[0])
+
     def incarca_remorci(self):
         lista_remorci = []
         try:
@@ -341,6 +350,9 @@ class Vehicule:
         # Debug code
         # print(id)
         # print(values)
+        # Golim frame-ul
+        for widget in self.frame_detalii.winfo_children():
+            widget.destroy()    
         self.frame_detalii.pack_forget()
         self.detalii_remorca(values, id)
 
