@@ -143,7 +143,7 @@ class Documente:
             elif sys.platform == 'darwin':  # For macOS
                 process = subprocess.run(['open', pdf_path])
             else:  # For Unix-like (Linux)
-                process = subprocess.run(['xdg-open', pdf_path])
+                process = subprocess.run(['evince', pdf_path])
         except Exception as e:
             print(f"Failed to open PDF: {e}")
             return

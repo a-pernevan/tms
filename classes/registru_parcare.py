@@ -28,6 +28,7 @@ class Registru_parcare:
     def __init__(self, master):
         super().__init__()
         load_dotenv()
+        connection._open_connection()
         # Variabila pentru adaugare manuala vizitator
         self.visit_manual = False
 

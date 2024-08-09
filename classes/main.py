@@ -1,4 +1,3 @@
-from site import ENABLE_USER_SITE
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk

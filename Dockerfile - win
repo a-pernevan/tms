@@ -1,0 +1,35 @@
+# Use the official Windows Server Core image as the base
+FROM mcr.microsoft.com/windows/servercore:ltsc2016
+
+
+# Set the working directory
+WORKDIR /app
+
+# Install Chocolatey
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; \
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+# Install Python using Chocolatey
+RUN choco install python --version=3.11.4 -y
+
+# Add Python to PATH
+RUN setx /M PATH "%PATH%;C:\Python311;C:\Python311\Scripts"
+
+# Verify Python installation
+RUN python --version
+
+# Copy the requirements.txt file into the container
+COPY requirements.txt .
+
+# Install the Python packages from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install SumatraPDF
+RUN choco install sumatrapdf -y
+
+# Copy your application files into the container
+COPY . .
+
+# Set the default command to run the Python script or open a command prompt
+CMD ["python", "classes/main_window.py"]
