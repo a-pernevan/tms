@@ -235,6 +235,10 @@ class Documente:
                 lista_documente = get_docs.afisare_doc()
                 self.lista_documente_drop.configure(values=lista_documente)
 
+            def doc_selectat(e):
+                self.upload_button.configure(state="normal")
+
+
             self.document_nou_frame = tk.Frame(frame)
             self.document_nou_frame.grid(row=row, column=column, sticky=W)
             self.adauga_doc_label = tk.Label(self.document_nou_frame, text="Adauga document:")
@@ -245,7 +249,8 @@ class Documente:
             self.lista_documente_drop = ttk.Combobox(self.document_nou_frame, textvariable=self.tip_doc, values=self.lista_documente)
             self.lista_documente_drop.grid(row=1, column=1, sticky=W, padx=10, pady=10)
             self.lista_documente_drop.bind("<Double-1>", actualizeaza_lista_docs)
-            self.upload_button = tk.Button(self.document_nou_frame, image=self.icon_upload, borderwidth=0, highlightthickness=0, relief="flat", command=self.selecteaza_document)
+            self.lista_documente_drop.bind("<<ComboboxSelected>>", doc_selectat)
+            self.upload_button = tk.Button(self.document_nou_frame, image=self.icon_upload, borderwidth=0, highlightthickness=0, relief="flat", command=self.selecteaza_document, state="disabled")
             self.upload_button.grid(row=1, column=2, sticky=W, padx=10, pady=10)
             ToolTip(self.upload_button, text="Incarca document")
             
