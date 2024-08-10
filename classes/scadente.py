@@ -52,7 +52,6 @@ class Scadente:
             i += 1
             b = 0
             if (date.today() + timedelta(days=15)) >= scadenta[1] - timedelta(days=15):
-                self.label_name = f"{scadenta[0]}"
                 self.label_name = tk.Label(self.scadente_frame, text=f"{scadenta[0]}:  {scadenta[1]} ", fg="red")
                 self.label_name.grid(row=i, column=b, sticky="w", padx=10, pady=5)
                 self.edit_button = tk.Button(self.scadente_frame, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.modifica_scadenta(label))
@@ -62,16 +61,12 @@ class Scadente:
     
                 # tk.Label(self.scadente_frame, text=f"{scadenta[1]}", fg="red").grid(row=i+1, column=b+1, sticky="w", padx=10, pady=5)
             else:
-                self.label_name = f"{scadenta[0]}"
                 self.label_name = tk.Label(self.scadente_frame, text=f"{scadenta[0]}:  {scadenta[1]}")
                 self.label_name.grid(row=i, column=b, sticky="w", padx=10, pady=5)
                 self.edit_button = tk.Button(self.scadente_frame, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.modifica_scadenta(label))
                 self.edit_button.grid(row=i, column=b+1, sticky="w", padx=10, pady=5)
                 ToolTip(self.edit_button, text="Modifica scadenta")
-                
-                
 
-        
 
     def incarca_scadente(self):
         
@@ -92,7 +87,6 @@ class Scadente:
     
     def modifica_scadenta(self, label):
         print(label)
-        print(self.label_name)
 
 
 if __name__ == "__main__":
