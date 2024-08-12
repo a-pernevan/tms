@@ -149,6 +149,25 @@ class Scadente:
         print(self.select_scadenta.get())
         print(self.data_scadenta_entry.get_date())
 
+        try:
+            connection._open_connection()
+            sql = "INSERT INTO tabel_scadente (id_tms, nume, tip, scadenta, data_scadenta) VALUES (%s, %s, %s, %s, %s)"
+            values = (self.id_tms, self.nume, self.tip, self.select_scadenta.get(), self.data_scadenta_entry.get_date())
+            cursor.execute(sql, values)
+            connection.commit()
+            messagebox.showinfo(title="Success", message="Scadenta adaugata cu succes!")
+            self.adauga_scadenta_window.destroy()
+        
+        except:
+            messagebox.showerror(title="Error", message="Failed to insert scadenta!")
+        finally:
+            connection.close()
+
+        self.scadente_frame.pack_forget()
+        self.adauga_scadenta_frame.pack_forget()
+        self.main_window(self.master)
+
+
 
 if __name__ == "__main__":
     root = tk.Tk()
