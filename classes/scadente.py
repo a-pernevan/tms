@@ -1,6 +1,5 @@
-from multiprocessing import Value
 import tkinter as tk
-from tkinter import Label, LabelFrame, Toplevel, ttk
+from tkinter import Toplevel, ttk
 from PIL import Image, ImageTk
 from tkinter import W, Button, filedialog, messagebox
 try:
@@ -11,6 +10,7 @@ except:
 from utils.tooltip import ToolTip
 from tkcalendar import DateEntry, Calendar
 from datetime import datetime, timedelta, date
+from liste import Scadente_auto
 
 class Scadente:
     def __init__(self, master, id_tms, nume, tip):
@@ -21,6 +21,7 @@ class Scadente:
         self.lista_scadente = []
 
         connection._open_connection()
+        self.main_window(self.master)
 
     def main_window(self, master):
         self.icon_new = Image.open("classes/utils/icons/add-text-icon-15.jpg")
@@ -35,17 +36,22 @@ class Scadente:
         self.icon_modify = self.icon_modify.resize((22, 22))
         self.icon_modify = ImageTk.PhotoImage(self.icon_modify)
 
+        self.icon_save = Image.open("classes/utils/icons/save-image-icon-11.jpg")
+        self.icon_save = self.icon_save.resize((22, 22))
+        self.icon_save = ImageTk.PhotoImage(self.icon_save)
+
         self.scadente_frame = tk.LabelFrame(master, text="Scadente")
         self.scadente_frame.pack(padx=5, pady=5)
 
         self.scadenta_noua_label = tk.Label(self.scadente_frame, text="Adauga scadenta:")
         self.scadenta_noua_label.grid(row=0, column=0, sticky=W, padx=10, pady=10)
 
-        self.scadenta_noua_button = tk.Button(self.scadente_frame, image=self.icon_new, borderwidth=0, highlightthickness=0, relief="flat", command=self.incarca_scadente)
+        self.scadenta_noua_button = tk.Button(self.scadente_frame, image=self.icon_new, borderwidth=0, highlightthickness=0, relief="flat", command=self.adauga_scadenta_rem)
         self.scadenta_noua_button.grid(row=0, column=1, sticky=W, padx=10, pady=10)
         ToolTip(self.scadenta_noua_button, text="Adauga scadenta")
         
         self.incarca_scadente()
+
         for i, scadenta in enumerate(self.lista_scadente):
             # Debug code - verificam daca lista e ok
             # print(i, scandenta)
@@ -69,6 +75,8 @@ class Scadente:
 
 
     def incarca_scadente(self):
+
+        connection._open_connection()
         
         sql = "SELECT scadenta, data_scadenta FROM tabel_scadente WHERE id_tms = %s AND nume = %s AND tip = %s"
         values = (self.id_tms, self.nume, self.tip)
@@ -83,16 +91,69 @@ class Scadente:
             for scadenta in self.scadente:
                 self.lista_scadente.append(scadenta)
 
+            
+
+        else:
+            self.lipsa_scadenta_label = tk.Label(self.scadente_frame, text="Nu exista scadente")
+            self.lipsa_scadenta_label.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+
         return self.lista_scadente
     
     def modifica_scadenta(self, label):
         print(label)
+
+    def adauga_scadenta_rem(self):
+        
+        def actualizeaza_lista_scadente(e):
+            scadente_window = Toplevel(self.master)
+            scadente_window.transient(self.master)
+            scadente_window.grab_set()
+            get_scadente = Scadente_auto(self.master)
+            get_scadente.adauga_tip_scadenta(scadente_window)
+            scadente_window.wait_window()
+            lista_scadente = get_scadente.afisare_scadente()
+            self.select_scadenta.configure(values=lista_scadente)
+
+        self.adauga_scadenta_window = tk.Toplevel(self.master)
+        self.adauga_scadenta_window.transient(self.master)
+        self.adauga_scadenta_window.grab_set()
+        self.adauga_scadenta_window.title("Adauga scadenta")
+
+        self.adauga_scadenta_frame = tk.Frame(self.adauga_scadenta_window)
+        self.adauga_scadenta_frame.pack()
+
+        self.adauga_scadenta_label = tk.Label(self.adauga_scadenta_frame, text="Tip scadenta:")
+        self.adauga_scadenta_label.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+
+        self.tip_scadente = Scadente_auto(self.adauga_scadenta_frame)
+        self.tip_scadente_list = self.tip_scadente.afisare_scadente()
+
+        self.select_scadenta = ttk.Combobox(self.adauga_scadenta_frame, values = self.tip_scadente_list, width=12)
+        self.select_scadenta.grid(row=0, column=1, sticky="w", padx=10, pady=10)
+
+        self.select_scadenta.bind("<Double-1>", actualizeaza_lista_scadente)
+
+        self.data_scadenta_label = tk.Label(self.adauga_scadenta_frame, text="Data scadenta:")
+        self.data_scadenta_label.grid(row=1, column=0, sticky="w", padx=10, pady=10)
+
+        self.data_scadenta_entry = DateEntry(self.adauga_scadenta_frame, locale="ro_RO", date_pattern='yyyy-MM-dd')
+        self.data_scadenta_entry.grid(row=1, column=1, sticky="w", padx=10, pady=10)
+
+        self.adauga_scadenta_button = tk.Button(self.adauga_scadenta_frame, text="Adauga", image=self.icon_save, borderwidth=0, highlightthickness=0, relief="flat", command=self.adauga_scadenta)
+        self.adauga_scadenta_button.grid(row=1, column=2, sticky="w", padx=10, pady=10)
+        ToolTip(self.adauga_scadenta_button, text="Salveaza")
+
+        self.adauga_scadenta_window.wait_window()
+
+    def adauga_scadenta(self):
+        print(self.select_scadenta.get())
+        print(self.data_scadenta_entry.get_date())
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Scadente")
     registru = Scadente(root, 35, "AR15UUT", "SEMIREMORCA")
-    registru.main_window(root)
+    # registru.main_window(root)
     # root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()

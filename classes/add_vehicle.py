@@ -4,6 +4,7 @@ from tkinter import ttk, messagebox
 from liste import Remorci
 from datetime import datetime, timedelta, date
 from upload_download_docs import Documente
+from scadente import Scadente
 try:
     from database.datab import connection, cursor
 except:
@@ -72,7 +73,7 @@ class Vehicule:
         self.remorca_table.bind("<Return>", self.incarca_detalii)
 
         self.frame_detalii = Frame(self.remorca_frame)
-        self.frame_detalii.pack(padx=10, pady=10, anchor=W)
+        self.frame_detalii.pack(padx=10, pady=5, anchor=W)
 
         # self.detalii_remorca()
 
@@ -132,7 +133,7 @@ class Vehicule:
 
         
         self.frame_detalii_tehnice = LabelFrame(self.frame_detalii, text="Detalii Tehnice")
-        self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=10)
+        self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=5)
 
         if len(detalii_rem) > 0:
             self.frame_detalii_tehnice.grid_forget()
@@ -288,23 +289,27 @@ class Vehicule:
 
         scadente = cursor.fetchall()
 
-        scadente_frame = LabelFrame(self.frame_detalii, text="Scadente")
-        scadente_frame.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky="nw")
+        print(scadente)
 
-        if scadente:
-            scadente_frame.grid_forget()
-            scadente_frame.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky="nw")
+        self.scadente_frame = Frame(self.frame_detalii)
+        self.scadente_frame.grid(row=0, column=2, pady=5, sticky="nw")
 
-            for i, remorca in enumerate(scadente):
-                # if "RCA" in str(remorca[4]):
-                #     print(remorca)
-                # print(f"{remorca[4]}: {remorca[5]}")
-                # print(i)
-                # print(remorca[5] - timedelta(days=15))
-                if (date.today() + timedelta(days=15)) >= remorca[5] - timedelta(days=15):
-                    Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="red").grid(row=i, column=0, sticky="w", padx=10, pady=5)
-                else:
-                    Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="green").grid(row=i, column=0, sticky="w", padx=10, pady=5)
+        Scadente(self.scadente_frame, id, date_rem[0], 'SEMIREMORCA')
+
+        # if scadente:
+        #     scadente_frame.grid_forget()
+        #     scadente_frame.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky="nw")
+
+        #     for i, remorca in enumerate(scadente):
+        #         # if "RCA" in str(remorca[4]):
+        #         #     print(remorca)
+        #         # print(f"{remorca[4]}: {remorca[5]}")
+        #         # print(i)
+        #         # print(remorca[5] - timedelta(days=15))
+        #         if (date.today() + timedelta(days=15)) >= remorca[5] - timedelta(days=15):
+        #             Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="red").grid(row=i, column=0, sticky="w", padx=10, pady=5)
+        #         else:
+        #             Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="green").grid(row=i, column=0, sticky="w", padx=10, pady=5)
 
 
         self.documente_frame = Frame(self.frame_detalii)

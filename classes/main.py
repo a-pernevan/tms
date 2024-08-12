@@ -127,7 +127,8 @@ class Main_Window:
 
     def admin_flota(self):
         # Frame-ul pentru gestionare flota
-        self.flota_frame = ttk.Frame(self.main_window, width=1300, height=950)
+        # self.flota_frame = ttk.Frame(self.main_window, width=1300, height=950)
+        self.flota_frame = ttk.Frame(self.main_window)
         self.main_window.add(self.flota_frame, text="Gestionare flota")
         self.main_window.select(self.flota_frame)
         self.inchide_flota_but = Button(self.flota_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.flota_frame)), self.flota_but.configure(state=NORMAL)))

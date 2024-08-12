@@ -299,3 +299,83 @@ class Documente_remorci():
 
             self.afisare_doc()
 
+class Scadente_auto():
+    def __init__(self, master):
+        super().__init__()
+        self.main_window = master
+        self.lista_scadente = []
+
+        try:
+            connection._open_connection()
+            sql = "SELECT nume_scadenta FROM tip_scadente"
+            cursor.execute("SELECT nume_scadenta FROM tip_scadente")
+            self.scadente = cursor.fetchall()
+
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        finally:
+            connection.close()
+
+        
+        for scadenta in self.scadente:
+            self.lista_scadente.append(scadenta)
+
+
+        self.afisare_scadente()
+
+    def afisare_scadente(self):
+        return self.lista_scadente
+    
+    def adauga_tip_scadenta(self, master):
+        self.adauga_tip_scadenta_window = master
+        self.adauga_tip_scadenta_window.title("Adauga tip scadenta")
+
+        self.tip_scadenta_label = Label(self.adauga_tip_scadenta_window, text="Nune scadenta:")
+        self.tip_scadenta_label.grid(row=0, column=0, sticky="nw", padx=5, pady=10)
+
+        self.tip_scadenta_entry = Entry(self.adauga_tip_scadenta_window)
+        self.tip_scadenta_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=5)
+
+        self.tip_scadenta_button = Button(self.adauga_tip_scadenta_window, text="Adauga", command=self.adauga_scadenta)
+        self.tip_scadenta_button.grid(row=1, column=1, sticky="nw")
+
+
+    def adauga_scadenta(self):
+        # connection._open_connection()
+        try:
+            connection._open_connection()
+            sql = "INSERT INTO tip_scadente (nume_scadenta) VALUES (%s)"
+            values = (self.tip_scadenta_entry.get().upper(),)
+            cursor.execute(sql, values)
+            connection.commit()
+            messagebox.showinfo(title="Success", message="Tip scadenta adaugat")
+            
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        finally:
+            connection.close()
+            
+
+        self.actualizare_scadente()
+
+        self.adauga_tip_scadenta_window.destroy()
+
+    def actualizare_scadente(self):
+        self.lista_scadente = []
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT nume_scadenta FROM tip_scadente")
+            result = cursor.fetchall()
+        
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        finally:
+            connection.close()
+        if result:
+            for scadenta in result:
+                self.lista_scadente.append(scadenta)
+
+            self.afisare_scadente()
