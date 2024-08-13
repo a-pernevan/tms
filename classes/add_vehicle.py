@@ -29,6 +29,14 @@ class Vehicule:
 
     def frame_remorci(self):
 
+        self.icon_modify_trailer = Image.open("classes/utils/icons/edit-pen-icon-18.jpg")
+        self.icon_modify_trailer = self.icon_modify_trailer.resize((33, 33))
+        self.icon_modify_trailer = ImageTk.PhotoImage(self.icon_modify_trailer)
+
+        self.icon_reset_trailers = Image.open("classes/utils/icons/reverse-icon-png-20.jpg")
+        self.icon_reset_trailers = self.icon_reset_trailers.resize((33, 33))
+        self.icon_reset_trailers = ImageTk.PhotoImage(self.icon_reset_trailers)
+
         self.remorca_frame = Frame(self.main_frame)
         self.remorca_frame.pack(fill=BOTH, expand=1, anchor=W)
 
@@ -47,6 +55,14 @@ class Vehicule:
         self.remorca_plate = Entry(self.frame_cautare)
         self.remorca_plate.grid(row=0, column=1, sticky="w", padx=10, pady=10)
         RightClickMenu.create_context_menu(self, self.remorca_plate)
+
+        self.edit_remorca = Button(self.frame_cautare, image=self.icon_modify_trailer, borderwidth=0, highlightthickness=0, relief="flat", state="disabled")
+        self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=10, ipadx=5, ipady=5)
+        ToolTip(self.edit_remorca, "Editare")
+
+        self.reset_remorci = Button(self.frame_cautare, image=self.icon_reset_trailers, borderwidth=0, highlightthickness=0, relief="flat", state="disabled", command=self.reset_detalii)
+        self.reset_remorci.grid(row=0, column=3, sticky="e", padx=10, pady=10, ipadx=5, ipady=5)
+        ToolTip(self.reset_remorci, "Resetare")
 
         self.remorca_table_frame = Frame(self.vehicule_frame)
         self.remorca_table_frame.pack()
@@ -90,7 +106,7 @@ class Vehicule:
         self.frame_detalii.pack(padx=10, pady=10, anchor=W)
 
         self.frame_detalii_generale = LabelFrame(self.frame_detalii, text="Detalii Generale")
-        self.frame_detalii_generale.grid(row=0, column=0, padx=10, pady=10)
+        self.frame_detalii_generale.grid(row=0, column=0, padx=2, pady=10)
 
         self.nr_auto_label = Label(self.frame_detalii_generale, text="Numar inmatriculare:")
         self.nr_auto_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
@@ -98,9 +114,9 @@ class Vehicule:
         self.nr_auto = Label(self.frame_detalii_generale, text=date_rem[0])
         self.nr_auto.grid(row=0, column=1, sticky="w", padx=10, pady=5)
 
-        self.edit_remorca = Button(self.frame_detalii_generale, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat")
-        self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=5, ipadx=5, ipady=5)
-        ToolTip(self.edit_remorca, "Editare")
+        # self.edit_remorca = Button(self.frame_detalii_generale, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat")
+        # self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=5, ipadx=5, ipady=5)
+        # ToolTip(self.edit_remorca, "Editare")
 
         self.marca_label = Label(self.frame_detalii_generale, text="Marca:")
         self.marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
@@ -129,6 +145,9 @@ class Vehicule:
         
         for remorca in self.lista_remorci:
             if str(id) == str(remorca[0]):
+                self.edit_remorca.configure(state="normal")
+                self.reset_remorci.configure(state="normal")
+
                 self.proprietar = Label(self.frame_detalii_generale, text="Proprietar:")
                 self.proprietar.grid(row=5, column=0, sticky="w", padx=10, pady=5)
 
@@ -145,7 +164,7 @@ class Vehicule:
 
         
         self.frame_detalii_tehnice = LabelFrame(self.frame_detalii, text="Detalii Tehnice")
-        self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=5)
+        self.frame_detalii_tehnice.grid(row=0, column=1, padx=2, pady=5)
 
         if len(detalii_rem) > 0:
             self.frame_detalii_tehnice.grid_forget()
@@ -373,6 +392,23 @@ class Vehicule:
             widget.destroy()    
         self.frame_detalii.pack_forget()
         self.detalii_remorca(values, id)
+
+    def reset_detalii(self):
+        """Resetam detaliile incarcate despre remorci, cautarea si butoanele."""
+        self.lista_remorci = []
+        for i in self.remorca_table.get_children():
+            self.remorca_table.delete(i)
+
+        self.incarca_remorci()
+
+        self.remorca_plate.delete(0, END)
+        for widget in self.frame_detalii.winfo_children():
+            widget.destroy()
+        self.frame_detalii.pack_forget()
+
+        self.edit_remorca.configure(state="disabled")
+        self.reset_remorci.configure(state="disabled")
+
 
 if __name__ == "__main__":
     root = Tk()

@@ -66,6 +66,10 @@ class Scadente:
                     self.edit_button = tk.Button(self.scadente_frame, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.modifica_scadenta(label))
                     self.edit_button.grid(row=i, column=b+1, sticky="w", padx=10, pady=5)
                     ToolTip(self.edit_button, text="Modifica scadenta")
+
+                    self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat")
+                    self.delete_button.grid(row=i, column=b+2, sticky="w", padx=2, pady=5)
+                    ToolTip(self.delete_button, text="Sterge scadenta")
                     
         
                     # tk.Label(self.scadente_frame, text=f"{scadenta[1]}", fg="red").grid(row=i+1, column=b+1, sticky="w", padx=10, pady=5)
@@ -75,6 +79,10 @@ class Scadente:
                     self.edit_button = tk.Button(self.scadente_frame, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.modifica_scadenta(label))
                     self.edit_button.grid(row=i, column=b+1, sticky="w", padx=10, pady=5)
                     ToolTip(self.edit_button, text="Modifica scadenta")
+
+                    self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat")
+                    self.delete_button.grid(row=i, column=b+2, sticky="w", padx=2, pady=5)
+                    ToolTip(self.delete_button, text="Sterge scadenta")
 
 
     def incarca_scadente(self):
