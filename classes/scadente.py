@@ -99,6 +99,29 @@ class Scadente:
             self.lipsa_scadenta_label = tk.Label(self.scadente_frame, text="Nu exista scadente")
             self.lipsa_scadenta_label.grid(row=1, column=0, sticky="w", padx=10, pady=10)
 
+
+    def modifica_scadenta_db(self, label):
+
+        try:
+            connection._open_connection()
+            sql = "UPDATE tabel_scadente SET data_scadenta = %s WHERE id_tms = %s AND nume = %s AND tip = %s AND scadenta = %s"
+            values = (self.data_scadenta_entry.get_date(), self.id_tms, self.nume, self.tip, label)
+            cursor.execute(sql, values)
+            print(values)
+            connection.commit()
+            messagebox.showinfo(title="Success", message="Scadenta modificata cu succes!")
+        
+        except:
+            messagebox.showerror(title="Error", message="Failed to insert scadenta!")
+        finally:
+            connection.close()
+
+        self.scadente_frame.pack_forget()
+        self.mod_scadenta_window.destroy()
+
+        self.mod_scadenta_frame.pack_forget()
+
+        self.main_window()
         
     
     def modifica_scadenta(self, label):
@@ -132,7 +155,8 @@ class Scadente:
         self.data_scadenta_entry.grid(row=1, column=1, sticky="w", padx=10, pady=10)
         self.data_scadenta_entry.set_date(self.data_scadenta[0][0])
 
-        self.mod_scadenta_save = tk.Button(self.mod_scadenta_frame, text="Salveaza", image=self.icon_save, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=label, data_nou=self.data_scadenta_entry.get_date(): self.modifica_scadenta(label, data_nou))
+
+        self.mod_scadenta_save = tk.Button(self.mod_scadenta_frame, text="Salveaza", image=self.icon_save, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=label: self.modifica_scadenta_db(label))
         self.mod_scadenta_save.grid(row=1, column=2, sticky="w", padx=10, pady=10)
         ToolTip(self.mod_scadenta_save, text="Salveaza")
 
@@ -164,6 +188,7 @@ class Scadente:
 
             self.main_window()
 
+    
 
     def adauga_scadenta_rem(self):
         
@@ -207,29 +232,6 @@ class Scadente:
         ToolTip(self.adauga_scadenta_button, text="Salveaza")
 
         self.adauga_scadenta_window.wait_window()
-
-    
-    def modifica_scadenta(self, label, data_nou):
-
-        try:
-            connection._open_connection()
-            sql = "UPDATE tabel_scadente SET data_scadenta = %s WHERE id_tms = %s AND nume = %s AND tip = %s AND scadenta = %s"
-            values = (data_nou, self.id_tms, self.nume, self.tip, label)
-            cursor.execute(sql, values)
-            connection.commit()
-            messagebox.showinfo(title="Success", message="Scadenta modificata cu succes!")
-        
-        except:
-            messagebox.showerror(title="Error", message="Failed to insert scadenta!")
-        finally:
-            connection.close()
-
-            self.adauga_scadenta_frame.pack_forget()
-            self.adauga_scadenta_window.destroy()
-
-            self.scadente_frame.pack_forget()
-
-            self.main_window()
 
 
 if __name__ == "__main__":

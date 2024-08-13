@@ -1,10 +1,13 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 # from tkinter.tix import ComboBox
+from utils.tooltip import ToolTip
 from liste import Remorci
 from datetime import datetime, timedelta, date
 from upload_download_docs import Documente
 from scadente import Scadente
+from PIL import Image, ImageTk
+from right_click_menu import RightClickMenu
 try:
     from database.datab import connection, cursor
 except:
@@ -43,6 +46,7 @@ class Vehicule:
         # self.remorca_plate = ttk.Combobox(self.vehicule_frame, values=remorci)
         self.remorca_plate = Entry(self.frame_cautare)
         self.remorca_plate.grid(row=0, column=1, sticky="w", padx=10, pady=10)
+        RightClickMenu.create_context_menu(self, self.remorca_plate)
 
         self.remorca_table_frame = Frame(self.vehicule_frame)
         self.remorca_table_frame.pack()
@@ -79,6 +83,10 @@ class Vehicule:
 
     def detalii_remorca(self, date_rem, id):
 
+        self.icon_modify = Image.open("classes/utils/icons/edit-pen-icon-18.jpg")
+        self.icon_modify = self.icon_modify.resize((22, 22))
+        self.icon_modify = ImageTk.PhotoImage(self.icon_modify)
+
         self.frame_detalii.pack(padx=10, pady=10, anchor=W)
 
         self.frame_detalii_generale = LabelFrame(self.frame_detalii, text="Detalii Generale")
@@ -90,29 +98,33 @@ class Vehicule:
         self.nr_auto = Label(self.frame_detalii_generale, text=date_rem[0])
         self.nr_auto.grid(row=0, column=1, sticky="w", padx=10, pady=5)
 
+        self.edit_remorca = Button(self.frame_detalii_generale, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat")
+        self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=5, ipadx=5, ipady=5)
+        ToolTip(self.edit_remorca, "Editare")
+
         self.marca_label = Label(self.frame_detalii_generale, text="Marca:")
         self.marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
 
         self.marca = Label(self.frame_detalii_generale, text=date_rem[1])
-        self.marca.grid(row=1, column=1, sticky="w", padx=10, pady=5)
+        self.marca.grid(row=1, column=1, sticky="w", padx=10, pady=5, columnspan=2)
 
         self.serie_sasiu_label = Label(self.frame_detalii_generale, text="Serie sasiu:")
         self.serie_sasiu_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
 
         self.serie_sasiu = Label(self.frame_detalii_generale, text=date_rem[2])
-        self.serie_sasiu.grid(row=2, column=1, sticky="w", padx=10, pady=5)
+        self.serie_sasiu.grid(row=2, column=1, sticky="w", padx=10, pady=5, columnspan=2)
 
         self.an_fabricatie_label = Label(self.frame_detalii_generale, text="An fabricatie:")
         self.an_fabricatie_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
 
         self.an_fabricatie = Label(self.frame_detalii_generale, text=date_rem[3])
-        self.an_fabricatie.grid(row=3, column=1, sticky="w", padx=10, pady=5)
+        self.an_fabricatie.grid(row=3, column=1, sticky="w", padx=10, pady=5, columnspan=2)
 
         self.id_label = Label(self.frame_detalii_generale, text="ID TMS:")
         self.id_label.grid(row=4, column=0, sticky="w", padx=10, pady=5)
 
         self.id = Label(self.frame_detalii_generale, text=id)
-        self.id.grid(row=4, column=1, sticky="w", padx=10, pady=5)
+        self.id.grid(row=4, column=1, sticky="w", padx=10, pady=5, columnspan=2)
 
         
         for remorca in self.lista_remorci:
