@@ -25,6 +25,8 @@ class Scadente:
         self.main_window()
 
     def main_window(self):
+        # TO DO - de terminat functie stergere scadente
+
         self.icon_new = Image.open("classes/utils/icons/add-text-icon-15.jpg")
         self.icon_new = self.icon_new.resize((22, 22))
         self.icon_new = ImageTk.PhotoImage(self.icon_new)
@@ -79,6 +81,7 @@ class Scadente:
                     self.edit_button = tk.Button(self.scadente_frame, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.modifica_scadenta(label))
                     self.edit_button.grid(row=i, column=b+1, sticky="w", padx=10, pady=5)
                     ToolTip(self.edit_button, text="Modifica scadenta")
+
 
                     self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat")
                     self.delete_button.grid(row=i, column=b+2, sticky="w", padx=2, pady=5)

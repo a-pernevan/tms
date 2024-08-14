@@ -14,6 +14,12 @@ except:
     mysql_error = messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
     quit()
 
+# TODO 
+# - functie editare remorca
+# - functie stergere remorca
+# - funcie adaugare remorca
+# - tab autovehicule
+
 class Vehicule:
     # modificarea vehiculelor
     def __init__(self, root):
@@ -96,6 +102,12 @@ class Vehicule:
         self.frame_detalii.pack(padx=10, pady=5, anchor=W)
 
         # self.detalii_remorca()
+
+    def editare_remorca(self):
+        pass
+
+    def adauga_remorca(self):
+        pass
 
     def detalii_remorca(self, date_rem, id):
 
@@ -245,74 +257,6 @@ class Vehicule:
 
             self.frame_detalii_tehnice.grid_forget()
 
-            # self.frame_detalii_tehnice = LabelFrame(self.frame_detalii, text="Detalii Tehnice")
-            # self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=10)
-
-            # self.data_inmatriculare_label = Label(self.frame_detalii_tehnice, text="Data primei inmatriculari:")
-            # self.data_inmatriculare_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
-
-            # self.data_inmatriculare = Label(self.frame_detalii_tehnice, text="")
-            # self.data_inmatriculare.grid(row=0, column=1, sticky="w", padx=10, pady=5)
-
-            # self.serie_civ_label = Label(self.frame_detalii_tehnice, text="Serie CIV:")
-            # self.serie_civ_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
-
-            # self.serie_civ = Label(self.frame_detalii_tehnice, text="")
-            # self.serie_civ.grid(row=1, column=1, sticky="w", padx=10, pady=5)
-
-            # self.serie_talon_label = Label(self.frame_detalii_tehnice, text="Serie talon:")
-            # self.serie_talon_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
-
-            # self.serie_talon = Label(self.frame_detalii_tehnice, text="")
-            # self.serie_talon.grid(row=2, column=1, sticky="w", padx=10, pady=5)
-
-            # self.culoare_label = Label(self.frame_detalii_tehnice, text="Culoare:")
-            # self.culoare_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
-
-            # self.culoare = Label(self.frame_detalii_tehnice, text="")
-            # self.culoare.grid(row=3, column=1, sticky="w", padx=10, pady=5)
-
-            # tip_remorca_label = Label(self.frame_detalii_tehnice, text="Tip remorca:")
-            # tip_remorca_label.grid(row=4, column=0, sticky="w", padx=10, pady=5)
-
-            # tip_remorca = Label(self.frame_detalii_tehnice, text="")
-            # tip_remorca.grid(row=4, column=1, sticky="w", padx=10, pady=5)
-
-            # axe_label = Label(self.frame_detalii_tehnice, text="Numar axe:")
-            # axe_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
-
-            # axe = Label(self.frame_detalii_tehnice, text="")
-            # axe.grid(row=5, column=1, sticky="w", padx=10, pady=5)
-
-            # lungime_rem_label = Label(self.frame_detalii_tehnice, text="Lungime:")
-            # lungime_rem_label.grid(row=0, column=2, sticky="w", padx=10, pady=5)
-
-            # lungime_rem = Label(self.frame_detalii_tehnice, text="")
-            # lungime_rem.grid(row=0, column=3, sticky="w", padx=10, pady=5)
-
-            # latime_rem_label = Label(self.frame_detalii_tehnice, text="Latime:")
-            # latime_rem_label.grid(row=1, column=2, sticky="w", padx=10, pady=5)
-
-            # latime_rem = Label(self.frame_detalii_tehnice, text="")
-            # latime_rem.grid(row=1, column=3, sticky="w", padx=10, pady=5)
-
-            # inaltime_rem_label = Label(self.frame_detalii_tehnice, text="Inaltime:")
-            # inaltime_rem_label.grid(row=2, column=2, sticky="w", padx=10, pady=5)
-
-            # inaltime_rem = Label(self.frame_detalii_tehnice, text="")
-            # inaltime_rem.grid(row=2, column=3, sticky="w", padx=10, pady=5)
-
-            # masa_max_rem_label = Label(self.frame_detalii_tehnice, text="Masa maxima admisa:")
-            # masa_max_rem_label.grid(row=3, column=2, sticky="w", padx=10, pady=5)
-
-            # masa_max_rem = Label(self.frame_detalii_tehnice, text="")
-            # masa_max_rem.grid(row=3, column=3, sticky="w", padx=10, pady=5)
-
-            # incarcatura_max_rem_label = Label(self.frame_detalii_tehnice, text="Incarcatura maxima admisa:")
-            # incarcatura_max_rem_label.grid(row=4, column=2, sticky="w", padx=10, pady=5)
-
-            # incarcatura_max_rem = Label(self.frame_detalii_tehnice, text="")
-            # incarcatura_max_rem.grid(row=4, column=3, sticky="w", padx=10, pady=5)
         
         sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND nume = %s"
         value = (id, date_rem[0])
@@ -326,22 +270,6 @@ class Vehicule:
         self.scadente_frame.grid(row=0, column=2, pady=5, sticky="nw")
 
         Scadente(self.scadente_frame, id, date_rem[0], 'SEMIREMORCA')
-
-        # if scadente:
-        #     scadente_frame.grid_forget()
-        #     scadente_frame.grid(row=0, column=2, rowspan=5, padx=10, pady=10, sticky="nw")
-
-        #     for i, remorca in enumerate(scadente):
-        #         # if "RCA" in str(remorca[4]):
-        #         #     print(remorca)
-        #         # print(f"{remorca[4]}: {remorca[5]}")
-        #         # print(i)
-        #         # print(remorca[5] - timedelta(days=15))
-        #         if (date.today() + timedelta(days=15)) >= remorca[5] - timedelta(days=15):
-        #             Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="red").grid(row=i, column=0, sticky="w", padx=10, pady=5)
-        #         else:
-        #             Label(scadente_frame, text=f"{remorca[4]}: {remorca[5]}", fg="green").grid(row=i, column=0, sticky="w", padx=10, pady=5)
-
 
         self.documente_frame = Frame(self.frame_detalii)
         self.documente_frame.grid(row=0, column=3, pady=5, sticky="nw")
@@ -368,11 +296,6 @@ class Vehicule:
     def cautare_remorci(self):
         remorci_list = self.lista_remorci
         query = self.remorca_plate.get()
-        # for child in self.remorca_table.get_children():
-        #     if query.lower() in str(self.remorca_table.item(child)['values']).lower():
-        #         self.remorca_table.selection_set(child)
-        #     else:
-        #         self.remorca_table.selection_remove(child)
 
         self.remorca_table.delete(*self.remorca_table.get_children())
         for remorca in remorci_list:
