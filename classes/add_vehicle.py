@@ -270,65 +270,95 @@ class Vehicule:
         Documente(self.documente_frame, id, date_rem[0])
 
     def editare_remorca(self, id, numar):
-        self.edit_remorca_window = Toplevel(self.root)
-        self.edit_remorca_window.transient(self.root)
-        self.edit_remorca_window.grab_set()
 
-        self.edit_remorca_notebook = ttk.Notebook(self.edit_remorca_window)
-        self.edit_remorca_notebook.pack(expand=1, fill="both", padx=5, pady=5)
+        def salvare_modificari():            
+            # print(edit_nr_auto_entry.get().upper())
+            # print(edit_marca_entry.get().upper())
+            # print(edit_serie_sasiu_entry.get().upper())
+            # print(edit_an_fabricatie_entry.get())
+            # print(proprietar_combobox.get())
 
-        self.edit_detalii_generale_tab = Frame(self.edit_remorca_notebook)
-        self.edit_remorca_notebook.add(self.edit_detalii_generale_tab, text="Detalii generale")
+            try:
+                connection._open_connection()
+                sql = "UPDATE tauros_truck SET plate_no = %s, serie_sasiu = %s, marca = %s, an_fabricatie = %s, proprietar = %s WHERE truck_id = %s AND categorie = %s"
+                values = (edit_nr_auto_entry.get().upper(), \
+                        edit_serie_sasiu_entry.get().upper(), \
+                        edit_marca_entry.get().upper(), \
+                        edit_an_fabricatie_entry.get(), \
+                        proprietar_combobox.get(), \
+                        id, 'SEMIREMORCA')
+                
+                cursor.execute(sql, values)
+                connection.commit()
+                messagebox.showinfo(title="Success", message="Remorca modificata cu succes!")
 
-        self.edit_detalii_generale_frame = LabelFrame(self.edit_detalii_generale_tab, text="Editare detalii generale")
+            except:
+                messagebox.showerror(title="Error", message="Eroare la modificare!")
+            finally:
+                connection.close()
 
-        self.edit_detalii_generale_frame.pack(expand=1, fill="both", padx=5, pady=5)
+            self.reset_detalii()
+            edit_remorca_window.destroy()
 
-        clienti = Lista_clienti(self.edit_detalii_generale_frame).incarca_clienti()
 
-        self.edit_nr_auto_label = Label(self.edit_detalii_generale_frame, text="Numar inmatriculare:")
-        self.edit_nr_auto_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        edit_remorca_window = Toplevel(self.root)
+        edit_remorca_window.transient(self.root)
+        edit_remorca_window.grab_set()
 
-        self.edit_nr_auto_entry = Entry(self.edit_detalii_generale_frame)
-        self.edit_nr_auto_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
-        self.edit_nr_auto_entry.insert(0, numar[0])
+        edit_remorca_notebook = ttk.Notebook(edit_remorca_window)
+        edit_remorca_notebook.pack(expand=1, fill="both", padx=5, pady=5)
 
-        self.edit_marca_label = Label(self.edit_detalii_generale_frame, text="Marca:")
-        self.edit_marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        edit_detalii_generale_tab = Frame(edit_remorca_notebook)
+        edit_remorca_notebook.add(edit_detalii_generale_tab, text="Detalii generale")
 
-        self.edit_marca_entry = Entry(self.edit_detalii_generale_frame)
-        self.edit_marca_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
-        self.edit_marca_entry.insert(0, numar[1])
+        edit_detalii_generale_frame = LabelFrame(edit_detalii_generale_tab, text="Editare detalii generale")
+        edit_detalii_generale_frame.pack(expand=1, fill="both", padx=5, pady=5)
 
-        self.edit_serie_sasiu_label = Label(self.edit_detalii_generale_frame, text="Serie sasiu:")
-        self.edit_serie_sasiu_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        clienti = Lista_clienti(edit_detalii_generale_frame).incarca_clienti()
 
-        self.edit_serie_sasiu_entry = Entry(self.edit_detalii_generale_frame)
-        self.edit_serie_sasiu_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
-        self.edit_serie_sasiu_entry.insert(0, numar[2])
+        edit_nr_auto_label = Label(edit_detalii_generale_frame, text="Numar inmatriculare:")
+        edit_nr_auto_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
 
-        self.edit_an_fabricatie_label = Label(self.edit_detalii_generale_frame, text="An fabricatie:")
-        self.edit_an_fabricatie_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
+        edit_nr_auto_entry = Entry(edit_detalii_generale_frame)
+        edit_nr_auto_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+        edit_nr_auto_entry.insert(0, numar[0])
 
-        self.edit_an_fabricatie_entry = Entry(self.edit_detalii_generale_frame)
-        self.edit_an_fabricatie_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
-        self.edit_an_fabricatie_entry.insert(0, numar[3])
+        edit_marca_label = Label(edit_detalii_generale_frame, text="Marca:")
+        edit_marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
 
-        self.edit_proprietar_label = Label(self.edit_detalii_generale_frame, text="Proprietar:")
-        self.edit_proprietar_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
+        edit_marca_entry = Entry(edit_detalii_generale_frame)
+        edit_marca_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+        edit_marca_entry.insert(0, numar[1])
+
+        edit_serie_sasiu_label = Label(edit_detalii_generale_frame, text="Serie sasiu:")
+        edit_serie_sasiu_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        edit_serie_sasiu_entry = Entry(edit_detalii_generale_frame)
+        edit_serie_sasiu_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+        edit_serie_sasiu_entry.insert(0, numar[2])
+
+        edit_an_fabricatie_label = Label(edit_detalii_generale_frame, text="An fabricatie:")
+        edit_an_fabricatie_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
+
+        edit_an_fabricatie_entry = Entry(edit_detalii_generale_frame)
+        edit_an_fabricatie_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+        edit_an_fabricatie_entry.insert(0, numar[3])
+
+        edit_proprietar_label = Label(edit_detalii_generale_frame, text="Proprietar:")
+        edit_proprietar_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
         
         proprietar = StringVar()
 
-        proprietar_combobox = ttk.Combobox(self.edit_detalii_generale_frame, textvariable=proprietar, values=clienti)
+        proprietar_combobox = ttk.Combobox(edit_detalii_generale_frame, textvariable=proprietar, values=clienti)
         proprietar_combobox.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
-        butoane_modificare_remorca_frame = Frame(self.edit_detalii_generale_frame)
+        butoane_modificare_remorca_frame = Frame(edit_detalii_generale_frame)
         butoane_modificare_remorca_frame.grid(row=6, column=0, columnspan=2, padx=10, pady=5)
 
-        self.salvare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Salveaza")
+        self.salvare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Salveaza", command=salvare_modificari)
         self.salvare_mod_remorca_button.grid(row=0, column=0, padx=10, pady=5)
 
-        self.anulare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Anuleaza", command=self.edit_remorca_window.destroy)
+        self.anulare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Anuleaza", command=edit_remorca_window.destroy)
         self.anulare_mod_remorca_button.grid(row=0, column=1, padx=10, pady=5)
 
         for remorca in self.lista_remorci:
@@ -336,8 +366,8 @@ class Vehicule:
                 # print(remorca[5])
                 proprietar = str(remorca[5])
 
-            else:
-                proprietar = ""
+            # else:
+            #     proprietar = ""
 
             proprietar_combobox.set(proprietar)
 
@@ -374,7 +404,7 @@ class Vehicule:
                 self.remorca_table.insert('', 'end', text=str(remorca[0]), values=(remorca[1], remorca[2], remorca[3], remorca[4]))
 
 
-    def incarca_detalii(self, e):
+    def incarca_detalii(self, e=None):
         selected = self.remorca_table.focus()
         values = self.remorca_table.item(selected, 'values')
         id = self.remorca_table.item(selected, 'text')
