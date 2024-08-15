@@ -271,13 +271,7 @@ class Vehicule:
 
     def editare_remorca(self, id, numar):
 
-        def salvare_modificari():            
-            # print(edit_nr_auto_entry.get().upper())
-            # print(edit_marca_entry.get().upper())
-            # print(edit_serie_sasiu_entry.get().upper())
-            # print(edit_an_fabricatie_entry.get())
-            # print(proprietar_combobox.get())
-
+        def salvare_modificari():
             try:
                 connection._open_connection()
                 sql = "UPDATE tauros_truck SET plate_no = %s, serie_sasiu = %s, marca = %s, an_fabricatie = %s, proprietar = %s WHERE truck_id = %s AND categorie = %s"
@@ -311,7 +305,7 @@ class Vehicule:
         edit_detalii_generale_tab = Frame(edit_remorca_notebook)
         edit_remorca_notebook.add(edit_detalii_generale_tab, text="Detalii generale")
 
-        edit_detalii_generale_frame = LabelFrame(edit_detalii_generale_tab, text="Editare detalii generale")
+        edit_detalii_generale_frame = LabelFrame(edit_detalii_generale_tab, text=f"Editare detalii generale {numar[0]}")
         edit_detalii_generale_frame.pack(expand=1, fill="both", padx=5, pady=5)
 
         clienti = Lista_clienti(edit_detalii_generale_frame).incarca_clienti()
@@ -371,6 +365,56 @@ class Vehicule:
 
             proprietar_combobox.set(proprietar)
 
+        edit_detalii_tehnice_tab = Frame(edit_remorca_notebook)
+        edit_remorca_notebook.add(edit_detalii_tehnice_tab, text="Detalii tehnice")
+
+        edit_detalii_tehnice_frame = LabelFrame(edit_detalii_tehnice_tab, text=f"Editare detalii tehnice {numar[0]}")
+        edit_detalii_tehnice_frame.pack(expand=1, fill="both", padx=5, pady=5)
+
+        data_inmatriculare_remorca_label = Label(edit_detalii_tehnice_frame, text="Data primei inmatriculari:")
+        data_inmatriculare_remorca_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        data_inmatriculare_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        data_inmatriculare_remorca_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        lungime_remorca_label = Label(edit_detalii_tehnice_frame, text="Lungime:")
+        lungime_remorca_label.grid(row=0, column=2, sticky="w", padx=10, pady=5)
+
+        lungime_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        lungime_remorca_entry.grid(row=0, column=3, padx=10, pady=5, sticky="w")
+
+        serie_civ_remorca_label = Label(edit_detalii_tehnice_frame, text="Serie CIV:")
+        serie_civ_remorca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+
+        serie_civ_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        serie_civ_remorca_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        latime_remorca_label = Label(edit_detalii_tehnice_frame, text="Latime:")
+        latime_remorca_label.grid(row=1, column=2, sticky="w", padx=10, pady=5)
+
+        latime_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        latime_remorca_entry.grid(row=1, column=3, padx=10, pady=5, sticky="w")
+
+        serie_talon_remorca_label = Label(edit_detalii_tehnice_frame, text="Serie talon:")
+        serie_talon_remorca_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        serie_talon_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        serie_talon_remorca_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        inaltime_remorca_label = Label(edit_detalii_tehnice_frame, text="Inaltime:")
+        inaltime_remorca_label.grid(row=2, column=2, sticky="w", padx=10, pady=5)
+
+        inaltime_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        inaltime_remorca_entry.grid(row=2, column=3, padx=10, pady=5, sticky="w")
+
+        culoare_remorca_label = Label(edit_detalii_tehnice_frame, text="Culoare:")
+        culoare_remorca_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
+
+        culoare_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        culoare_remorca_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+
+        masa_maxima_admisa_label = Label(edit_detalii_tehnice_frame, text="Masa maxima admisa (Kg):")
+        masa_maxima_admisa_label.grid(row=3, column=2, sticky="w", padx=10, pady=5)
         
 
     def adauga_remorca(self):
