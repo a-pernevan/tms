@@ -379,3 +379,27 @@ class Scadente_auto():
                 self.lista_scadente.append(scadenta)
 
             self.afisare_scadente()
+
+    
+class Lista_clienti():
+    def __init__(self, master):
+        self.main_window = master
+        self.lista_clienti = []
+
+    def incarca_clienti(self):
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT client_id, denumire, cui_tara, cui_nr FROM clienti")
+            result = cursor.fetchall()
+
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        finally:
+            connection.close()
+
+        if result:
+            for client in result:
+                self.lista_clienti.append(client[1])
+
+        return self.lista_clienti

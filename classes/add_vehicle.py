@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 # from tkinter.tix import ComboBox
 from utils.tooltip import ToolTip
-from liste import Remorci
+from liste import Remorci, Lista_clienti
 from datetime import datetime, timedelta, date
 from upload_download_docs import Documente
 from scadente import Scadente
@@ -15,7 +15,7 @@ except:
     quit()
 
 # TODO 
-# - functie editare remorca
+# - functie editare remorca - in progress
 # - functie stergere remorca
 # - funcie adaugare remorca
 # - tab autovehicule
@@ -62,7 +62,7 @@ class Vehicule:
         self.remorca_plate.grid(row=0, column=1, sticky="w", padx=10, pady=10)
         RightClickMenu.create_context_menu(self, self.remorca_plate)
 
-        self.edit_remorca = Button(self.frame_cautare, image=self.icon_modify_trailer, borderwidth=0, highlightthickness=0, relief="flat", state="disabled", command=self.editare_remorca)
+        self.edit_remorca = Button(self.frame_cautare, image=self.icon_modify_trailer, borderwidth=0, highlightthickness=0, relief="flat", state="disabled", command=lambda:self.editare_remorca(self.id_remorca, self.date_remorca))
         self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=10, ipadx=5, ipady=5)
         ToolTip(self.edit_remorca, "Editare")
 
@@ -104,6 +104,9 @@ class Vehicule:
         # self.detalii_remorca()
 
     def detalii_remorca(self, date_rem, id):
+        
+        self.date_remorca = date_rem
+        self.id_remorca = id
 
         self.icon_modify = Image.open("classes/utils/icons/edit-pen-icon-18.jpg")
         self.icon_modify = self.icon_modify.resize((22, 22))
@@ -254,7 +257,7 @@ class Vehicule:
 
         scadente = cursor.fetchall()
 
-        print(scadente)
+        # print(scadente)
 
         self.scadente_frame = Frame(self.frame_detalii)
         self.scadente_frame.grid(row=0, column=2, pady=5, sticky="nw")
@@ -266,15 +269,86 @@ class Vehicule:
 
         Documente(self.documente_frame, id, date_rem[0])
 
-    def editare_remorca(self):
-        pass
+    def editare_remorca(self, id, numar):
+        self.edit_remorca_window = Toplevel(self.root)
+        self.edit_remorca_window.transient(self.root)
+        self.edit_remorca_window.grab_set()
+
+        self.edit_remorca_notebook = ttk.Notebook(self.edit_remorca_window)
+        self.edit_remorca_notebook.pack(expand=1, fill="both", padx=5, pady=5)
+
+        self.edit_detalii_generale_tab = Frame(self.edit_remorca_notebook)
+        self.edit_remorca_notebook.add(self.edit_detalii_generale_tab, text="Detalii generale")
+
+        self.edit_detalii_generale_frame = LabelFrame(self.edit_detalii_generale_tab, text="Editare detalii generale")
+
+        self.edit_detalii_generale_frame.pack(expand=1, fill="both", padx=5, pady=5)
+
+        clienti = Lista_clienti(self.edit_detalii_generale_frame).incarca_clienti()
+
+        self.edit_nr_auto_label = Label(self.edit_detalii_generale_frame, text="Numar inmatriculare:")
+        self.edit_nr_auto_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        self.edit_nr_auto_entry = Entry(self.edit_detalii_generale_frame)
+        self.edit_nr_auto_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+        self.edit_nr_auto_entry.insert(0, numar[0])
+
+        self.edit_marca_label = Label(self.edit_detalii_generale_frame, text="Marca:")
+        self.edit_marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+
+        self.edit_marca_entry = Entry(self.edit_detalii_generale_frame)
+        self.edit_marca_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+        self.edit_marca_entry.insert(0, numar[1])
+
+        self.edit_serie_sasiu_label = Label(self.edit_detalii_generale_frame, text="Serie sasiu:")
+        self.edit_serie_sasiu_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        self.edit_serie_sasiu_entry = Entry(self.edit_detalii_generale_frame)
+        self.edit_serie_sasiu_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+        self.edit_serie_sasiu_entry.insert(0, numar[2])
+
+        self.edit_an_fabricatie_label = Label(self.edit_detalii_generale_frame, text="An fabricatie:")
+        self.edit_an_fabricatie_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
+
+        self.edit_an_fabricatie_entry = Entry(self.edit_detalii_generale_frame)
+        self.edit_an_fabricatie_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
+        self.edit_an_fabricatie_entry.insert(0, numar[3])
+
+        self.edit_proprietar_label = Label(self.edit_detalii_generale_frame, text="Proprietar:")
+        self.edit_proprietar_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
+        
+        proprietar = StringVar()
+
+        proprietar_combobox = ttk.Combobox(self.edit_detalii_generale_frame, textvariable=proprietar, values=clienti)
+        proprietar_combobox.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+        butoane_modificare_remorca_frame = Frame(self.edit_detalii_generale_frame)
+        butoane_modificare_remorca_frame.grid(row=6, column=0, columnspan=2, padx=10, pady=5)
+
+        self.salvare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Salveaza")
+        self.salvare_mod_remorca_button.grid(row=0, column=0, padx=10, pady=5)
+
+        self.anulare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Anuleaza", command=self.edit_remorca_window.destroy)
+        self.anulare_mod_remorca_button.grid(row=0, column=1, padx=10, pady=5)
+
+        for remorca in self.lista_remorci:
+            if str(remorca[0]) == str(id):
+                # print(remorca[5])
+                proprietar = str(remorca[5])
+
+            else:
+                proprietar = ""
+
+            proprietar_combobox.set(proprietar)
+
+        
 
     def adauga_remorca(self):
         pass
 
 
     def incarca_remorci(self):
-        lista_remorci = []
+        self.lista_remorci = []
         try:
             connection._open_connection()
             cursor.execute("SELECT * FROM tauros_truck WHERE categorie='SEMIREMORCA'")
