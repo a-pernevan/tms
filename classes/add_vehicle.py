@@ -46,7 +46,7 @@ class Vehicule:
         self.remorca_frame = Frame(self.main_frame)
         self.remorca_frame.pack(fill=BOTH, expand=1, anchor=W)
 
-        self.main_frame.add(self.remorca_frame, text="Gestionare remorci")
+        self.main_frame.add(self.remorca_frame, text="Remorci")
 
         self.vehicule_frame = LabelFrame(self.remorca_frame, text="Lista Semiremorci")
         self.vehicule_frame.pack()
@@ -62,7 +62,7 @@ class Vehicule:
         self.remorca_plate.grid(row=0, column=1, sticky="w", padx=10, pady=10)
         RightClickMenu.create_context_menu(self, self.remorca_plate)
 
-        self.edit_remorca = Button(self.frame_cautare, image=self.icon_modify_trailer, borderwidth=0, highlightthickness=0, relief="flat", state="disabled")
+        self.edit_remorca = Button(self.frame_cautare, image=self.icon_modify_trailer, borderwidth=0, highlightthickness=0, relief="flat", state="disabled", command=self.editare_remorca)
         self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=10, ipadx=5, ipady=5)
         ToolTip(self.edit_remorca, "Editare")
 
@@ -103,12 +103,6 @@ class Vehicule:
 
         # self.detalii_remorca()
 
-    def editare_remorca(self):
-        pass
-
-    def adauga_remorca(self):
-        pass
-
     def detalii_remorca(self, date_rem, id):
 
         self.icon_modify = Image.open("classes/utils/icons/edit-pen-icon-18.jpg")
@@ -125,10 +119,6 @@ class Vehicule:
 
         self.nr_auto = Label(self.frame_detalii_generale, text=date_rem[0])
         self.nr_auto.grid(row=0, column=1, sticky="w", padx=10, pady=5)
-
-        # self.edit_remorca = Button(self.frame_detalii_generale, image=self.icon_modify, borderwidth=0, highlightthickness=0, relief="flat")
-        # self.edit_remorca.grid(row=0, column=2, sticky="e", padx=10, pady=5, ipadx=5, ipady=5)
-        # ToolTip(self.edit_remorca, "Editare")
 
         self.marca_label = Label(self.frame_detalii_generale, text="Marca:")
         self.marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
@@ -275,6 +265,13 @@ class Vehicule:
         self.documente_frame.grid(row=0, column=3, pady=5, sticky="nw")
 
         Documente(self.documente_frame, id, date_rem[0])
+
+    def editare_remorca(self):
+        pass
+
+    def adauga_remorca(self):
+        pass
+
 
     def incarca_remorci(self):
         lista_remorci = []

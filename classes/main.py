@@ -8,15 +8,14 @@ import os
 from dotenv import load_dotenv
 import registru_parcare, add_vehicle
 import os
+from PIL import Image, ImageTk
+from utils.tooltip import ToolTip
 
 class Main_Window:
     def __init__(self, root):
         self.main_window = ttk.Notebook(root, width=1300, height=950)
         self.main_window.pack(pady=0)
         
-
-        
-
         load_dotenv()
         
         # self.main_frame = Frame(self.main_window)
@@ -66,8 +65,9 @@ class Main_Window:
             quit()
         self.my_cursor = self.tms_db.cursor()
 
-    
-   
+        self.icon_close = Image.open("classes/utils/icons/close-x-icon-15.jpg")
+        self.icon_close = self.icon_close.resize((18, 18))
+        self.icon_close = ImageTk.PhotoImage(self.icon_close)
 
     def show_clients(self):
         self.client_frame = ttk.Frame(self.main_window, width=1300, height=800)
@@ -131,8 +131,9 @@ class Main_Window:
         self.flota_frame = ttk.Frame(self.main_window)
         self.main_window.add(self.flota_frame, text="Gestionare flota")
         self.main_window.select(self.flota_frame)
-        self.inchide_flota_but = Button(self.flota_frame, text="Inchidere", command=lambda:(self.main_window.forget(self.main_window.index(self.flota_frame)), self.flota_but.configure(state=NORMAL)))
-        self.inchide_flota_but.pack(padx=5, pady=5, side=TOP, anchor=NW)
+        self.inchide_flota_but = Button(self.flota_frame, text="Inchidere", image=self.icon_close, borderwidth=0, highlightthickness=0, relief="flat", command=lambda:(self.main_window.forget(self.main_window.index(self.flota_frame)), self.flota_but.configure(state=NORMAL)))
+        self.inchide_flota_but.pack(padx=20, pady=5, side=TOP, anchor=NE)
+        ToolTip(self.inchide_flota_but, "Inchide")
         self.modul_flota_frame = Frame(self.flota_frame)
         self.modul_flota_frame.pack(padx=5, pady=5)
         add_vehicle.Vehicule(self.modul_flota_frame)
