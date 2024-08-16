@@ -415,8 +415,11 @@ class Vehicule:
 
         masa_maxima_admisa_label = Label(edit_detalii_tehnice_frame, text="Masa maxima admisa (Kg):")
         masa_maxima_admisa_label.grid(row=3, column=2, sticky="w", padx=10, pady=5)
-        
 
+        masa_maxima_admisa_entry = Entry(edit_detalii_tehnice_frame)
+        masa_maxima_admisa_entry.grid(row=3, column=3, padx=10, pady=5, sticky="w")
+        
+        
     def adauga_remorca(self):
         pass
 
