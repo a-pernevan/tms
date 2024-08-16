@@ -99,7 +99,7 @@ class Vehicule:
         self.remorca_table.bind("<Return>", self.incarca_detalii)
 
         self.frame_detalii = Frame(self.remorca_frame)
-        self.frame_detalii.pack(padx=10, pady=5, anchor=W)
+        self.frame_detalii.pack(padx=10, pady=5, anchor="center")
 
         # self.detalii_remorca()
 
@@ -112,10 +112,16 @@ class Vehicule:
         self.icon_modify = self.icon_modify.resize((22, 22))
         self.icon_modify = ImageTk.PhotoImage(self.icon_modify)
 
-        self.frame_detalii.pack(padx=10, pady=10, anchor=W)
+        self.frame_detalii.pack(padx=10, pady=10, anchor="center")
 
-        self.frame_detalii_generale = LabelFrame(self.frame_detalii, text="Detalii Generale")
+        self.detalii_tab = ttk.Notebook(self.frame_detalii)
+        self.detalii_tab.grid(row=0, column=0, padx=2, pady=10)
+
+        # self.frame_detalii_generale = LabelFrame(self.detalii_tab, text="Detalii Generale")
+        self.frame_detalii_generale = Frame(self.detalii_tab)
         self.frame_detalii_generale.grid(row=0, column=0, padx=2, pady=10)
+
+        self.detalii_tab.add(self.frame_detalii_generale, text="Generale")
 
         self.nr_auto_label = Label(self.frame_detalii_generale, text="Numar inmatriculare:")
         self.nr_auto_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
@@ -168,12 +174,15 @@ class Vehicule:
         # print(detalii_rem)
 
         
-        self.frame_detalii_tehnice = LabelFrame(self.frame_detalii, text="Detalii Tehnice")
-        self.frame_detalii_tehnice.grid(row=0, column=1, padx=2, pady=5)
+        # self.frame_detalii_tehnice = LabelFrame(self.detalii_tab, text="Detalii Tehnice")
+        self.frame_detalii_tehnice = Frame(self.detalii_tab)
+        self.frame_detalii_tehnice.grid(row=0, column=0, padx=2, pady=5)
+
+        self.detalii_tab.add(self.frame_detalii_tehnice, text="Detalii Tehnice")
 
         if len(detalii_rem) > 0:
-            self.frame_detalii_tehnice.grid_forget()
-            self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=10)
+        #     self.frame_detalii_tehnice.grid_forget()
+        #     self.frame_detalii_tehnice.grid(row=0, column=0, padx=10, pady=10)
             # self.frame_detalii_tehnice = LabelFrame(self.frame_detalii, text="Detalii Tehnice")
             # self.frame_detalii_tehnice.grid(row=0, column=1, padx=10, pady=10)
 
@@ -243,12 +252,12 @@ class Vehicule:
             incarcatura_max_rem = Label(self.frame_detalii_tehnice, text=f"{detalii_rem[0][12]} kg")
             incarcatura_max_rem.grid(row=4, column=3, sticky="w", padx=10, pady=5)
 
-        else: 
-            # self.frame_detalii_tehnice.grid_forget()
-            for widget in self.frame_detalii_tehnice.winfo_children():
-                widget.destroy()
+        # else: 
+        #     # self.frame_detalii_tehnice.grid_forget()
+        #     for widget in self.frame_detalii_tehnice.winfo_children():
+        #         widget.destroy()
 
-            self.frame_detalii_tehnice.grid_forget()
+        #     self.frame_detalii_tehnice.grid_forget()
 
         
         sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND nume = %s"
