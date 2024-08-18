@@ -259,6 +259,45 @@ class Vehicule:
 
         #     self.frame_detalii_tehnice.grid_forget()
 
+        self.frame_inventare_remorci = Frame(self.detalii_tab)
+        self.frame_inventare_remorci.grid(row=0, column=0, padx=2, pady=5)
+
+        self.detalii_tab.add(self.frame_inventare_remorci, text="Inventare")
+
+        # Scrollbar pentru treeview inventare remorci
+        inv_remorca_scroll = Scrollbar(self.frame_inventare_remorci)
+        inv_remorca_scroll.pack(side=RIGHT, fill=Y)
+
+        # cream tabelul
+        inv_remorca_tree = ttk.Treeview(self.frame_inventare_remorci, yscrollcommand=inv_remorca_scroll.set, selectmode="extended", height=5)
+
+        # Definire coloane
+        inv_remorca_tree['columns'] = ("Nr remorca", "Data inventar", "Intocmit")
+
+        # Formatare coloane
+        inv_remorca_tree.column("#0", width=0, stretch=NO)
+        inv_remorca_tree.column("Nr remorca", anchor=CENTER, width=100)
+        inv_remorca_tree.column("Data inventar", anchor=CENTER, width=100)
+        inv_remorca_tree.column("Intocmit", anchor=CENTER, width=100)
+
+        # Heading
+        inv_remorca_tree.heading("#0", text="", anchor=CENTER)
+        inv_remorca_tree.heading("Nr remorca", text="Nr remorca", anchor=CENTER)
+        inv_remorca_tree.heading("Data inventar", text="Data inventar", anchor=CENTER)
+        inv_remorca_tree.heading("Intocmit", text="Intocmit", anchor=CENTER)
+
+        # # Adaugare date in tabel
+        # for i in range(len(inventare_remorci)):
+        #     inv_remorca_tree.insert(parent='', index='end', iid=i, text='', values=(inventare_remorci[i][0], inventare_remorci[i][1], inventare_remorci[i][2]))
+
+        inv_remorca_tree.pack(side="left", fill="both", expand=True)
+
+        # Confirgurare scrollbar
+        inv_remorca_scroll.config(command=inv_remorca_tree.yview)
+
+
+        
+
         
         sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND nume = %s"
         value = (id, date_rem[0])
