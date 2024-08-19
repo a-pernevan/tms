@@ -8,6 +8,7 @@ from upload_download_docs import Documente
 from scadente import Scadente
 from PIL import Image, ImageTk
 from right_click_menu import RightClickMenu
+from tkcalendar import DateEntry
 try:
     from database.datab import connection, cursor
 except:
@@ -19,6 +20,7 @@ except:
 # - functie stergere remorca
 # - funcie adaugare remorca
 # - tab autovehicule
+# - inventare remorci - in progress
 
 class Vehicule:
     # modificarea vehiculelor
@@ -111,6 +113,10 @@ class Vehicule:
         self.icon_modify = Image.open("classes/utils/icons/edit-pen-icon-18.jpg")
         self.icon_modify = self.icon_modify.resize((22, 22))
         self.icon_modify = ImageTk.PhotoImage(self.icon_modify)
+
+        self.icon_add_new = Image.open("classes/utils/icons/add-text-icon-15.jpg")
+        self.icon_add_new = self.icon_add_new.resize((22, 22))
+        self.icon_add_new = ImageTk.PhotoImage(self.icon_add_new)
 
         self.frame_detalii.pack(padx=10, pady=10, anchor="center")
 
@@ -264,12 +270,15 @@ class Vehicule:
 
         self.detalii_tab.add(self.frame_inventare_remorci, text="Inventare")
 
+        frame_tabel_inventare = Frame(self.frame_inventare_remorci)
+        frame_tabel_inventare.grid(row=0, column=0, padx=10, pady=10, columnspan=2, sticky="nesw")
+
         # Scrollbar pentru treeview inventare remorci
-        inv_remorca_scroll = Scrollbar(self.frame_inventare_remorci)
+        inv_remorca_scroll = Scrollbar(frame_tabel_inventare)
         inv_remorca_scroll.pack(side=RIGHT, fill=Y)
 
         # cream tabelul
-        inv_remorca_tree = ttk.Treeview(self.frame_inventare_remorci, yscrollcommand=inv_remorca_scroll.set, selectmode="extended", height=5)
+        inv_remorca_tree = ttk.Treeview(frame_tabel_inventare, yscrollcommand=inv_remorca_scroll.set, selectmode="extended", height=5)
 
         # Definire coloane
         inv_remorca_tree['columns'] = ("Nr remorca", "Data inventar", "Intocmit")
@@ -295,7 +304,14 @@ class Vehicule:
         # Confirgurare scrollbar
         inv_remorca_scroll.config(command=inv_remorca_tree.yview)
 
+        # Adaugam butoane
 
+        inventar_butoane_frame = Frame(self.frame_inventare_remorci)
+        inventar_butoane_frame.grid(row=0, column=2, padx=10, pady=10)
+
+        inventar_nou_button = Button(inventar_butoane_frame, text="Inventar nou", image=self.icon_add_new, borderwidth=0, highlightthickness=0, relief="flat", command=lambda:self.adauga_inventar(id, date_rem[0]))
+        inventar_nou_button.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
+        ToolTip(inventar_nou_button, 'Inventar nou')
         
 
         
@@ -470,6 +486,175 @@ class Vehicule:
         
     def adauga_remorca(self):
         pass
+
+    def adauga_inventar(self, id, nr_remorca):
+        print(id, nr_remorca)
+
+        data_inventar = date.today().strftime("%Y-%m-%d")
+        print(data_inventar)
+
+        adauga_inventar_window = Toplevel(self.root)
+        adauga_inventar_window.title("Adaugare inventar")
+        adauga_inventar_window.transient(self.root)
+        adauga_inventar_window.grab_set()
+
+        adauga_inventar_frame = LabelFrame(adauga_inventar_window, text=f"Adaugare inventar {nr_remorca}")
+        adauga_inventar_frame.pack(expand=1, fill="both", padx=5, pady=5)
+
+        nr_inventar_label = Label(adauga_inventar_frame, text="Nr. inventar:")
+        nr_inventar_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        nr_inventar_entry = Entry(adauga_inventar_frame, state="readonly")
+        nr_inventar_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        data_inventar_label = Label(adauga_inventar_frame, text="Data inventar:")
+        data_inventar_label.grid(row=0, column=2, sticky="w", padx=10, pady=5)
+
+        data_inventar_entry = DateEntry(adauga_inventar_frame, locale="RO_ro", date_pattern='yyyy-MM-dd')
+        data_inventar_entry.grid(row=0, column=3, padx=10, pady=5, sticky="w")
+        data_inventar_entry.set_date(data_inventar)
+
+        anv_axa_1_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 1")
+        anv_axa_1_frame.grid(row=1, column=0, columnspan=2, sticky="w", padx=10, pady=5)
+
+        marca_anv_axa1_label = Label(anv_axa_1_frame, text="Marca:")
+        marca_anv_axa1_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        marca_anv_axa1_entry = Entry(anv_axa_1_frame)
+        marca_anv_axa1_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        dim_anv_axa1_label = Label(anv_axa_1_frame, text="Dimensiuni:")
+        dim_anv_axa1_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+
+        dim_anv_axa1_entry = Entry(anv_axa_1_frame)
+        dim_anv_axa1_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        stare_anv_axa1_label = Label(anv_axa_1_frame, text="Stare anvelope:")
+        stare_anv_axa1_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        stare_anv_axa1_entry = Entry(anv_axa_1_frame)
+        stare_anv_axa1_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        anv_axa_2_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 2")
+        anv_axa_2_frame.grid(row=1, column=2, columnspan=2, sticky="w", padx=10, pady=5)
+
+        marca_anv_axa2_label = Label(anv_axa_2_frame, text="Marca:")
+        marca_anv_axa2_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        marca_anv_axa2_entry = Entry(anv_axa_2_frame)
+        marca_anv_axa2_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        dim_anv_axa2_label = Label(anv_axa_2_frame, text="Dimensiuni:")
+        dim_anv_axa2_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+
+        dim_anv_axa2_entry = Entry(anv_axa_2_frame)
+        dim_anv_axa2_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        stare_anv_axa2_label = Label(anv_axa_2_frame, text="Stare anvelope:")
+        stare_anv_axa2_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        stare_anv_axa2_entry = Entry(anv_axa_2_frame)
+        stare_anv_axa2_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        anv_axa_3_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 3")
+        anv_axa_3_frame.grid(row=1, column=4, columnspan=2, sticky="w", padx=10, pady=5)
+
+        marca_anv_axa3_label = Label(anv_axa_3_frame, text="Marca:")
+        marca_anv_axa3_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        marca_anv_axa3_entry = Entry(anv_axa_3_frame)
+        marca_anv_axa3_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        dim_anv_axa3_label = Label(anv_axa_3_frame, text="Dimensiuni:")
+        dim_anv_axa3_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+
+        dim_anv_axa3_entry = Entry(anv_axa_3_frame)
+        dim_anv_axa3_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        stare_anv_axa3_label = Label(anv_axa_3_frame, text="Stare anvelope:")
+        stare_anv_axa3_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        stare_anv_axa3_entry = Entry(anv_axa_3_frame)
+        stare_anv_axa3_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        dotari_remorca_frame = LabelFrame(adauga_inventar_frame, text="Dotari remorca")
+        dotari_remorca_frame.grid(row=2, column=0, columnspan=6, sticky="ew", padx=10, pady=5)
+
+        check_button_frame = Frame(dotari_remorca_frame)
+        check_button_frame.pack(padx=5, pady=5, expand=True)
+
+
+
+        rezerva_cap_var = IntVar()
+        
+        rezerva_cap_check = Checkbutton(check_button_frame, text="Rezerva cap tractor", variable=rezerva_cap_var)
+        rezerva_cap_check.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+
+        rezerva_remorca_var = IntVar()
+
+        rezerva_remorca_check = Checkbutton(check_button_frame, text="Rezerva remorca", variable=rezerva_remorca_var)
+        rezerva_remorca_check.grid(row=0, column=1, sticky="w", padx=5, pady=5)
+
+        cablu_vamal_var = IntVar()
+
+        cablu_vamal_check = Checkbutton(check_button_frame, text="Cablu Vamal", variable=cablu_vamal_var)
+        cablu_vamal_check.grid(row=0, column=2, sticky="w", padx=5, pady=5)
+
+        coltare_var = IntVar()
+
+        coltare_check = Checkbutton(check_button_frame, text="Coltare", variable=coltare_var)
+        coltare_check.grid(row=0, column=3, sticky="w", padx=5, pady=5)
+
+        covorase_var = IntVar()
+
+        covorase_check = Checkbutton(check_button_frame, text="Covorase", variable=covorase_var)
+        covorase_check.grid(row=0, column=4, sticky="w", padx=5, pady=5)
+
+        sticker_limite_var = IntVar()
+
+        sticker_limite_check = Checkbutton(check_button_frame, text="Stickere limite viteza", variable=sticker_limite_var)
+        sticker_limite_check.grid(row=0, column=5, sticky="w", padx=5, pady=5)
+
+        echipare_remorca_frame = Frame(dotari_remorca_frame)
+        echipare_remorca_frame.pack(padx=5, pady=5)
+
+        nr_scanduri_label = Label(echipare_remorca_frame, text="Nr. scanduri:")
+        nr_scanduri_label.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+
+        nr_scanduri_entry = Entry(echipare_remorca_frame)
+        nr_scanduri_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
+        nr_chingiri_label = Label(echipare_remorca_frame, text="Nr. chingi:")
+        nr_chingiri_label.grid(row=0, column=2, sticky="w", padx=5, pady=5)
+
+        nr_chingi_entry = Entry(echipare_remorca_frame)
+        nr_chingi_entry.grid(row=0, column=3, padx=5, pady=5, sticky="w")
+
+        nr_crikete_label = Label(echipare_remorca_frame, text="Nr. crikete:")
+        nr_crikete_label.grid(row=0, column=4, sticky="w", padx=5, pady=5)
+
+        nr_crikete_entry = Entry(echipare_remorca_frame)
+        nr_crikete_entry.grid(row=0, column=5, padx=5, pady=5, sticky="w")
+
+        nr_bari_marfa_label = Label(echipare_remorca_frame, text="Nr. bari marfa:")
+        nr_bari_marfa_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
+
+        nr_bari_marfa_entry = Entry(echipare_remorca_frame)
+        nr_bari_marfa_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+        nr_cala_roata_label = Label(echipare_remorca_frame, text="Cala roata:")
+        nr_cala_roata_label.grid(row=1, column=2, sticky="w", padx=5, pady=5)
+
+        nr_cala_roata_entry = Entry(echipare_remorca_frame)
+        nr_cala_roata_entry.grid(row=1, column=3, padx=5, pady=5, sticky="w")
+
+        nr_stickere_unghi_label = Label(echipare_remorca_frame, text="Stickere unghi:")
+        nr_stickere_unghi_label.grid(row=1, column=4, sticky="w", padx=5, pady=5)
+
+        nr_stickere_unghi_entry = Entry(echipare_remorca_frame)
+        nr_stickere_unghi_entry.grid(row=1, column=5, padx=5, pady=5, sticky="w")
+
+
 
 
     def incarca_remorci(self):
