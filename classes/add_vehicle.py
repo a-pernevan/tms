@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
+from tkinter.tix import ComboBox
 # from tkinter.tix import ComboBox
 from utils.tooltip import ToolTip
 from liste import Remorci, Lista_clienti
@@ -491,7 +492,9 @@ class Vehicule:
         print(id, nr_remorca)
 
         data_inventar = date.today().strftime("%Y-%m-%d")
-        print(data_inventar)
+        # print(data_inventar)
+
+        stare_anvelopa = ["Noi", "Uzate", "Pana stanga", "Pana dreapta", "Schimb stanga", "Schimb dreapta", "Schimb ambele"]
 
         adauga_inventar_window = Toplevel(self.root)
         adauga_inventar_window.title("Adaugare inventar")
@@ -532,7 +535,7 @@ class Vehicule:
         stare_anv_axa1_label = Label(anv_axa_1_frame, text="Stare anvelope:")
         stare_anv_axa1_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
 
-        stare_anv_axa1_entry = Entry(anv_axa_1_frame)
+        stare_anv_axa1_entry = ttk.Combobox(anv_axa_1_frame, values=stare_anvelopa, width=17)
         stare_anv_axa1_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
         anv_axa_2_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 2")
@@ -553,7 +556,7 @@ class Vehicule:
         stare_anv_axa2_label = Label(anv_axa_2_frame, text="Stare anvelope:")
         stare_anv_axa2_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
 
-        stare_anv_axa2_entry = Entry(anv_axa_2_frame)
+        stare_anv_axa2_entry = ttk.Combobox(anv_axa_2_frame, values=stare_anvelopa, width=17)
         stare_anv_axa2_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
         anv_axa_3_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 3")
@@ -574,7 +577,7 @@ class Vehicule:
         stare_anv_axa3_label = Label(anv_axa_3_frame, text="Stare anvelope:")
         stare_anv_axa3_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
 
-        stare_anv_axa3_entry = Entry(anv_axa_3_frame)
+        stare_anv_axa3_entry = ttk.Combobox(anv_axa_3_frame, values=stare_anvelopa, width=17)
         stare_anv_axa3_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
         dotari_remorca_frame = LabelFrame(adauga_inventar_frame, text="Dotari remorca")
@@ -630,7 +633,7 @@ class Vehicule:
         nr_chingi_entry = Entry(echipare_remorca_frame)
         nr_chingi_entry.grid(row=0, column=3, padx=5, pady=5, sticky="w")
 
-        nr_crikete_label = Label(echipare_remorca_frame, text="Nr. crikete:")
+        nr_crikete_label = Label(echipare_remorca_frame, text="Nr. clicheti:")
         nr_crikete_label.grid(row=0, column=4, sticky="w", padx=5, pady=5)
 
         nr_crikete_entry = Entry(echipare_remorca_frame)
