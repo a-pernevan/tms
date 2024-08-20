@@ -282,19 +282,21 @@ class Vehicule:
         inv_remorca_tree = ttk.Treeview(frame_tabel_inventare, yscrollcommand=inv_remorca_scroll.set, selectmode="extended", height=5)
 
         # Definire coloane
-        inv_remorca_tree['columns'] = ("Nr remorca", "Data inventar", "Intocmit")
+        inv_remorca_tree['columns'] = ("Nr. remorca", "Nr. inventar", "Data inventar", "Intocmit de")
 
         # Formatare coloane
         inv_remorca_tree.column("#0", width=0, stretch=NO)
-        inv_remorca_tree.column("Nr remorca", anchor=CENTER, width=100)
+        inv_remorca_tree.column("Nr. remorca", anchor=CENTER, width=100)
+        inv_remorca_tree.column("Nr. inventar", anchor=CENTER, width=100)
         inv_remorca_tree.column("Data inventar", anchor=CENTER, width=100)
-        inv_remorca_tree.column("Intocmit", anchor=CENTER, width=100)
+        inv_remorca_tree.column("Intocmit de", anchor=CENTER, width=100)
 
         # Heading
         inv_remorca_tree.heading("#0", text="", anchor=CENTER)
-        inv_remorca_tree.heading("Nr remorca", text="Nr remorca", anchor=CENTER)
+        inv_remorca_tree.heading("Nr. remorca", text="Nr. remorca", anchor=CENTER)
+        inv_remorca_tree.heading("Nr. inventar", text="Nr. inventar", anchor=CENTER)
         inv_remorca_tree.heading("Data inventar", text="Data inventar", anchor=CENTER)
-        inv_remorca_tree.heading("Intocmit", text="Intocmit", anchor=CENTER)
+        inv_remorca_tree.heading("Intocmit de", text="Intocmit de", anchor=CENTER)
 
         # # Adaugare date in tabel
         # for i in range(len(inventare_remorci)):
