@@ -1,10 +1,12 @@
+from optparse import Values
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import threading
 import mysql.connector
 import os
 from dotenv import load_dotenv
-from liste import Functii, Filiala
+from liste import Functii, Filiala, Lista_orase
 from tkcalendar import DateEntry
 from datetime import date, timedelta, datetime
 try:
@@ -57,6 +59,46 @@ class Angajati_firma:
         
     # Interfata de adaugare angajat nou. 
     def interfata(self):
+        self.lista_orase = []
+        self.lista_judete = []
+        lock = threading.Lock()
+
+        def cauta_oras():
+            # to do - filtare judet dupa id oras.
+
+            filtered_orase = []
+            filtered_judete = []
+            query = self.oras_entry.get()
+            if query:
+                filtered_values = [value for value in self.lista_orase if query.lower() in value.lower()]
+                # for value, judet in self.lista_orase:
+                #     if query.lower() in value.lower():
+                #         filtered_orase.append(f"{value}, {judet}")
+                #         filtered_judete.append(judet)
+                self.oras_entry['values'] = filtered_values
+                # # self.judet_entry['values'] = filtered_judete
+                # print(filtered_judete)
+                # self.judet_entry.set(filtered_orase)
+
+            else:
+                self.oras_entry['values'] = self.lista_orase
+
+        # def cauta_judet():
+            
+        #     query = self.oras_entry.get()
+        #     if query:
+        #         filtered_values = [value for value in self.lista_orase if query.lower() in value.lower()]
+        #         self.oras_entry['values'] = filtered_values
+        #     else:
+        #         self.oras_entry['values'] = self.lista_orase
+
+        def incarca_orase():
+            with lock:
+                for oras, judet in orase_judete.afisare_orase():
+                    # self.lista_orase.append((oras, judet))
+                    # self.lista_judete.append(judet)
+                    self.lista_orase.append(f"{oras}, {judet}")
+
         self.main_window = LabelFrame(self.master, text="Angajati")
         # self.main_window.grid(row=0, column=0, padx=10, pady=10)
         self.main_window.pack(padx=10, pady=10)
@@ -222,6 +264,23 @@ class Angajati_firma:
 
         self.sector_entry = Entry(self.adresa_frame)
         self.sector_entry.grid(row=2, column=1, columnspan=3, sticky="nw", pady=10)
+
+        self.oras_label = Label(self.adresa_frame, text="Oras:")
+        self.oras_label.grid(row=3, column=0, sticky="nw", pady=10)
+
+        orase_judete = Lista_orase(self.master)
+        thread_orase = threading.Thread(target=incarca_orase)
+        thread_orase.start()
+        thread_orase.join()
+
+        self.oras_entry = ttk.Combobox(self.adresa_frame, postcommand=cauta_oras)
+        self.oras_entry.grid(row=3, column=1, columnspan=3, sticky="nw", pady=10)
+
+        self.judet_label = Label(self.adresa_frame, text="Judet:")
+        self.judet_label.grid(row=4, column=0, sticky="nw", pady=10)
+
+        self.judet_entry = ttk.Combobox(self.adresa_frame)
+        self.judet_entry.grid(row=4, column=1, columnspan=3, sticky="nw", pady=10)
 
     
     def vechime_angajat(self):

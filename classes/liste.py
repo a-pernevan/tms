@@ -403,3 +403,38 @@ class Lista_clienti():
                 self.lista_clienti.append(client[1])
 
         return self.lista_clienti
+
+
+class Lista_orase():
+    def __init__(self, master):
+        self.main_window = master
+        self.orase = []
+        self.judete = []
+
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT oras, judet FROM orase")
+            result = cursor.fetchall()
+
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+        
+
+        finally:
+            connection.close()
+
+        if result:
+            for oras, judet in result:
+                if (oras, judet) not in self.orase:
+                    self.orase.append((oras, judet))
+                # if oras not in self.orase:
+                #     self.orase.append(oras)
+            
+                # if judet not in self.judete:
+                #     self.judete.append(judet)
+
+    def afisare_orase(self):
+        return self.orase
+    
+    def afisare_judete(self):
+        return self.judete
