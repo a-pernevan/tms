@@ -61,7 +61,7 @@ class Angajati_firma:
         # self.main_window.grid(row=0, column=0, padx=10, pady=10)
         self.main_window.pack(padx=10, pady=10)
         self.detalii_angajat = LabelFrame(self.main_window, text="Detalii Angajat")
-        self.detalii_angajat.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+        self.detalii_angajat.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
 
         self.angajat_nume_label = Label(self.detalii_angajat, text="Nume: ")
         self.angajat_nume_label.grid(row=0, column=0, sticky="nw", pady=10)
@@ -80,6 +80,12 @@ class Angajati_firma:
 
         self.angajat_prenume_entry = Entry(self.detalii_angajat)
         self.angajat_prenume_entry.grid(row=0, column=3, sticky="nw", pady=10, padx=10)
+
+        self.angajat_id_label = Label(self.detalii_angajat, text="ID: ")
+        self.angajat_id_label.grid(row=0, column=4, sticky="nw", pady=10)
+
+        self.angajat_id_entry = Entry(self.detalii_angajat, state="disabled")
+        self.angajat_id_entry.grid(row=0, column=5, sticky="nw", pady=10, padx=10)
 
         self.angajat_functie_entry = ttk.Combobox(self.detalii_angajat, values=self.lista_functii, width=17)
         # Facem bind la double click pentru a actualiza lista
@@ -139,6 +145,83 @@ class Angajati_firma:
         self.copii_entry = Entry(self.detalii_angajat)
         self.copii_entry.grid(row=6, column=3, sticky="nw", pady=10, padx=10)
 
+        self.buletin_frame = LabelFrame(self.main_window, text="Date C.I. / B.I.")
+        self.buletin_frame.grid(row=0, column=1, padx=5, pady=10, sticky="nw")
+
+        self.buletin_no_label = Label(self.buletin_frame, text="Serie / Numar:")
+        self.buletin_no_label.grid(row=0, column=0, sticky="nw", pady=10)
+
+        self.buletin_no_entry = Entry(self.buletin_frame)
+        self.buletin_no_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=10)
+
+        self.emitent_buletin_label = Label(self.buletin_frame, text="Emitent:")
+        self.emitent_buletin_label.grid(row=1, column=0, sticky="nw", pady=10)
+
+        self.emitent_buletin_entry = Entry(self.buletin_frame)
+        self.emitent_buletin_entry.grid(row=1, column=1, sticky="nw", pady=10, padx=10)
+
+        self.data_eliberare_buletin_label = Label(self.buletin_frame, text="Data eliberarii:")
+        self.data_eliberare_buletin_label.grid(row=2, column=0, sticky="nw", pady=10)
+
+        self.data_eliberare_buletin_entry = DateEntry(self.buletin_frame, locale="RO_ro", date_pattern="yyyy-MM-dd")
+        self.data_eliberare_buletin_entry.grid(row=2, column=1, sticky="nw", pady=10, padx=10)
+
+        self.cnp_label = Label(self.buletin_frame, text="CNP:")
+        self.cnp_label.grid(row=3, column=0, sticky="nw", pady=10)
+
+        self.cnp_entry = Entry(self.buletin_frame)
+        self.cnp_entry.grid(row=3, column=1, sticky="nw", pady=10, padx=10)
+
+        self.cetatenie_label = Label(self.buletin_frame, text="Cetatenie:")
+        self.cetatenie_label.grid(row=4, column=0, sticky="nw", pady=10)
+
+        self.cetatenie_entry = Entry(self.buletin_frame)
+        self.cetatenie_entry.grid(row=4, column=1, sticky="nw", pady=10, padx=10)
+
+        self.adresa_frame = LabelFrame(self.main_window, text="Adresa")
+        self.adresa_frame.grid(row=1, column=0, padx=5, pady=10, sticky="nw")
+
+        self.strada_label = Label(self.adresa_frame, text="Strada:")
+        self.strada_label.grid(row=0, column=0, sticky="nw", pady=10)
+
+        self.strada_entry = Entry(self.adresa_frame, width=40)
+        self.strada_entry.grid(row=0, column=1, columnspan=7, sticky="nw", pady=10)
+
+        self.nr_strada_label = Label(self.adresa_frame, text="Nr.")
+        self.nr_strada_label.grid(row=0, column=8, sticky="nw", pady=10)
+
+        self.nr_strada_entry = Entry(self.adresa_frame, width=5)
+        self.nr_strada_entry.grid(row=0, column=9, sticky="nw", pady=10, padx=5)
+
+        self.bloc_label = Label(self.adresa_frame, text="Bloc:")
+        self.bloc_label.grid(row=1, column=0, sticky="nw", pady=10)
+
+        self.bloc_entry = Entry(self.adresa_frame, width=5)
+        self.bloc_entry.grid(row=1, column=1, sticky="nw", pady=10)
+
+        self.scara_label = Label(self.adresa_frame, text="Sc.")
+        self.scara_label.grid(row=1, column=2, sticky="nw", pady=10)
+
+        self.scara_entry = Entry(self.adresa_frame, width=5)
+        self.scara_entry.grid(row=1, column=3, sticky="nw", pady=10)
+
+        self.etaj_label = Label(self.adresa_frame, text="Et.")
+        self.etaj_label.grid(row=1, column=4, sticky="nw", pady=10)
+
+        self.etaj_entry = Entry(self.adresa_frame, width=5)
+        self.etaj_entry.grid(row=1, column=5, sticky="nw", pady=10)
+
+        self.ap_label = Label(self.adresa_frame, text="Ap.")
+        self.ap_label.grid(row=1, column=6, sticky="nw", pady=10)
+
+        self.ap_entry = Entry(self.adresa_frame, width=5)
+        self.ap_entry.grid(row=1, column=7, sticky="nw", pady=10)
+
+        self.sector_label = Label(self.adresa_frame, text="Sector:")
+        self.sector_label.grid(row=2, column=0, sticky="nw", pady=10)
+
+        self.sector_entry = Entry(self.adresa_frame)
+        self.sector_entry.grid(row=2, column=1, columnspan=3, sticky="nw", pady=10)
 
     
     def vechime_angajat(self):
