@@ -425,13 +425,14 @@ class Lista_orase():
 
         if result:
             for oras, judet in result:
-                if (oras, judet) not in self.orase:
-                    self.orase.append((oras, judet))
-                # if oras not in self.orase:
-                #     self.orase.append(oras)
+                # if (oras, judet) not in self.orase:
+                #     self.orase.append((oras, judet))
+                if oras not in self.orase:
+                    self.orase.append(oras)
             
-                # if judet not in self.judete:
-                #     self.judete.append(judet)
+            # for oras, judet in result:
+                if judet not in self.judete:
+                    self.judete.append(judet)
 
     def afisare_orase(self):
         return self.orase

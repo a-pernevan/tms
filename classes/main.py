@@ -103,7 +103,8 @@ class Main_Window:
         self.main_window.select(self.angajat_frame)
         # Cream un frame nou
         self.modul_angajati_frame = Frame(self.angajat_frame)
-        self.modul_angajati_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+        # self.modul_angajati_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+        self.modul_angajati_frame.pack(padx=10, pady=10)
         # initializam clasa angajati_firma
         self.create_frame = Angajati_firma(self.modul_angajati_frame)
         self.angajati_button.configure(state=DISABLED)

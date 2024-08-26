@@ -64,10 +64,6 @@ class Angajati_firma:
         lock = threading.Lock()
 
         def cauta_oras():
-            # to do - filtare judet dupa id oras.
-
-            filtered_orase = []
-            filtered_judete = []
             query = self.oras_entry.get()
             if query:
                 filtered_values = [value for value in self.lista_orase if query.lower() in value.lower()]
@@ -83,25 +79,32 @@ class Angajati_firma:
             else:
                 self.oras_entry['values'] = self.lista_orase
 
-        # def cauta_judet():
+        def cauta_judet():
             
-        #     query = self.oras_entry.get()
-        #     if query:
-        #         filtered_values = [value for value in self.lista_orase if query.lower() in value.lower()]
-        #         self.oras_entry['values'] = filtered_values
-        #     else:
-        #         self.oras_entry['values'] = self.lista_orase
+            query = self.judet_entry.get()
+            if query:
+                filtered_values = [value for value in self.lista_judete if query.lower() in value.lower()]
+                self.judet_entry['values'] = filtered_values
+            else:
+                self.judet_entry['values'] = self.lista_judete
 
         def incarca_orase():
             with lock:
-                for oras, judet in orase_judete.afisare_orase():
+                for oras in orase_judete.afisare_orase():
                     # self.lista_orase.append((oras, judet))
                     # self.lista_judete.append(judet)
-                    self.lista_orase.append(f"{oras}, {judet}")
+                    self.lista_orase.append(oras)
+                
+                for judet in orase_judete.afisare_judete():
+                    self.lista_judete.append(judet)
+
 
         self.main_window = LabelFrame(self.master, text="Angajati")
         # self.main_window.grid(row=0, column=0, padx=10, pady=10)
         self.main_window.pack(padx=10, pady=10)
+
+        # Frame-ul cu detaliile angajatului.
+
         self.detalii_angajat = LabelFrame(self.main_window, text="Detalii Angajat")
         self.detalii_angajat.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
 
@@ -187,6 +190,8 @@ class Angajati_firma:
         self.copii_entry = Entry(self.detalii_angajat)
         self.copii_entry.grid(row=6, column=3, sticky="nw", pady=10, padx=10)
 
+        # Frame date buletin + cnp
+
         self.buletin_frame = LabelFrame(self.main_window, text="Date C.I. / B.I.")
         self.buletin_frame.grid(row=0, column=1, padx=5, pady=10, sticky="nw")
 
@@ -220,8 +225,10 @@ class Angajati_firma:
         self.cetatenie_entry = Entry(self.buletin_frame)
         self.cetatenie_entry.grid(row=4, column=1, sticky="nw", pady=10, padx=10)
 
-        self.adresa_frame = LabelFrame(self.main_window, text="Adresa")
-        self.adresa_frame.grid(row=1, column=0, padx=5, pady=10, sticky="nw")
+        # Frame cu adresa 
+
+        self.adresa_frame = LabelFrame(self.main_window, text="Date contact")
+        self.adresa_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nw")
 
         self.strada_label = Label(self.adresa_frame, text="Strada:")
         self.strada_label.grid(row=0, column=0, sticky="nw", pady=10)
@@ -279,8 +286,27 @@ class Angajati_firma:
         self.judet_label = Label(self.adresa_frame, text="Judet:")
         self.judet_label.grid(row=4, column=0, sticky="nw", pady=10)
 
-        self.judet_entry = ttk.Combobox(self.adresa_frame)
+        self.judet_entry = ttk.Combobox(self.adresa_frame, postcommand=cauta_judet)
         self.judet_entry.grid(row=4, column=1, columnspan=3, sticky="nw", pady=10)
+
+
+        # self.telefon_personal_label = Label(self.adresa_frame, text="Telefon personal:")
+        # self.telefon_personal_label.grid(row=0, column=2, sticky="nw", pady=10)
+
+        # self.telefon_personal_entry = Entry(self.adresa_frame)
+        # self.telefon_personal_entry.grid(row=0, column=3, sticky="nw", pady=10)
+
+        # self.telefon_firma_label = Label(self.adresa_frame, text="Telefon firma:")
+        # self.telefon_firma_label.grid(row=1, column=2, sticky="nw", pady=10)
+
+        # self.telefon_firma_entry = Entry(self.adresa_frame)
+        # self.telefon_firma_entry.grid(row=1, column=3, sticky="nw", pady=10)
+
+        # self.email_label = Label(self.adresa_frame, text="Email:")
+        # self.email_label.grid(row=2, column=2, sticky="nw", pady=10)
+
+        # self.email_entry = Entry(self.adresa_frame)
+        # self.email_entry.grid(row=2, column=3, sticky="nw", pady=10)
 
     
     def vechime_angajat(self):
