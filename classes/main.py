@@ -18,19 +18,11 @@ class Main_Window:
         
         load_dotenv()
         
-        # self.main_frame = Frame(self.main_window)
-        # self.client_frame = Frame(self.main_window)
         self.main_frame = ttk.Frame(self.main_window, width=1300, height=800)
-        # self.client_frame = Frame(self.main_window, width=900, height=600)
-        # self.angajat_frame = Frame(self.main_window, width=900, height=600)
 
         self.main_frame.pack(fill=BOTH, expand=1, anchor=W)
-        # self.client_frame.pack(fill=BOTH, expand=1, anchor=W)
-        # self.angajat_frame.pack(fill=BOTH, expand=1, anchor=W)
 
         self.main_window.add(self.main_frame, text="Principal")
-        # self.main_window.add(self.client_frame, text="Gestionare firme")
-        # self.main_window.add(self.angajat_frame, text="Gestionare angajati")
 
         self.adaugare_cam = Button(self.main_frame, text="Afisare firme", command=self.show_clients)
         self.adaugare_cam.grid(row=0, column=0)
