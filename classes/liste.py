@@ -439,3 +439,26 @@ class Lista_orase():
     
     def afisare_judete(self):
         return self.judete
+
+
+class Parteneri_parcare():
+    def __init__(self, master):
+        self.main_window = master
+        self.parteneri = []
+
+        try:
+            connection._open_connection()
+            cursor.execute("SELECT denumire from clienti")
+            result = cursor.fetchall()
+
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server")
+
+        finally:
+            connection.close()
+
+        for partener in result:
+            self.parteneri.append(partener[0])
+    
+    def afisare_parteneri(self):
+        return self.parteneri

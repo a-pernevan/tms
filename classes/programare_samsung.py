@@ -9,11 +9,14 @@ from dotenv import load_dotenv
 from tkcalendar import DateEntry
 import time
 from datetime import datetime, timedelta
+from liste import Parteneri_parcare
 
 class Rezervare_parcare:
     def __init__(self, master):
         super().__init__()
         load_dotenv()
+
+        parking_period = []
 
         hours = [
             "00:00",
@@ -44,13 +47,19 @@ class Rezervare_parcare:
         ]
 
         self.main_window = Toplevel(master)
-        self.main_window.title("Rezervare parcare Samsung")
+        self.main_window.title("Rezervare parcare")
 
         self.plate_no_label = Label(self.main_window, text="Numar auto:")
         self.plate_no_label.grid(row=0, column=0, sticky="nw")
 
         self.plate_no_entry = Entry(self.main_window)
         self.plate_no_entry.grid(row=0, column=1, sticky="nw")
+
+        self.trailer_no_label = Label(self.main_window, text="Numar remorca:")
+        self.trailer_no_label.grid(row=0, column=2, sticky="nw")
+
+        self.trailer_no_entry = Entry(self.main_window)
+        self.trailer_no_entry.grid(row=0, column=3, sticky="nw")
 
         self.driver_name_label = Label(self.main_window, text="Nume sofer:")
         self.driver_name_label.grid(row=1, column=0, sticky="nw")
@@ -59,16 +68,24 @@ class Rezervare_parcare:
         self.driver_name_entry.grid(row=1, column=1, sticky="nw")
 
         self.driver_lname_label = Label(self.main_window, text="Prenume sofer:")
-        self.driver_lname_label.grid(row=2, column=0, sticky="nw")
+        self.driver_lname_label.grid(row=1, column=2, sticky="nw")
 
         self.driver_lname_entry = Entry(self.main_window)
-        self.driver_lname_entry.grid(row=2, column=1, sticky="nw")
+        self.driver_lname_entry.grid(row=1, column=3, sticky="nw")
+
+        self.partener_label = Label(self.main_window, text="Partener:")
+        self.partener_label.grid(row=3, column=0, sticky="nw")
+
+        parteneri = Parteneri_parcare(self.main_window)
+
+        self.partener_entry = ttk.Combobox(self.main_window, values=parteneri.afisare_parteneri(), width=15)
+        self.partener_entry.grid(row=3, column=1, sticky="nw")
 
         self.company_label = Label(self.main_window, text="Transportator:")
-        self.company_label.grid(row=3, column=0, sticky="nw")
+        self.company_label.grid(row=3, column=2, sticky="nw")
 
         self.company_entry = Entry(self.main_window)
-        self.company_entry.grid(row=3, column=1, sticky="nw")
+        self.company_entry.grid(row=3, column=3, sticky="nw")
 
         # self.parking_space_label = Label(self.main_window, text="Loc parcare alocat:")
         # self.parking_space_label.grid(row=4, column=0, sticky="nw")
@@ -100,7 +117,10 @@ class Rezervare_parcare:
         self.reservation_period_label = Label(self.main_window, text="Durata (ore):")
         self.reservation_period_label.grid(row=6, column=0, sticky="nw")
 
-        self.reservation_period_combo = ttk.Combobox(self.main_window, values=["12", "24", "48"])
+        for hour in range(1, 25):
+            parking_period.append(hour)
+
+        self.reservation_period_combo = ttk.Combobox(self.main_window, values=parking_period)
         self.reservation_period_combo.current(0)
         self.reservation_period_combo.grid(row=6, column=1, sticky="nw")
 
@@ -245,7 +265,7 @@ class Rezervare_parcare:
                 quit()
 
             self.my_cursor = self.tms_db.cursor()
-            sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out, durata) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO tauros_park_main (place_status, plate_no, d_fname, d_lname, company, date_in, date_out, durata, partener, trailer) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             values = (place_status,
                     truck_no.upper(),
                     f_name.upper(),
@@ -253,7 +273,9 @@ class Rezervare_parcare:
                     company.upper(),
                     date_entry,
                     date_exit,
-                    durata)
+                    durata,
+                    self.partener_entry.get(),
+                    self.trailer_no_entry.get())
 
             self.my_cursor.execute(sql, values)
             self.tms_db.commit()
