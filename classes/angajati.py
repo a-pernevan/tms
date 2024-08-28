@@ -290,23 +290,23 @@ class Angajati_firma:
         self.judet_entry.grid(row=4, column=1, columnspan=3, sticky="nw", pady=10)
 
 
-        # self.telefon_personal_label = Label(self.adresa_frame, text="Telefon personal:")
-        # self.telefon_personal_label.grid(row=0, column=2, sticky="nw", pady=10)
+        self.telefon_personal_label = Label(self.adresa_frame, text="Telefon personal:")
+        self.telefon_personal_label.grid(row=0, column=10, sticky="nw", pady=10)
 
-        # self.telefon_personal_entry = Entry(self.adresa_frame)
-        # self.telefon_personal_entry.grid(row=0, column=3, sticky="nw", pady=10)
+        self.telefon_personal_entry = Entry(self.adresa_frame)
+        self.telefon_personal_entry.grid(row=0, column=11, sticky="nw", pady=10, padx=5)
 
-        # self.telefon_firma_label = Label(self.adresa_frame, text="Telefon firma:")
-        # self.telefon_firma_label.grid(row=1, column=2, sticky="nw", pady=10)
+        self.telefon_firma_label = Label(self.adresa_frame, text="Telefon firma:")
+        self.telefon_firma_label.grid(row=1, column=10, sticky="nw", pady=10)
 
-        # self.telefon_firma_entry = Entry(self.adresa_frame)
-        # self.telefon_firma_entry.grid(row=1, column=3, sticky="nw", pady=10)
+        self.telefon_firma_entry = Entry(self.adresa_frame)
+        self.telefon_firma_entry.grid(row=1, column=11, sticky="nw", pady=10, padx=5)
 
-        # self.email_label = Label(self.adresa_frame, text="Email:")
-        # self.email_label.grid(row=2, column=2, sticky="nw", pady=10)
+        self.email_label = Label(self.adresa_frame, text="Email personal:")
+        self.email_label.grid(row=2, column=10, sticky="nw", pady=10)
 
-        # self.email_entry = Entry(self.adresa_frame)
-        # self.email_entry.grid(row=2, column=3, sticky="nw", pady=10)
+        self.email_entry = Entry(self.adresa_frame)
+        self.email_entry.grid(row=2, column=11, sticky="nw", pady=10, padx=5)
 
     
     def vechime_angajat(self):
