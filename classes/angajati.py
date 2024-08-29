@@ -228,7 +228,7 @@ class Angajati_firma:
         # Frame cu adresa 
 
         self.adresa_frame = LabelFrame(self.main_window, text="Date contact")
-        self.adresa_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nw")
+        self.adresa_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         self.strada_label = Label(self.adresa_frame, text="Strada:")
         self.strada_label.grid(row=0, column=0, sticky="nw", pady=10)
@@ -307,6 +307,20 @@ class Angajati_firma:
 
         self.email_entry = Entry(self.adresa_frame)
         self.email_entry.grid(row=2, column=11, sticky="nw", pady=10, padx=5)
+
+        self.firma_firma_label = Label(self.adresa_frame, text="Email firma:")
+        self.firma_firma_label.grid(row=3, column=10, sticky="nw", pady=10)
+
+        self.mail_firma_entry = Entry(self.adresa_frame)
+        self.mail_firma_entry.grid(row=3, column=11, sticky="nw", pady=10, padx=5)
+
+        # Frame date permis de conducere
+
+        self.frame_permis = LabelFrame(self.main_window, text="Permis de conducere")
+        self.frame_permis.grid(row=1, column=1, sticky="nw", pady=10)
+
+        self.numar_serie_permis_label = Label(self.frame_permis, text="Serie / numar permis:")
+        self.numar_serie_permis_label.grid(row=0, column=0, sticky="nw", pady=10)
 
     
     def vechime_angajat(self):
