@@ -23,6 +23,10 @@ class Angajati_firma:
         # self.master = Toplevel(master)
         # self.master.title("Gestionare angajati")
         self.master = master
+        self.main_menu = Menubutton(self.master, text="Fisier")
+        self.menu = Menu(self.main_menu, tearoff=0)
+        self.main_menu['menu'] = self.menu
+        self.main_menu.pack(side="top", anchor="nw")
         # self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
