@@ -23,6 +23,10 @@ class Angajati_firma:
         # self.master = Toplevel(master)
         # self.master.title("Gestionare angajati")
         self.master = master
+        self.main_menu = Menubutton(self.master, text="Fisier")
+        self.menu = Menu(self.main_menu, tearoff=0)
+        self.main_menu['menu'] = self.menu
+        self.main_menu.pack(side="top", anchor="nw")
         # self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
@@ -193,7 +197,7 @@ class Angajati_firma:
         # Frame date buletin + cnp
 
         self.buletin_frame = LabelFrame(self.main_window, text="Date C.I. / B.I.")
-        self.buletin_frame.grid(row=0, column=1, padx=5, pady=10, sticky="nw")
+        self.buletin_frame.grid(row=0, column=1, padx=5, pady=10, sticky="nsew")
 
         self.buletin_no_label = Label(self.buletin_frame, text="Serie / Numar:")
         self.buletin_no_label.grid(row=0, column=0, sticky="nw", pady=10)
@@ -228,7 +232,7 @@ class Angajati_firma:
         # Frame cu adresa 
 
         self.adresa_frame = LabelFrame(self.main_window, text="Date contact")
-        self.adresa_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nw")
+        self.adresa_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         self.strada_label = Label(self.adresa_frame, text="Strada:")
         self.strada_label.grid(row=0, column=0, sticky="nw", pady=10)
@@ -307,6 +311,48 @@ class Angajati_firma:
 
         self.email_entry = Entry(self.adresa_frame)
         self.email_entry.grid(row=2, column=11, sticky="nw", pady=10, padx=5)
+
+        self.firma_firma_label = Label(self.adresa_frame, text="Email firma:")
+        self.firma_firma_label.grid(row=3, column=10, sticky="nw", pady=10)
+
+        self.mail_firma_entry = Entry(self.adresa_frame)
+        self.mail_firma_entry.grid(row=3, column=11, sticky="nw", pady=10, padx=5)
+
+        # Frame date permis de conducere
+
+        self.frame_permis = LabelFrame(self.main_window, text="Permis de conducere")
+        self.frame_permis.grid(row=1, column=1, sticky="nsew", padx=5, pady=5)
+
+        self.numar_serie_permis_label = Label(self.frame_permis, text="Serie / numar permis:")
+        self.numar_serie_permis_label.grid(row=0, column=0, sticky="nw", pady=10)
+
+        self.numar_serie_permis_entry = Entry(self.frame_permis)
+        self.numar_serie_permis_entry.grid(row=0, column=1, sticky="nw", pady=10, padx=5)
+
+        self.cat_a = IntVar()
+        self.cat_b = IntVar()
+        self.cat_c = IntVar()
+        self.cat_ce = IntVar()
+        self.cat_d = IntVar()
+        self.cat_de = IntVar()
+
+        self.cat_a_checkbutton = Checkbutton(self.frame_permis, text="Categorie A", variable=self.cat_a)
+        self.cat_a_checkbutton.grid(row=1, column=0, sticky="nw")
+
+        self.cat_b_checkbutton = Checkbutton(self.frame_permis, text="Categorie B", variable=self.cat_b)
+        self.cat_b_checkbutton.grid(row=2, column=0, sticky="nw")
+
+        self.cat_c_checkbutton = Checkbutton(self.frame_permis, text="Categorie C", variable=self.cat_c)
+        self.cat_c_checkbutton.grid(row=3, column=0, sticky="nw")
+
+        self.cat_ce_checkbutton = Checkbutton(self.frame_permis, text="Categorie C+E", variable=self.cat_ce)
+        self.cat_ce_checkbutton.grid(row=4, column=0, sticky="nw")
+
+        self.cat_d_checkbutton = Checkbutton(self.frame_permis, text="Categorie D", variable=self.cat_d)
+        self.cat_d_checkbutton.grid(row=5, column=0, sticky="nw")
+
+        self.cat_de_checkbutton = Checkbutton(self.frame_permis, text="Categorie D+E", variable=self.cat_de)
+        self.cat_de_checkbutton.grid(row=6, column=0, sticky="nw")
 
     
     def vechime_angajat(self):

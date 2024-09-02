@@ -1,11 +1,14 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Menu, ttk
 
 def create_tab(notebook, tab_name):
     # create a frame for the tab
     frame = tk.Frame(notebook)
     label = tk.Label(frame, text=tab_name)
     label.pack()
+
+    my_menu = Menu(frame, tearoff=0)
+    frame.config(menu=my_menu)
 
     # create a button to close the tab
     close_button = tk.Button(frame, text="Close", command=lambda: notebook.forget(notebook.index(frame)))
