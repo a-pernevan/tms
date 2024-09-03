@@ -1,10 +1,7 @@
-from optparse import Values
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import threading
-import mysql.connector
-import os
 from dotenv import load_dotenv
 from liste import Functii, Filiala, Lista_orase
 from tkcalendar import DateEntry
@@ -23,10 +20,27 @@ class Angajati_firma:
         # self.master = Toplevel(master)
         # self.master.title("Gestionare angajati")
         self.master = master
-        self.main_menu = Menubutton(self.master, text="Fisier")
+        self.menu_frame = Frame(self.master)
+        self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
+        self.main_menu = Menubutton(self.menu_frame, text="Fisier")
+        self.main_menu.bind("<Control-f>", self.interfata)
         self.menu = Menu(self.main_menu, tearoff=0)
+        self.menu.add_command(label="Angajat nou")
+        self.menu.add_command(label="Salvare angajat")
+        self.menu.add_separator()
+        self.menu.add_command(label="Iesire", command=master.destroy)
         self.main_menu['menu'] = self.menu
-        self.main_menu.pack(side="top", anchor="nw")
+        self.menu.entryconfig(0, state="normal")
+
+        self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
+        self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
+        self.scadente_menu['menu'] = self.scadente_opt
+        self.scadente_opt.add_command(label="Adaugare / editare scadente")
+        self.scadente_opt.entryconfig(0, state="disabled")
+        
+
+        self.main_menu.grid(row=0, column=0)
+        self.scadente_menu.grid(row=0, column=1, padx=5)
         # self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
@@ -297,25 +311,25 @@ class Angajati_firma:
         self.telefon_personal_label = Label(self.adresa_frame, text="Telefon personal:")
         self.telefon_personal_label.grid(row=0, column=10, sticky="nw", pady=10)
 
-        self.telefon_personal_entry = Entry(self.adresa_frame)
+        self.telefon_personal_entry = Entry(self.adresa_frame, width=30)
         self.telefon_personal_entry.grid(row=0, column=11, sticky="nw", pady=10, padx=5)
 
         self.telefon_firma_label = Label(self.adresa_frame, text="Telefon firma:")
         self.telefon_firma_label.grid(row=1, column=10, sticky="nw", pady=10)
 
-        self.telefon_firma_entry = Entry(self.adresa_frame)
+        self.telefon_firma_entry = Entry(self.adresa_frame, width=30)
         self.telefon_firma_entry.grid(row=1, column=11, sticky="nw", pady=10, padx=5)
 
         self.email_label = Label(self.adresa_frame, text="Email personal:")
         self.email_label.grid(row=2, column=10, sticky="nw", pady=10)
 
-        self.email_entry = Entry(self.adresa_frame)
+        self.email_entry = Entry(self.adresa_frame, width=30)
         self.email_entry.grid(row=2, column=11, sticky="nw", pady=10, padx=5)
 
         self.firma_firma_label = Label(self.adresa_frame, text="Email firma:")
         self.firma_firma_label.grid(row=3, column=10, sticky="nw", pady=10)
 
-        self.mail_firma_entry = Entry(self.adresa_frame)
+        self.mail_firma_entry = Entry(self.adresa_frame, width=30)
         self.mail_firma_entry.grid(row=3, column=11, sticky="nw", pady=10, padx=5)
 
         # Frame date permis de conducere
