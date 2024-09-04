@@ -23,16 +23,18 @@ class Angajati_firma:
         self.menu_frame = Frame(self.master)
         self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
         self.main_menu = Menubutton(self.menu_frame, text="Fisier")
+
+        # Cream un meniu principal pentru aplicatie. 
         self.menu = Menu(self.main_menu, tearoff=0)
         self.menu.add_command(label="Angajat nou")
-        self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.cat_permis)
+        self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
         self.menu.add_separator()
         self.menu.add_command(label="Iesire", command=master.destroy)
         self.main_menu['menu'] = self.menu
         self.menu.entryconfig(0, state="normal")
 
 
-        self.master.bind("<Control-s>", self.cat_permis)
+        self.master.bind("<Control-s>", self.salvare_angajat)
 
         self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
         self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
@@ -168,6 +170,12 @@ class Angajati_firma:
         self.angajat_filiala = ttk.Combobox(self.detalii_angajat, values=self.lista_filiale, width=17)
         self.angajat_filiala.bind("<Double-1>", lambda event: self.refresh_filiale())
         self.angajat_filiala.grid(row=2, column=3, sticky="nw", pady=10, padx=10)
+
+        self.angajat_status_label = Label(self.detalii_angajat, text="Status: ")
+        self.angajat_status_label.grid(row=2, column=4, sticky="nw", pady=10)
+
+        self.angajat_status_check = ttk.Combobox(self.detalii_angajat, values=["Activ", "Inactiv"], width=17)
+        self.angajat_status_check.grid(row=2, column=5, sticky="nw", pady=10, padx=10)
 
         self.data_angajare_label = Label(self.detalii_angajat, text="Data angajare: ")
         self.data_angajare_label.grid(row=4, column=0, sticky="nw", pady=10)
@@ -409,6 +417,56 @@ class Angajati_firma:
     
     def cat_permis(self, event=None):
         print(self.cat_a.get())
+
+    
+    def salvare_angajat(self, event=None):
+        # try:
+        connection._open_connection()
+        sql = """INSERT INTO angajati (nume, prenume, functie, filiala, status_angajat, 
+                    data_angajare, data_nastere, zile_concediu, casatorit, copii, 
+                    buletin, emitent_buletin, data_buletin, cnp, cetatenie, strada, 
+                    nr_strada, bloc, scara, etaj, apartament, 
+                    sector, oras_domiciliu, judet_domiciliu, tel_personal, tel_firma, 
+                    email_personal, email_firma, permis_auto, categ_a, 
+                    categ_b, categ_c, categ_ce, categ_d, categ_de) VALUES
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            
+        values = (self.angajat_nume_entry.get(), self.angajat_prenume_entry.get(), self.angajat_functie_entry.get(), \
+                      self.angajat_filiala.get(), self.angajat_status_check.get(), self.data_angajare_entry.get_date(), \
+                    self.data_nastere_entry.get_date(), self.zile_concediu_entry.get(), self.casatorit.get(), self.copii_entry.get(), \
+                        self.buletin_no_entry.get(), self.emitent_buletin_entry.get(), self.data_eliberare_buletin_entry.get_date(), \
+                        self.cnp_entry.get(), self.cetatenie_entry.get(), self.strada_entry.get(), self.nr_strada_entry.get(), self.bloc_entry.get(), \
+                        self.scara_entry.get(), self.etaj_entry.get(), self.ap_entry.get(), self.sector_entry.get(), self.oras_entry.get(), \
+                        self.judet_entry.get(), self.telefon_personal_entry.get(), self.telefon_firma_entry.get(), self.email_entry.get(), self.mail_firma_entry.get(), \
+                        self.numar_serie_permis_entry.get(), self.cat_a.get(), self.cat_b.get(), self.cat_c.get(), self.cat_ce.get(), self.cat_d.get(), \
+                        self.cat_de.get())
+        print(sql)
+        print(values)
+        try:
+            
+            cursor.execute(sql, values)
+
+            connection.commit()
+        
+        except:
+            messagebox.showerror("Eroare", "Eroare la inserare angajat")
+        # except:
+        #     messagebox.showerror("Eroare", "Eroare la inserare angajat")
+
+
+        try:
+            connection._open_connection()
+            sql = "SELECT id from angajati ORDER BY id DESC LIMIT 1"
+
+            cursor.execute(sql)
+            self.angajat_id_entry.config(state=NORMAL)
+            self.angajat_id_entry.delete(0, END)
+            self.angajat_id_entry.insert(0, cursor.fetchone()[0])
+            self.angajat_id_entry.config(state=DISABLED)
+
+        except:
+            messagebox.showerror("Eroare", "Eroare la generare ID")
 
 if __name__ == "__main__":
     root = Tk()
