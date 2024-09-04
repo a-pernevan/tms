@@ -23,24 +23,34 @@ class Angajati_firma:
         self.menu_frame = Frame(self.master)
         self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
         self.main_menu = Menubutton(self.menu_frame, text="Fisier")
-        self.main_menu.bind("<Control-f>", self.interfata)
         self.menu = Menu(self.main_menu, tearoff=0)
         self.menu.add_command(label="Angajat nou")
-        self.menu.add_command(label="Salvare angajat")
+        self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.cat_permis)
         self.menu.add_separator()
         self.menu.add_command(label="Iesire", command=master.destroy)
         self.main_menu['menu'] = self.menu
         self.menu.entryconfig(0, state="normal")
+
+
+        self.master.bind("<Control-s>", self.cat_permis)
 
         self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
         self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
         self.scadente_menu['menu'] = self.scadente_opt
         self.scadente_opt.add_command(label="Adaugare / editare scadente")
         self.scadente_opt.entryconfig(0, state="disabled")
-        
 
+        self.documente_menu = Menubutton(self.menu_frame, text="Documente")
+        self.documente_opt = Menu(self.documente_menu, tearoff=0)
+        self.documente_menu['menu'] = self.documente_opt
+        self.documente_opt.add_command(label="Adaugare / editare documente")
+        self.documente_opt.entryconfig(0, state="disabled")
+        
         self.main_menu.grid(row=0, column=0)
+        
         self.scadente_menu.grid(row=0, column=1, padx=5)
+        self.documente_menu.grid(row=0, column=2, padx=5)
+        
         # self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
         self.lista_functii = self.get_functii.afisare_functii()
@@ -395,6 +405,10 @@ class Angajati_firma:
         self.varsta_entry.delete(0, END)
         self.varsta_entry.insert(0, varsta)
         self.varsta_entry.config(state=DISABLED)
+
+    
+    def cat_permis(self, event=None):
+        print(self.cat_a.get())
 
 if __name__ == "__main__":
     root = Tk()
