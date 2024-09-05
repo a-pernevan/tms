@@ -38,7 +38,7 @@ class Angajati_firma:
         # Bind-urile pentru meniu si alte shortcut-uri
         self.master.bind("<Control-s>", self.salvare_angajat)
         # probleme la bind-ul asta. 
-        self.master.bind("<Control-d>", lambda x:self.incarca_angajat(x))
+        # self.master.bind("<Control-d>", lambda x:self.incarca_angajat(x))
         self.master.bind("<Control-e>", self.enable_angajati)
         self.master.bind("<Control-n>", self.clear_angajati)
 
@@ -95,6 +95,7 @@ class Angajati_firma:
         
     # Interfata de adaugare angajat nou. 
     def interfata(self):
+        
         self.lista_orase = []
         self.lista_judete = []
         lock = threading.Lock()
@@ -391,6 +392,9 @@ class Angajati_firma:
 
         self.cat_de_checkbutton = Checkbutton(self.frame_permis, text="Categorie D+E", variable=self.cat_de)
         self.cat_de_checkbutton.grid(row=6, column=0, sticky="nw")
+
+
+        self.incarca_angajat(2)
 
     
     def vechime_angajat(self):
