@@ -26,15 +26,21 @@ class Angajati_firma:
 
         # Cream un meniu principal pentru aplicatie. 
         self.menu = Menu(self.main_menu, tearoff=0)
-        self.menu.add_command(label="Angajat nou")
+        self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.disable_angajati)
         self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
         self.menu.add_separator()
         self.menu.add_command(label="Iesire", command=master.destroy)
         self.main_menu['menu'] = self.menu
         self.menu.entryconfig(0, state="normal")
+        
+        x = 2
 
-
+        # Bind-urile pentru meniu si alte shortcut-uri
         self.master.bind("<Control-s>", self.salvare_angajat)
+        # probleme la bind-ul asta. 
+        self.master.bind("<Control-d>", lambda x:self.incarca_angajat(x))
+        self.master.bind("<Control-e>", self.enable_angajati)
+        self.master.bind("<Control-n>", self.clear_angajati)
 
         self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
         self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
@@ -448,12 +454,16 @@ class Angajati_firma:
             cursor.execute(sql, values)
 
             connection.commit()
+
+            messagebox.showinfo("Salvare", "Salvare reusita")
         
         except:
             messagebox.showerror("Eroare", "Eroare la inserare angajat")
         # except:
         #     messagebox.showerror("Eroare", "Eroare la inserare angajat")
 
+        finally:
+            connection.close()
 
         try:
             connection._open_connection()
@@ -467,6 +477,150 @@ class Angajati_firma:
 
         except:
             messagebox.showerror("Eroare", "Eroare la generare ID")
+
+    def incarca_angajat(self, id_angajat):
+        pass
+
+    def disable_angajati(self, event=None):
+        self.angajat_nume_entry.config(state=DISABLED)
+        self.angajat_prenume_entry.config(state=DISABLED)
+        self.angajat_functie_entry.config(state=DISABLED)
+        self.angajat_filiala.config(state=DISABLED)
+        self.angajat_status_check.config(state=DISABLED)
+        self.data_angajare_entry.config(state=DISABLED)
+        self.data_nastere_entry.config(state=DISABLED)
+        self.zile_concediu_entry.config(state=DISABLED)
+        self.casatorit_check.config(state=DISABLED)
+        self.copii_entry.config(state=DISABLED)
+        self.buletin_no_entry.config(state=DISABLED)
+        self.emitent_buletin_entry.config(state=DISABLED)
+        self.data_eliberare_buletin_entry.config(state=DISABLED)
+        self.cnp_entry.config(state=DISABLED)
+        self.cetatenie_entry.config(state=DISABLED)
+        self.strada_entry.config(state=DISABLED)
+        self.nr_strada_entry.config(state=DISABLED)
+        self.bloc_entry.config(state=DISABLED)
+        self.scara_entry.config(state=DISABLED)
+        self.etaj_entry.config(state=DISABLED)
+        self.ap_entry.config(state=DISABLED)
+        self.sector_entry.config(state=DISABLED)
+        self.oras_entry.config(state=DISABLED)
+        self.judet_entry.config(state=DISABLED)
+        self.telefon_personal_entry.config(state=DISABLED)
+        self.telefon_firma_entry.config(state=DISABLED)
+        self.email_entry.config(state=DISABLED)
+        self.mail_firma_entry.config(state=DISABLED)
+        self.numar_serie_permis_entry.config(state=DISABLED)
+        self.cat_a_checkbutton.config(state=DISABLED)
+        self.cat_b_checkbutton.config(state=DISABLED)
+        self.cat_c_checkbutton.config(state=DISABLED)
+        self.cat_ce_checkbutton.config(state=DISABLED)
+        self.cat_d_checkbutton.config(state=DISABLED)
+        self.cat_de_checkbutton.config(state=DISABLED)
+
+    
+    # Activam toate entry-urile
+    def enable_angajati(self, event=None):
+        self.angajat_nume_entry.config(state=NORMAL)
+        self.angajat_prenume_entry.config(state=NORMAL)
+        self.angajat_functie_entry.config(state=NORMAL)
+        self.angajat_filiala.config(state=NORMAL)
+        self.angajat_status_check.config(state=NORMAL)
+        self.data_angajare_entry.config(state=NORMAL)
+        self.data_nastere_entry.config(state=NORMAL)
+        self.zile_concediu_entry.config(state=NORMAL)
+        self.casatorit_check.config(state=NORMAL)
+        self.copii_entry.config(state=NORMAL)
+        self.buletin_no_entry.config(state=NORMAL)
+        self.emitent_buletin_entry.config(state=NORMAL)
+        self.data_eliberare_buletin_entry.config(state=NORMAL)
+        self.cnp_entry.config(state=NORMAL)
+        self.cetatenie_entry.config(state=NORMAL)
+        self.strada_entry.config(state=NORMAL)
+        self.nr_strada_entry.config(state=NORMAL)
+        self.bloc_entry.config(state=NORMAL)
+        self.scara_entry.config(state=NORMAL)
+        self.etaj_entry.config(state=NORMAL)
+        self.ap_entry.config(state=NORMAL)
+        self.sector_entry.config(state=NORMAL)
+        self.oras_entry.config(state=NORMAL)
+        self.judet_entry.config(state=NORMAL)
+        self.telefon_personal_entry.config(state=NORMAL)
+        self.telefon_firma_entry.config(state=NORMAL)
+        self.email_entry.config(state=NORMAL)
+        self.mail_firma_entry.config(state=NORMAL)
+        self.numar_serie_permis_entry.config(state=NORMAL)
+        self.cat_a_checkbutton.config(state=NORMAL)
+        self.cat_b_checkbutton.config(state=NORMAL)
+        self.cat_c_checkbutton.config(state=NORMAL)
+        self.cat_ce_checkbutton.config(state=NORMAL)
+        self.cat_d_checkbutton.config(state=NORMAL)
+        self.cat_de_checkbutton.config(state=NORMAL)
+
+
+    
+    # Golim toate entry-urile
+    def clear_angajati(self, event=None):
+        self.enable_angajati()
+        self.angajat_nume_entry.delete(0, END)
+        self.angajat_prenume_entry.delete(0, END)
+        self.angajat_functie_entry.delete(0, END)
+        self.angajat_filiala.set('')
+        self.angajat_status_check.set('')
+        self.data_angajare_entry.delete(0, END)
+        self.data_nastere_entry.delete(0, END)
+        self.zile_concediu_entry.delete(0, END)
+        self.casatorit_check.deselect()
+        self.copii_entry.delete(0, END)
+        self.buletin_no_entry.delete(0, END)
+        self.emitent_buletin_entry.delete(0, END)
+        self.data_eliberare_buletin_entry.delete(0, END)
+        self.cnp_entry.delete(0, END)
+        self.cetatenie_entry.delete(0, END)
+        self.strada_entry.delete(0, END)
+        self.nr_strada_entry.delete(0, END)
+        self.bloc_entry.delete(0, END)
+        self.scara_entry.delete(0, END)
+        self.etaj_entry.delete(0, END)
+        self.ap_entry.delete(0, END)
+        self.sector_entry.delete(0, END)
+        self.oras_entry.delete(0, END)
+        self.judet_entry.delete(0, END)
+        self.telefon_personal_entry.delete(0, END)
+        self.telefon_firma_entry.delete(0, END)
+        self.email_entry.delete(0, END)
+        self.mail_firma_entry.delete(0, END)
+        self.numar_serie_permis_entry.delete(0, END)
+        self.cat_a_checkbutton.deselect()
+        self.cat_b_checkbutton.deselect()
+        self.cat_c_checkbutton.deselect()
+        self.cat_ce_checkbutton.deselect()
+        self.cat_d_checkbutton.deselect()
+        self.cat_de_checkbutton.deselect()    
+
+
+    
+    # Incarcam datele angajatului din baza de date
+    def incarca_angajat(self, id_angajat, event=None):
+        print(id_angajat)
+        try:
+            connection._open_connection()
+            sql = "SELECT * FROM angajati WHERE id = %s"
+            values = (id_angajat,)
+            cursor.execute(sql, values)
+            result = cursor.fetchone()
+
+        except:
+            messagebox.showerror("Eroare", "Ceva nu a functionat!", parent=self.master)
+
+        finally:
+            connection.close()
+
+        self.enable_angajati()
+
+        self.angajat_nume_entry.insert(0, result[1])
+        self.angajat_prenume_entry.insert(0, result[2])
+        self.angajat_functie_entry.set(result[3])
 
 if __name__ == "__main__":
     root = Tk()

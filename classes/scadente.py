@@ -248,7 +248,7 @@ class Scadente:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Scadente")
-    registru = Scadente(root, 35, "AR15UUT", "SEMIREMORCA")
+    registru = Scadente(root, 9, "AR11YHA", "SEMIREMORCA")
     # registru.main_window(root)
     # root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
