@@ -625,6 +625,16 @@ class Angajati_firma:
         self.angajat_nume_entry.insert(0, result[1])
         self.angajat_prenume_entry.insert(0, result[2])
         self.angajat_functie_entry.set(result[3])
+        self.angajat_filiala.set(result[4])
+        self.angajat_status_check.set(result[5])
+        self.data_angajare_entry.set_date(result[6])
+        self.vechime_angajat()
+        self.data_nastere_entry.set_date(result[7])
+        self.varsta_angajat()
+        self.zile_concediu_entry.insert(0, result[8])
+        self.casatorit.set(result[9])
+        self.copii_entry.insert(0, result[10])
+        self.buletin_no_entry.insert(0, result[11])
 
 if __name__ == "__main__":
     root = Tk()
