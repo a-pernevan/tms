@@ -1,3 +1,5 @@
+from cProfile import label
+from distutils.sysconfig import customize_compiler
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -6,6 +8,7 @@ from dotenv import load_dotenv
 from liste import Functii, Filiala, Lista_orase
 from tkcalendar import DateEntry
 from datetime import date, timedelta, datetime
+from utils.tooltip import ToolTip
 try:
     from database.datab import connection, cursor
 except:
@@ -26,12 +29,14 @@ class Angajati_firma:
 
         # Cream un meniu principal pentru aplicatie. 
         self.menu = Menu(self.main_menu, tearoff=0)
-        self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.disable_angajati)
+        self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.clear_angajati)
         self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
+        self.menu.add_command(label="Editare angajat", accelerator="Ctrl+E", command=self.editare_angajat)
         self.menu.add_separator()
         self.menu.add_command(label="Iesire", command=master.destroy)
         self.main_menu['menu'] = self.menu
         self.menu.entryconfig(0, state="normal")
+        self.menu.entryconfig(2, state="disabled")
         
         x = 2
 
@@ -429,61 +434,123 @@ class Angajati_firma:
         print(self.cat_a.get())
 
     
-    def salvare_angajat(self, event=None):
-        # try:
-        connection._open_connection()
-        sql = """INSERT INTO angajati (nume, prenume, functie, filiala, status_angajat, 
-                    data_angajare, data_nastere, zile_concediu, casatorit, copii, 
-                    buletin, emitent_buletin, data_buletin, cnp, cetatenie, strada, 
-                    nr_strada, bloc, scara, etaj, apartament, 
-                    sector, oras_domiciliu, judet_domiciliu, tel_personal, tel_firma, 
-                    email_personal, email_firma, permis_auto, categ_a, 
-                    categ_b, categ_c, categ_ce, categ_d, categ_de) VALUES
-                    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            
-        values = (self.angajat_nume_entry.get(), self.angajat_prenume_entry.get(), self.angajat_functie_entry.get(), \
-                      self.angajat_filiala.get(), self.angajat_status_check.get(), self.data_angajare_entry.get_date(), \
-                    self.data_nastere_entry.get_date(), self.zile_concediu_entry.get(), self.casatorit.get(), self.copii_entry.get(), \
-                        self.buletin_no_entry.get(), self.emitent_buletin_entry.get(), self.data_eliberare_buletin_entry.get_date(), \
-                        self.cnp_entry.get(), self.cetatenie_entry.get(), self.strada_entry.get(), self.nr_strada_entry.get(), self.bloc_entry.get(), \
-                        self.scara_entry.get(), self.etaj_entry.get(), self.ap_entry.get(), self.sector_entry.get(), self.oras_entry.get(), \
-                        self.judet_entry.get(), self.telefon_personal_entry.get(), self.telefon_firma_entry.get(), self.email_entry.get(), self.mail_firma_entry.get(), \
-                        self.numar_serie_permis_entry.get(), self.cat_a.get(), self.cat_b.get(), self.cat_c.get(), self.cat_ce.get(), self.cat_d.get(), \
-                        self.cat_de.get())
-        print(sql)
-        print(values)
-        try:
-            
-            cursor.execute(sql, values)
-
-            connection.commit()
-
-            messagebox.showinfo("Salvare", "Salvare reusita")
+    def salvare_angajat(self, event=None, id_angajat=None):
         
-        except:
-            messagebox.showerror("Eroare", "Eroare la inserare angajat")
-        # except:
-        #     messagebox.showerror("Eroare", "Eroare la inserare angajat")
+        connection._open_connection()
+        # Debug
+        # print(id_angajat)
 
-        finally:
-            connection.close()
+        if id_angajat == None:
 
-        try:
-            connection._open_connection()
-            sql = "SELECT id from angajati ORDER BY id DESC LIMIT 1"
+            sql = "SELECT * FROM angajati WHERE cnp = %s"
+            values = (self.cnp_entry.get(), )
 
-            cursor.execute(sql)
-            self.angajat_id_entry.config(state=NORMAL)
-            self.angajat_id_entry.delete(0, END)
-            self.angajat_id_entry.insert(0, cursor.fetchone()[0])
-            self.angajat_id_entry.config(state=DISABLED)
+            cursor.execute(sql, values)
+            result = cursor.fetchall()
 
-        except:
-            messagebox.showerror("Eroare", "Eroare la generare ID")
+            print(result)
 
-    def incarca_angajat(self, id_angajat):
-        pass
+            if result:
+                messagebox.showinfo(title="Eroare", message="Angajatul exista deja!")
+                return
+
+
+            sql = """INSERT INTO angajati (nume, prenume, functie, filiala, status_angajat, 
+                        data_angajare, data_nastere, zile_concediu, casatorit, copii, 
+                        buletin, emitent_buletin, data_buletin, cnp, cetatenie, strada, 
+                        nr_strada, bloc, scara, etaj, apartament, 
+                        sector, oras_domiciliu, judet_domiciliu, tel_personal, tel_firma, 
+                        email_personal, email_firma, permis_auto, categ_a, 
+                        categ_b, categ_c, categ_ce, categ_d, categ_de) VALUES
+                        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                
+            values = (self.angajat_nume_entry.get(), self.angajat_prenume_entry.get(), self.angajat_functie_entry.get(), \
+                        self.angajat_filiala.get(), self.angajat_status_check.get(), self.data_angajare_entry.get_date(), \
+                        self.data_nastere_entry.get_date(), self.zile_concediu_entry.get(), self.casatorit.get(), self.copii_entry.get(), \
+                            self.buletin_no_entry.get(), self.emitent_buletin_entry.get(), self.data_eliberare_buletin_entry.get_date(), \
+                            self.cnp_entry.get(), self.cetatenie_entry.get(), self.strada_entry.get(), self.nr_strada_entry.get(), self.bloc_entry.get(), \
+                            self.scara_entry.get(), self.etaj_entry.get(), self.ap_entry.get(), self.sector_entry.get(), self.oras_entry.get(), \
+                            self.judet_entry.get(), self.telefon_personal_entry.get(), self.telefon_firma_entry.get(), self.email_entry.get(), self.mail_firma_entry.get(), \
+                            self.numar_serie_permis_entry.get(), self.cat_a.get(), self.cat_b.get(), self.cat_c.get(), self.cat_ce.get(), self.cat_d.get(), \
+                            self.cat_de.get())
+            try:
+                
+                cursor.execute(sql, values)
+
+                connection.commit()
+
+                messagebox.showinfo("Salvare", "Salvare reusita")
+            
+            except:
+                messagebox.showerror("Eroare", "Eroare la inserare angajat")
+            # except:
+            #     messagebox.showerror("Eroare", "Eroare la inserare angajat")
+
+            finally:
+                connection.close()
+
+            try:
+                connection._open_connection()
+                sql = "SELECT id from angajati ORDER BY id DESC LIMIT 1"
+
+                cursor.execute(sql)
+                self.angajat_id_entry.config(state=NORMAL)
+                self.angajat_id_entry.delete(0, END)
+                self.angajat_id_entry.insert(0, cursor.fetchone()[0])
+                self.angajat_id_entry.config(state=DISABLED)
+
+            except:
+                messagebox.showerror("Eroare", "Eroare la generare ID")
+
+        else:
+            sql = "DELETE FROM angajati WHERE id = %s"
+            values = (id_angajat,)
+            cursor.execute(sql, values)
+            connection.commit()
+            sql = """INSERT INTO angajati (id, nume, prenume, functie, filiala, status_angajat, 
+                        data_angajare, data_nastere, zile_concediu, casatorit, copii, 
+                        buletin, emitent_buletin, data_buletin, cnp, cetatenie, strada, 
+                        nr_strada, bloc, scara, etaj, apartament, 
+                        sector, oras_domiciliu, judet_domiciliu, tel_personal, tel_firma, 
+                        email_personal, email_firma, permis_auto, categ_a, 
+                        categ_b, categ_c, categ_ce, categ_d, categ_de) VALUES
+                        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                
+            values = (id_angajat, self.angajat_nume_entry.get(), self.angajat_prenume_entry.get(), self.angajat_functie_entry.get(), \
+                        self.angajat_filiala.get(), self.angajat_status_check.get(), self.data_angajare_entry.get_date(), \
+                        self.data_nastere_entry.get_date(), self.zile_concediu_entry.get(), self.casatorit.get(), self.copii_entry.get(), \
+                            self.buletin_no_entry.get(), self.emitent_buletin_entry.get(), self.data_eliberare_buletin_entry.get_date(), \
+                            self.cnp_entry.get(), self.cetatenie_entry.get(), self.strada_entry.get(), self.nr_strada_entry.get(), self.bloc_entry.get(), \
+                            self.scara_entry.get(), self.etaj_entry.get(), self.ap_entry.get(), self.sector_entry.get(), self.oras_entry.get(), \
+                            self.judet_entry.get(), self.telefon_personal_entry.get(), self.telefon_firma_entry.get(), self.email_entry.get(), self.mail_firma_entry.get(), \
+                            self.numar_serie_permis_entry.get(), self.cat_a.get(), self.cat_b.get(), self.cat_c.get(), self.cat_ce.get(), self.cat_d.get(), \
+                            self.cat_de.get())
+            print(sql)
+            print(values)
+            try:
+                
+                cursor.execute(sql, values)
+
+                connection.commit()
+
+                messagebox.showinfo("Modificare", "Angajatul a fost modificat")
+            
+            except:
+                messagebox.showerror("Eroare", "Eroare la modificare angajat")
+            # except:
+            #     messagebox.showerror("Eroare", "Eroare la inserare angajat")
+
+            finally:
+                connection.close()
+
+            try:
+                self.incarca_angajat(id_angajat)
+
+            except:
+                messagebox.showerror("Eroare", "eroare la incarcare.")
+
 
     def disable_angajati(self, event=None):
         self.angajat_nume_entry.config(state=DISABLED)
@@ -560,6 +627,9 @@ class Angajati_firma:
         self.cat_ce_checkbutton.config(state=NORMAL)
         self.cat_d_checkbutton.config(state=NORMAL)
         self.cat_de_checkbutton.config(state=NORMAL)
+        self.menu.entryconfig(1, state="normal")
+        self.menu.entryconfig(0, state="normal")
+        self.menu.entryconfig(2, state="disabled")
 
 
     
@@ -568,6 +638,9 @@ class Angajati_firma:
         self.enable_angajati()
         self.angajat_nume_entry.delete(0, END)
         self.angajat_prenume_entry.delete(0, END)
+        self.angajat_id_entry.config(state=NORMAL)
+        self.angajat_id_entry.delete(0, END)
+        self.angajat_id_entry.config(state=DISABLED)
         self.angajat_functie_entry.delete(0, END)
         self.angajat_filiala.set('')
         self.angajat_status_check.set('')
@@ -607,6 +680,7 @@ class Angajati_firma:
     # Incarcam datele angajatului din baza de date
     def incarca_angajat(self, id_angajat, event=None):
         print(id_angajat)
+        self.clear_angajati()
         try:
             connection._open_connection()
             sql = "SELECT * FROM angajati WHERE id = %s"
@@ -624,6 +698,10 @@ class Angajati_firma:
 
         self.angajat_nume_entry.insert(0, result[1])
         self.angajat_prenume_entry.insert(0, result[2])
+        self.angajat_id_entry.config(state=NORMAL)
+        self.angajat_id_entry.delete(0, END)
+        self.angajat_id_entry.insert(0, result[0])
+        self.angajat_id_entry.config(state=DISABLED)
         self.angajat_functie_entry.set(result[3])
         self.angajat_filiala.set(result[4])
         self.angajat_status_check.set(result[5])
@@ -635,6 +713,39 @@ class Angajati_firma:
         self.casatorit.set(result[9])
         self.copii_entry.insert(0, result[10])
         self.buletin_no_entry.insert(0, result[11])
+        self.emitent_buletin_entry.insert(0, result[12])
+        self.data_eliberare_buletin_entry.set_date(result[13])
+        self.cnp_entry.insert(0, result[14])
+        self.cetatenie_entry.insert(0, result[15])
+        self.strada_entry.insert(0, result[16])
+        self.nr_strada_entry.insert(0, result[17])
+        self.bloc_entry.insert(0, result[18])
+        self.scara_entry.insert(0, result[19])
+        self.etaj_entry.insert(0, result[20])
+        self.ap_entry.insert(0, result[21])
+        self.sector_entry.insert(0, result[22])
+        self.oras_entry.insert(0, result[23])
+        self.judet_entry.insert(0, result[24])
+        self.telefon_personal_entry.insert(0, result[25])
+        self.telefon_firma_entry.insert(0, result[26])
+        self.email_entry.insert(0, result[27])
+        self.mail_firma_entry.insert(0, result[28])
+        self.numar_serie_permis_entry.insert(0, result[29])
+        self.cat_a.set(result[30])
+        self.cat_b.set(result[31])
+        self.cat_c.set(result[32])
+        self.cat_ce.set(result[33])
+        self.cat_d.set(result[34])
+        self.cat_de.set(result[35])
+
+        self.disable_angajati()
+        self.menu.entryconfig(1, state="disabled")
+        self.menu.entryconfig(2, state="normal")
+
+    def editare_angajat(self, event=None):
+        self.enable_angajati()
+        self.menu.entryconfig(1, state="normal", label="Actualizare angajat", accelerator="Ctrl+D", command=lambda: self.salvare_angajat(id_angajat=self.angajat_id_entry.get()))
+        self.menu.entryconfig(2, state="disabled")
 
 if __name__ == "__main__":
     root = Tk()
