@@ -318,11 +318,11 @@ class Vehicule:
         
 
         
-        sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND nume = %s"
-        value = (id, date_rem[0])
-        cursor.execute(sql, value)
+        # sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND nume = %s"
+        # value = (id, date_rem[0])
+        # cursor.execute(sql, value)
 
-        scadente = cursor.fetchall()
+        # scadente = cursor.fetchall()
 
         # print(scadente)
 

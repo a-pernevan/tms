@@ -675,7 +675,8 @@ class Angajati_firma:
         self.cat_d_checkbutton.deselect()
         self.cat_de_checkbutton.deselect()    
 
-
+        self.menu.entryconfig(1, state="normal", label="Salvare angajat", command=self.salvare_angajat)
+        self.menu.entryconfig(2, state="disabled")
     
     # Incarcam datele angajatului din baza de date
     def incarca_angajat(self, id_angajat, event=None):
