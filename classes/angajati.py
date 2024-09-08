@@ -9,6 +9,7 @@ from liste import Functii, Filiala, Lista_orase
 from tkcalendar import DateEntry
 from datetime import date, timedelta, datetime
 from utils.tooltip import ToolTip
+from scadente import Scadente
 try:
     from database.datab import connection, cursor
 except:
@@ -742,11 +743,29 @@ class Angajati_firma:
         self.disable_angajati()
         self.menu.entryconfig(1, state="disabled")
         self.menu.entryconfig(2, state="normal")
+        self.scadente_opt.entryconfig(0, state="normal", command=self.incarca_scadente)
 
     def editare_angajat(self, event=None):
         self.enable_angajati()
         self.menu.entryconfig(1, state="normal", label="Actualizare angajat", accelerator="Ctrl+D", command=lambda: self.salvare_angajat(id_angajat=self.angajat_id_entry.get()))
         self.menu.entryconfig(2, state="disabled")
+
+    def incarca_scadente(self, event=None):
+        id_angajat = self.angajat_id_entry.get()
+        nume_angajat = f"{self.angajat_prenume_entry.get()} {self.angajat_nume_entry.get()}"
+        tip_angajat = self.angajat_functie_entry.get()
+        scadente_windows = Toplevel(self.master)
+        scadente_windows.transient(self.master)
+        scadente_windows.grab_set()
+        scadente_windows.title("Scadente")
+        scadente_windows.geometry("300x200")
+        Scadente(scadente_windows, id_angajat, nume_angajat, tip_angajat)
+        scadente_windows.wait_window()
+        obj()
+    
+    def incarca_documente(self, id_angajat, nume_angajat, event=None):
+        pass
+
 
 if __name__ == "__main__":
     root = Tk()
