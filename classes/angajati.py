@@ -10,6 +10,7 @@ from tkcalendar import DateEntry
 from datetime import date, timedelta, datetime
 from utils.tooltip import ToolTip
 from scadente import Scadente
+from upload_download_docs import Documente
 try:
     from database.datab import connection, cursor
 except:
@@ -743,7 +744,10 @@ class Angajati_firma:
         self.disable_angajati()
         self.menu.entryconfig(1, state="disabled")
         self.menu.entryconfig(2, state="normal")
+        
         self.scadente_opt.entryconfig(0, state="normal", command=self.incarca_scadente)
+
+        self.documente_opt.entryconfig(0, state="normal", command=self.incarca_documente)
 
     def editare_angajat(self, event=None):
         self.enable_angajati()
@@ -761,11 +765,18 @@ class Angajati_firma:
         scadente_windows.geometry("300x200")
         Scadente(scadente_windows, id_angajat, nume_angajat, tip_angajat)
         scadente_windows.wait_window()
-        obj()
+        
     
-    def incarca_documente(self, id_angajat, nume_angajat, event=None):
-        pass
-
+    def incarca_documente(self, event=None):
+        id_angajat = self.angajat_id_entry.get()
+        nume_angajat = f"{self.angajat_prenume_entry.get()} {self.angajat_nume_entry.get()}"
+        documente_window = Toplevel(self.master)
+        documente_window.transient(self.master)
+        documente_window.grab_set()
+        documente_window.title("Documente")
+        documente_window.geometry("300x200")
+        Documente(documente_window, id_angajat, nume_angajat)
+        documente_window.wait_window()
 
 if __name__ == "__main__":
     root = Tk()
