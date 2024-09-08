@@ -27,9 +27,9 @@ class Angajati_firma:
         self.master = master
         self.menu_frame = Frame(self.master)
         self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
-        self.main_menu = Menubutton(self.menu_frame, text="Fisier")
 
-        # Cream un meniu principal pentru aplicatie. 
+        # Cream un meniu principal pentru aplicatie.
+        self.main_menu = Menubutton(self.menu_frame, text="Fisier")
         self.menu = Menu(self.main_menu, tearoff=0)
         self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.clear_angajati)
         self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
@@ -744,7 +744,7 @@ class Angajati_firma:
         self.disable_angajati()
         self.menu.entryconfig(1, state="disabled")
         self.menu.entryconfig(2, state="normal")
-        
+
         self.scadente_opt.entryconfig(0, state="normal", command=self.incarca_scadente)
 
         self.documente_opt.entryconfig(0, state="normal", command=self.incarca_documente)
