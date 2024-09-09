@@ -25,46 +25,9 @@ class Angajati_firma:
         # self.master = Toplevel(master)
         # self.master.title("Gestionare angajati")
         self.master = master
-        self.menu_frame = Frame(self.master)
-        self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
-
-        # Cream un meniu principal pentru aplicatie.
-        self.main_menu = Menubutton(self.menu_frame, text="Fisier")
-        self.menu = Menu(self.main_menu, tearoff=0)
-        self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.clear_angajati)
-        self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
-        self.menu.add_command(label="Editare angajat", accelerator="Ctrl+E", command=self.editare_angajat)
-        self.menu.add_separator()
-        self.menu.add_command(label="Iesire", command=master.destroy)
-        self.main_menu['menu'] = self.menu
-        self.menu.entryconfig(0, state="normal")
-        self.menu.entryconfig(2, state="disabled")
         
-        x = 2
-
-        # Bind-urile pentru meniu si alte shortcut-uri
-        self.master.bind("<Control-s>", self.salvare_angajat)
-        # probleme la bind-ul asta. 
-        # self.master.bind("<Control-d>", lambda x:self.incarca_angajat(x))
-        self.master.bind("<Control-e>", self.enable_angajati)
-        self.master.bind("<Control-n>", self.clear_angajati)
-
-        self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
-        self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
-        self.scadente_menu['menu'] = self.scadente_opt
-        self.scadente_opt.add_command(label="Adaugare / editare scadente")
-        self.scadente_opt.entryconfig(0, state="disabled")
-
-        self.documente_menu = Menubutton(self.menu_frame, text="Documente")
-        self.documente_opt = Menu(self.documente_menu, tearoff=0)
-        self.documente_menu['menu'] = self.documente_opt
-        self.documente_opt.add_command(label="Adaugare / editare documente")
-        self.documente_opt.entryconfig(0, state="disabled")
-        
-        self.main_menu.grid(row=0, column=0)
-        
-        self.scadente_menu.grid(row=0, column=1, padx=5)
-        self.documente_menu.grid(row=0, column=2, padx=5)
+        self.angajat_notebook = ttk.Notebook(self.master)
+        self.angajat_notebook.pack(pady=0)
         
         # self.master.title("Gestionare angajati")
         self.get_functii = Functii(self.master)
@@ -72,7 +35,7 @@ class Angajati_firma:
         self.get_filiale = Filiala(self.master)
         self.lista_filiale = self.get_filiale.afisare_filiale()
         if self.lista_functii and self.lista_filiale:
-            self.interfata()
+            self.lista_angajati()
         elif not self.lista_functii:
             messagebox.showerror(title="Error", message="No data found")
             self.get_functii.adauga_functie(self.master)
@@ -99,14 +62,32 @@ class Angajati_firma:
         window.wait_window()
         lista_filiale = self.get_filiale.afisare_filiale()
         self.angajat_filiala.configure(values=lista_filiale)    
+
+
+    # Cream tab-ul pentru afisare lista de angajati
+    def lista_angajati(self):
+        self.angajati_tab = Frame(self.angajat_notebook)
+        self.angajati_tab.pack(fill=BOTH, expand=1, anchor=W)
+        self.angajat_notebook.add(self.angajati_tab, text="Angajati")
+        self.angajat_notebook.select(self.angajati_tab)
         
+
+        self.angajati_frame = LabelFrame(self.angajati_tab, text="Lista angajati")
+        self.angajati_frame.pack(padx=10, pady=10)
+
+        self.test_label = Button(self.angajati_frame, text="Adauga angajati", command=self.interfata)
+        self.test_label.grid(row=0, column=0)
+
     # Interfata de adaugare angajat nou. 
     def interfata(self):
-        
+        self.test_label.configure(state=DISABLED)
         self.lista_orase = []
         self.lista_judete = []
         lock = threading.Lock()
 
+        def iesire():
+            self.test_label.configure(state=NORMAL)
+            self.edit_angajat_tab.destroy()
         def cauta_oras():
             query = self.oras_entry.get()
             if query:
@@ -142,10 +123,56 @@ class Angajati_firma:
                 for judet in orase_judete.afisare_judete():
                     self.lista_judete.append(judet)
 
+        self.edit_angajat_tab = Frame(self.angajat_notebook)
+        self.edit_angajat_tab.pack(fill="both", expand=1)
+        self.angajat_notebook.add(self.edit_angajat_tab, text="Gestionare angajati")
+        self.angajat_notebook.select(self.edit_angajat_tab)
 
-        self.main_window = LabelFrame(self.master, text="Angajati")
+        self.menu_frame = Frame(self.edit_angajat_tab)
+        self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
+
+        # Cream un meniu principal pentru aplicatie.
+        self.main_menu = Menubutton(self.menu_frame, text="Fisier")
+        self.menu = Menu(self.main_menu, tearoff=0)
+        self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.clear_angajati)
+        self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
+        self.menu.add_command(label="Editare angajat", accelerator="Ctrl+E", command=self.editare_angajat)
+        self.menu.add_separator()
+        self.menu.add_command(label="Inchide tab", command=iesire)
+        self.main_menu['menu'] = self.menu
+        self.menu.entryconfig(0, state="normal")
+        self.menu.entryconfig(2, state="disabled")
+        
+        x = 2
+
+        # Bind-urile pentru meniu si alte shortcut-uri
+        self.master.bind("<Control-s>", self.salvare_angajat)
+        # probleme la bind-ul asta. 
+        # self.master.bind("<Control-d>", lambda x:self.incarca_angajat(x))
+        self.master.bind("<Control-e>", self.enable_angajati)
+        self.master.bind("<Control-n>", self.clear_angajati)
+
+        self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
+        self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
+        self.scadente_menu['menu'] = self.scadente_opt
+        self.scadente_opt.add_command(label="Adaugare / editare scadente")
+        self.scadente_opt.entryconfig(0, state="disabled")
+
+        self.documente_menu = Menubutton(self.menu_frame, text="Documente")
+        self.documente_opt = Menu(self.documente_menu, tearoff=0)
+        self.documente_menu['menu'] = self.documente_opt
+        self.documente_opt.add_command(label="Adaugare / editare documente")
+        self.documente_opt.entryconfig(0, state="disabled")
+        
+        self.main_menu.grid(row=0, column=0)        
+        self.scadente_menu.grid(row=0, column=1, padx=5)
+        self.documente_menu.grid(row=0, column=2, padx=5)
+
+        self.main_window = LabelFrame(self.edit_angajat_tab, text="Angajati")
         # self.main_window.grid(row=0, column=0, padx=10, pady=10)
         self.main_window.pack(padx=10, pady=10)
+
+
 
         # Frame-ul cu detaliile angajatului.
 
@@ -401,7 +428,7 @@ class Angajati_firma:
         self.cat_de_checkbutton.grid(row=6, column=0, sticky="nw")
 
 
-        self.incarca_angajat(2)
+        # self.incarca_angajat(2)
 
     
     def vechime_angajat(self):
