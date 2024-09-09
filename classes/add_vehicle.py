@@ -1,3 +1,4 @@
+from msilib.schema import CheckBox
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.tix import ComboBox
@@ -518,6 +519,12 @@ class Vehicule:
         data_inventar_entry = DateEntry(adauga_inventar_frame, locale="RO_ro", date_pattern='yyyy-MM-dd')
         data_inventar_entry.grid(row=0, column=3, padx=10, pady=5, sticky="w")
         data_inventar_entry.set_date(data_inventar)
+
+        intocmit_de_label = Label(adauga_inventar_frame, text="Intocmit de:")
+        intocmit_de_label.grid(row=0, column=4, padx=10, pady=5, sticky="w")
+
+        intocmit_de_entry = ttk.Combobox(adauga_inventar_frame)
+        intocmit_de_entry.grid(row=0, column=5, padx=10, pady=5, sticky="w")
 
         anv_axa_1_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 1")
         anv_axa_1_frame.grid(row=1, column=0, columnspan=2, sticky="w", padx=10, pady=5)
