@@ -378,7 +378,7 @@ class Vehicule:
 
                 result = cursor.fetchall()
 
-                print(result)
+                # print(result)
             except:
                 messagebox.showerror(title="Error", message="Eroare la incarcare date tehnice!")
 
@@ -533,6 +533,7 @@ class Vehicule:
         numar_axe_entry = Entry(edit_detalii_tehnice_frame)
         numar_axe_entry.grid(row=5, column=1, padx=10, pady=5, sticky="w")
 
+        # Verificam daca exista datele tehnice in db si le incarcam. 
         if date_tehnice:
             data_inmatriculare_remorca_entry.set_date(date_tehnice[0][2])
             lungime_remorca_entry.insert(0, str(date_tehnice[0][8]))
@@ -837,6 +838,8 @@ class Vehicule:
 
 
     def incarca_remorci(self):
+
+        # Se incarca remorcile din baza de date si se populeaza treeview. 
         self.lista_remorci = []
         try:
             connection._open_connection()
