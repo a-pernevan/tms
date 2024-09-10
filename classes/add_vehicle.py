@@ -1,4 +1,3 @@
-from msilib.schema import CheckBox
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.tix import ComboBox
@@ -11,6 +10,7 @@ from scadente import Scadente
 from PIL import Image, ImageTk
 from right_click_menu import RightClickMenu
 from tkcalendar import DateEntry
+from ttkwidgets.autocomplete import AutocompleteCombobox
 try:
     from database.datab import connection, cursor
 except:
@@ -493,6 +493,17 @@ class Vehicule:
 
     def adauga_inventar(self, id, nr_remorca):
         print(id, nr_remorca)
+        
+        lista_angajati = []
+
+        connection._open_connection()
+        sql = "SELECT nume, prenume from angajati"
+        cursor.execute(sql)
+        angajati = cursor.fetchall()
+        connection.close()
+
+        for nume, prenume in angajati:
+            lista_angajati.append(f"{prenume} {nume}")
 
         data_inventar = date.today().strftime("%Y-%m-%d")
         # print(data_inventar)
@@ -523,7 +534,7 @@ class Vehicule:
         intocmit_de_label = Label(adauga_inventar_frame, text="Intocmit de:")
         intocmit_de_label.grid(row=0, column=4, padx=10, pady=5, sticky="w")
 
-        intocmit_de_entry = ttk.Combobox(adauga_inventar_frame)
+        intocmit_de_entry = AutocompleteCombobox(adauga_inventar_frame, completevalues=lista_angajati)
         intocmit_de_entry.grid(row=0, column=5, padx=10, pady=5, sticky="w")
 
         anv_axa_1_frame = LabelFrame(adauga_inventar_frame, text="Anvelope axa 1")
