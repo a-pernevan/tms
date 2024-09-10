@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.tix import ComboBox
+
+from requests import delete
 # from tkinter.tix import ComboBox
 from utils.tooltip import ToolTip
 from liste import Remorci, Lista_clienti
@@ -491,8 +493,95 @@ class Vehicule:
     def adauga_remorca(self):
         pass
 
-    def adauga_inventar(self, id, nr_remorca):
+    def adauga_inventar(self, id, nr_remorca, id_inv=None):
         print(id, nr_remorca)
+
+        data_inventar = date.today().strftime("%Y-%m-%d")
+        # print(data_inventar)
+
+        def disable_fields():
+            data_inventar_entry.config(state="disabled")
+            intocmit_de_entry.config(state="disabled")
+            marca_anv_axa1_entry.config(state="disabled")
+            dim_anv_axa1_entry.config(state="disabled")
+            stare_anv_axa1_entry.config(state="disabled")
+            marca_anv_axa2_entry.config(state="disabled")
+            dim_anv_axa2_entry.config(state="disabled")
+            stare_anv_axa2_entry.config(state="disabled")
+            marca_anv_axa3_entry.config(state="disabled")
+            dim_anv_axa3_entry.config(state="disabled")
+            stare_anv_axa3_entry.config(state="disabled")
+            rezerva_cap_check.config(state="disabled")
+            rezerva_remorca_check.config(state="disabled")
+            cablu_vamal_check.config(state="disabled")
+            coltare_check.config(state="disabled")
+            covorase_check.config(state="disabled")
+            sticker_limite_check.config(state="disabled")
+            nr_scanduri_entry.config(state="disabled")
+            nr_chingi_entry.config(state="disabled")
+            nr_crikete_entry.config(state="disabled")
+            nr_bari_marfa_entry.config(state="disabled")
+            nr_cala_roata_entry.config(state="disabled")
+            nr_stickere_unghi_entry.config(state="disabled")
+
+            file_menu.entryconfig(0, state="active")
+            file_menu.entryconfig(1, state="active")
+            file_menu.entryconfig(2, state="disabled")
+
+        def enable_fields():
+            data_inventar_entry.config(state="normal")
+            intocmit_de_entry.config(state="normal")
+            marca_anv_axa1_entry.config(state="normal")
+            dim_anv_axa1_entry.config(state="normal")
+            stare_anv_axa1_entry.config(state="normal")
+            marca_anv_axa2_entry.config(state="normal")
+            dim_anv_axa2_entry.config(state="normal")
+            stare_anv_axa2_entry.config(state="normal")
+            marca_anv_axa3_entry.config(state="normal")
+            dim_anv_axa3_entry.config(state="normal")
+            stare_anv_axa3_entry.config(state="normal")
+            rezerva_cap_check.config(state="normal")
+            rezerva_remorca_check.config(state="normal")
+            cablu_vamal_check.config(state="normal")
+            coltare_check.config(state="normal")
+            covorase_check.config(state="normal")
+            sticker_limite_check.config(state="normal")
+            nr_scanduri_entry.config(state="normal")
+            nr_chingi_entry.config(state="normal")
+            nr_crikete_entry.config(state="normal")
+            nr_bari_marfa_entry.config(state="normal")
+            nr_cala_roata_entry.config(state="normal")
+            nr_stickere_unghi_entry.config(state="normal")
+
+        def clear_fields():
+            enable_fields()
+            data_inventar_entry.set_date(data_inventar)
+            intocmit_de_entry.delete(0, END)
+            marca_anv_axa1_entry.delete(0, END)
+            dim_anv_axa1_entry.delete(0, END)
+            stare_anv_axa1_entry.delete(0, END)
+            marca_anv_axa2_entry.delete(0, END)
+            dim_anv_axa2_entry.delete(0, END)
+            stare_anv_axa2_entry.delete(0, END)
+            marca_anv_axa3_entry.delete(0, END)
+            dim_anv_axa3_entry.delete(0, END)
+            stare_anv_axa3_entry.delete(0, END)
+            rezerva_cap_check.deselect()
+            rezerva_remorca_check.deselect()
+            cablu_vamal_check.deselect()
+            coltare_check.deselect()
+            covorase_check.deselect()
+            sticker_limite_check.deselect()
+            nr_scanduri_entry.delete(0, END)
+            nr_chingi_entry.delete(0, END)
+            nr_crikete_entry.delete(0, END)
+            nr_bari_marfa_entry.delete(0, END)
+            nr_cala_roata_entry.delete(0, END)
+            nr_stickere_unghi_entry.delete(0, END)
+
+            file_menu.entryconfig(0, state="disabled")
+            file_menu.entryconfig(1, state="disabled")
+            file_menu.entryconfig(2, state="active")
         
         lista_angajati = []
 
@@ -505,15 +594,26 @@ class Vehicule:
         for nume, prenume in angajati:
             lista_angajati.append(f"{prenume} {nume}")
 
-        data_inventar = date.today().strftime("%Y-%m-%d")
-        # print(data_inventar)
-
         stare_anvelopa = ["Noi", "Uzate", "Pana stanga", "Pana dreapta", "Schimb stanga", "Schimb dreapta", "Schimb ambele"]
 
         adauga_inventar_window = Toplevel(self.root)
         adauga_inventar_window.title("Adaugare inventar")
         adauga_inventar_window.transient(self.root)
         adauga_inventar_window.grab_set()
+
+        menubar = Menu(adauga_inventar_window)
+        adauga_inventar_window.config(menu=menubar)
+
+        file_menu = Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Nou", accelerator="Ctrl+N", command=clear_fields)
+        file_menu.add_command(label="Editeaza", accelerator="Ctrl+E", command=enable_fields)
+        file_menu.add_command(label="Salveaza", accelerator="Ctrl+S", command=disable_fields)
+        file_menu.add_separator()
+        file_menu.add_command(label="Inchide", command=adauga_inventar_window.destroy)
+        menubar.add_cascade(label="Fisier", menu=file_menu, underline=0)
+
+        file_menu.entryconfig("Editeaza", state="disabled")
+        file_menu.entryconfig("Nou", state="disabled")
 
         adauga_inventar_frame = LabelFrame(adauga_inventar_window, text=f"Adaugare inventar {nr_remorca}")
         adauga_inventar_frame.pack(expand=1, fill="both", padx=5, pady=5)

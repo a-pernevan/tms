@@ -132,7 +132,7 @@ class Angajati_firma:
         self.menu_frame.pack(padx=5, pady=5, fill=X, anchor=NW)
 
         # Cream un meniu principal pentru aplicatie.
-        self.main_menu = Menubutton(self.menu_frame, text="Fisier")
+        self.main_menu = Menubutton(self.menu_frame, text="Fisier", underline=0)
         self.menu = Menu(self.main_menu, tearoff=0)
         self.menu.add_command(label="Angajat nou", accelerator="Ctrl+N", command=self.clear_angajati)
         self.menu.add_command(label="Salvare angajat", accelerator="Ctrl+S", command=self.salvare_angajat)
@@ -152,7 +152,7 @@ class Angajati_firma:
         self.master.bind("<Control-e>", self.enable_angajati)
         self.master.bind("<Control-n>", self.clear_angajati)
 
-        self.scadente_menu = Menubutton(self.menu_frame, text="Scadente")
+        self.scadente_menu = Menubutton(self.menu_frame, text="Scadente", underline=0)
         self.scadente_opt = Menu(self.scadente_menu, tearoff=0)
         self.scadente_menu['menu'] = self.scadente_opt
         self.scadente_opt.add_command(label="Adaugare / editare scadente")
