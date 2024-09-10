@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from tkinter.tix import ComboBox
+from turtle import width
 
 from requests import delete
 # from tkinter.tix import ComboBox
@@ -340,8 +341,9 @@ class Vehicule:
         Documente(self.documente_frame, id, date_rem[0])
 
     def editare_remorca(self, id, numar):
-
+        print(id)
         def salvare_modificari():
+            
             try:
                 connection._open_connection()
                 sql = "UPDATE tauros_truck SET plate_no = %s, serie_sasiu = %s, marca = %s, an_fabricatie = %s, proprietar = %s WHERE truck_id = %s AND categorie = %s"
@@ -364,6 +366,26 @@ class Vehicule:
             self.reset_detalii()
             edit_remorca_window.destroy()
 
+        def salvare_date_tehnice():
+            pass
+
+        def incarcare_date_tehnice():
+            try:
+                connection._open_connection()
+                sql = "SELECT * FROM date_tehnice_rem WHERE id_rem=%s"
+
+                cursor.execute(sql, (id, ))
+
+                result = cursor.fetchall()
+
+                print(result)
+            except:
+                messagebox.showerror(title="Error", message="Eroare la incarcare date tehnice!")
+
+            finally:
+                connection.close()
+
+            return result
 
         edit_remorca_window = Toplevel(self.root)
         edit_remorca_window.transient(self.root)
@@ -425,6 +447,10 @@ class Vehicule:
         self.anulare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Anuleaza", command=edit_remorca_window.destroy)
         self.anulare_mod_remorca_button.grid(row=0, column=1, padx=10, pady=5)
 
+        date_tehnice = incarcare_date_tehnice()
+
+        # Cautam remorca in lista si extragem proprietarul. 
+
         for remorca in self.lista_remorci:
             if str(remorca[0]) == str(id):
                 # print(remorca[5])
@@ -444,7 +470,7 @@ class Vehicule:
         data_inmatriculare_remorca_label = Label(edit_detalii_tehnice_frame, text="Data primei inmatriculari:")
         data_inmatriculare_remorca_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
 
-        data_inmatriculare_remorca_entry = Entry(edit_detalii_tehnice_frame)
+        data_inmatriculare_remorca_entry = DateEntry(edit_detalii_tehnice_frame, locale="RO_ro", date_pattern='yyyy-MM-dd', width=17)
         data_inmatriculare_remorca_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
         lungime_remorca_label = Label(edit_detalii_tehnice_frame, text="Lungime:")
@@ -489,6 +515,36 @@ class Vehicule:
         masa_maxima_admisa_entry = Entry(edit_detalii_tehnice_frame)
         masa_maxima_admisa_entry.grid(row=3, column=3, padx=10, pady=5, sticky="w")
         
+        tip_remorca_label = Label(edit_detalii_tehnice_frame, text="Tip remorca:")
+        tip_remorca_label.grid(row=4, column=0, sticky="w", padx=10, pady=5)
+
+        tip_remorca_entry = ttk.Combobox(edit_detalii_tehnice_frame, values=["Prelata", "Platforma"], width=17)
+        tip_remorca_entry.grid(row=4, column=1, padx=10, pady=5, sticky="w")
+
+        incarcatura_max_admisa_label = Label(edit_detalii_tehnice_frame, text="Incarcatura maxima admisa (Kg):")
+        incarcatura_max_admisa_label.grid(row=4, column=2, sticky="w", padx=10, pady=5)
+
+        incarcatura_max_admisa_entry = Entry(edit_detalii_tehnice_frame)
+        incarcatura_max_admisa_entry.grid(row=4, column=3, padx=10, pady=5, sticky="w")
+
+        numar_axe_label = Label(edit_detalii_tehnice_frame, text="Numar axe:")
+        numar_axe_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
+
+        numar_axe_entry = Entry(edit_detalii_tehnice_frame)
+        numar_axe_entry.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+        if date_tehnice:
+            data_inmatriculare_remorca_entry.set_date(date_tehnice[0][2])
+            lungime_remorca_entry.insert(0, str(date_tehnice[0][8]))
+            serie_civ_remorca_entry.insert(0, str(date_tehnice[0][3]))
+            latime_remorca_entry.insert(0, str(date_tehnice[0][9]))
+            serie_talon_remorca_entry.insert(0, str(date_tehnice[0][4]))
+            inaltime_remorca_entry.insert(0, str(date_tehnice[0][10]))
+            culoare_remorca_entry.insert(0, str(date_tehnice[0][5]))
+            masa_maxima_admisa_entry.insert(0, str(date_tehnice[0][11]))
+            tip_remorca_entry.set(str(date_tehnice[0][13]))
+            incarcatura_max_admisa_entry.insert(0, str(date_tehnice[0][12]))
+            numar_axe_entry.insert(0, str(date_tehnice[0][7]))
         
     def adauga_remorca(self):
         pass
