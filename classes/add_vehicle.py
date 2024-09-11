@@ -408,13 +408,13 @@ class Vehicule:
             numar_axe_entry.delete(0, END)
 
         
-        def adauga_date_tehnice():
+        def adauga_date_tehnice(id_rem):
             
             try: 
                 connection._open_connection()
                 sql = "INSERT INTO date_tehnice_rem (id_rem, data_reg, serie_civ, serie_talon, culoare, axe, lungime, latime, inaltime, masa_max, max_load, tip_rem) \
                         values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                values = (id, data_inmatriculare_remorca_entry.get_date(), \
+                values = (id_rem, data_inmatriculare_remorca_entry.get_date(), \
                                         serie_civ_remorca_entry.get(), \
                                         serie_talon_remorca_entry.get(), \
                                         culoare_remorca_entry.get(), \
@@ -465,7 +465,7 @@ class Vehicule:
                     result = True
                 
                 else:
-                    result = adauga_date_tehnice()
+                    result = adauga_date_tehnice(id)
                 
                 if result: 
                     connection._open_connection()
@@ -490,7 +490,7 @@ class Vehicule:
             self.reset_detalii()
             edit_remorca_window.destroy()
 
-        def salvare_date_tehnice():
+        def salvare_remorca_noua():
             pass
 
         def incarcare_date_tehnice():
