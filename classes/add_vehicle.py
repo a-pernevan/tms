@@ -1,8 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from tkinter.tix import ComboBox
-from turtle import width
-
+from ttkwidgets.frames import ScrolledFrame
 from requests import delete
 # from tkinter.tix import ComboBox
 from utils.tooltip import ToolTip
@@ -50,6 +48,7 @@ class Vehicule:
         self.icon_reset_trailers = self.icon_reset_trailers.resize((33, 33))
         self.icon_reset_trailers = ImageTk.PhotoImage(self.icon_reset_trailers)
 
+        # self.remorca_frame = Frame(self.main_frame)
         self.remorca_frame = Frame(self.main_frame)
         self.remorca_frame.pack(fill=BOTH, expand=1, anchor=W)
 
@@ -111,7 +110,31 @@ class Vehicule:
         # self.detalii_remorca()
 
     def detalii_remorca(self, date_rem, id):
+
+        def incarca_inventare():
+            try:
+                connection._open_connection()
+                sql = "SELECT * FROM inventar_remorci WHERE id_tms = %s"
+                cursor.execute(sql, (id, ))
+
+                inventare = cursor.fetchall()
+
+            except:
+                messagebox.showerror("Error", "Nu s-a putut conecta la baza de date!")
+
+            if inventare:
+                for i in range(len(inventare)):
+                    print(inventare[i])
+                    print(date_rem[0])
+                    inv_remorca_tree.insert(parent='', index='end', iid=i, text='', values=(date_rem[0], inventare[i][0], inventare[i][2], inventare[i][3]))
         
+        def reincarca_inventare():
+            for i in inv_remorca_tree.get_children():
+                inv_remorca_tree.delete(i)
+
+            incarca_inventare()
+            print("OK")
+
         self.date_remorca = date_rem
         self.id_remorca = id
 
@@ -122,6 +145,8 @@ class Vehicule:
         self.icon_add_new = Image.open("classes/utils/icons/add-text-icon-15.jpg")
         self.icon_add_new = self.icon_add_new.resize((22, 22))
         self.icon_add_new = ImageTk.PhotoImage(self.icon_add_new)
+
+        self.frame_detalii = Frame(self.remorca_frame)
 
         self.frame_detalii.pack(padx=10, pady=10, anchor="center")
 
@@ -311,15 +336,24 @@ class Vehicule:
         # Confirgurare scrollbar
         inv_remorca_scroll.config(command=inv_remorca_tree.yview)
 
+        incarca_inventare()
+
         # Adaugam butoane
 
         inventar_butoane_frame = Frame(self.frame_inventare_remorci)
         inventar_butoane_frame.grid(row=0, column=2, padx=10, pady=10)
 
+        self.icon_refresh_inv = Image.open("classes/utils/icons/reset-icon-png-10.jpg")
+        self.icon_refresh_inv = self.icon_refresh_inv.resize((22, 22))
+        self.icon_refresh_inv = ImageTk.PhotoImage(self.icon_refresh_inv)
+
         inventar_nou_button = Button(inventar_butoane_frame, text="Inventar nou", image=self.icon_add_new, borderwidth=0, highlightthickness=0, relief="flat", command=lambda:self.adauga_inventar(id, date_rem[0]))
         inventar_nou_button.grid(row=0, column=0, padx=5, pady=5, sticky="nw")
         ToolTip(inventar_nou_button, 'Inventar nou')
-        
+
+        refresh_inventare = Button(inventar_butoane_frame, text="Refresh", image=self.icon_refresh_inv, borderwidth=0, highlightthickness=0, relief="flat", command=reincarca_inventare)
+        refresh_inventare.grid(row=1, column=0, padx=5, pady=5, sticky="nw")
+        ToolTip(refresh_inventare, 'Actualizare')
 
         
         # sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND nume = %s"
@@ -556,6 +590,68 @@ class Vehicule:
         data_inventar = date.today().strftime("%Y-%m-%d")
         # print(data_inventar)
 
+        # Introducem un inventar nou in baza de date. 
+        def inventar_nou():
+            disable_fields()
+            try:
+                connection._open_connection()
+
+            except:
+                messagebox.showerror("Error", "Nu s-a putut conecta la baza de date!")
+
+            else:
+                sql = "INSERT INTO inventar_remorci (id_tms, data_inventar, intocmit, axa1_marca, axa1_dim, axa1_stare, axa2_marca, axa2_dim, axa2_stare, axa3_marca, axa3_dim, axa3_stare, \
+                    rezerva_cap, rezerva_rem, cablu_vamal, coltare, covorase, stickere, scanduri, chingi, clicheti, bari, cala, stiker_unghi) \
+                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                values = (id, data_inventar_entry.get(), \
+                            intocmit_de_entry.get(), \
+                            marca_anv_axa1_entry.get(), \
+                            dim_anv_axa1_entry.get(), \
+                            stare_anv_axa1_entry.get(), \
+                            marca_anv_axa2_entry.get(), \
+                            dim_anv_axa2_entry.get(), \
+                            stare_anv_axa2_entry.get(), \
+                            marca_anv_axa3_entry.get(), \
+                            dim_anv_axa3_entry.get(), \
+                            stare_anv_axa3_entry.get(), \
+                            rezerva_cap_var.get(), \
+                            rezerva_remorca_var.get(), \
+                            cablu_vamal_var.get(), \
+                            coltare_var.get(), \
+                            covorase_var.get(), \
+                            sticker_limite_var.get(), \
+                            nr_scanduri_entry.get(), \
+                            nr_chingi_entry.get(), \
+                            nr_crikete_entry.get(), \
+                            nr_bari_marfa_entry.get(), \
+                            nr_cala_roata_entry.get(), \
+                            nr_stickere_unghi_entry.get())
+                
+                cursor.execute(sql, values)
+                connection.commit()
+
+                sql = "SELECT id from inventar_remorci WHERE id_tms = %s ORDER BY id DESC LIMIT 1"
+
+                cursor.execute(sql, (id,))
+
+                result = cursor.fetchall()
+                id_inv = result[0][0]
+
+                nr_inventar_entry.config(state="normal")
+
+                nr_inventar_entry.insert(0, id_inv)
+
+                nr_inventar_entry.config(state="disabled")
+
+                connection.close()
+
+                messagebox.showinfo("Success", "Inventar adaugat cu succes!")
+
+                file_menu.entryconfig(0, state="active")
+                file_menu.entryconfig(1, state="active")
+                file_menu.entryconfig(2, state="disabled")
+        
+
         def disable_fields():
             data_inventar_entry.config(state="disabled")
             intocmit_de_entry.config(state="disabled")
@@ -640,6 +736,13 @@ class Vehicule:
             file_menu.entryconfig(1, state="disabled")
             file_menu.entryconfig(2, state="active")
         
+        def edit_inventar():
+            enable_fields()
+            file_menu.entryconfig(0, state="active")
+            file_menu.entryconfig(1, state="disabled")
+            file_menu.entryconfig(2, state="active")
+        
+
         lista_angajati = []
 
         connection._open_connection()
@@ -663,8 +766,8 @@ class Vehicule:
 
         file_menu = Menu(menubar, tearoff=0)
         file_menu.add_command(label="Nou", accelerator="Ctrl+N", command=clear_fields)
-        file_menu.add_command(label="Editeaza", accelerator="Ctrl+E", command=enable_fields)
-        file_menu.add_command(label="Salveaza", accelerator="Ctrl+S", command=disable_fields)
+        file_menu.add_command(label="Editeaza", accelerator="Ctrl+E", command=edit_inventar)
+        file_menu.add_command(label="Salveaza", accelerator="Ctrl+S", command=inventar_nou)
         file_menu.add_separator()
         file_menu.add_command(label="Inchide", command=adauga_inventar_window.destroy)
         menubar.add_cascade(label="Fisier", menu=file_menu, underline=0)
