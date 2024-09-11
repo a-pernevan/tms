@@ -32,8 +32,9 @@ class Vehicule:
         self.root = root
         self.lista_remorci = []
         
-        self.main_frame = ttk.Notebook(self.root, width=1300, height=600)
-        # self.main_frame = ttk.Notebook(self.root)
+        # self.main_frame = ttk.Notebook(self.root, width=1300, height=600)
+
+        self.main_frame = ttk.Notebook(self.root)
         self.main_frame.pack(fill=BOTH, expand=1)
 
         self.frame_remorci()
@@ -49,11 +50,11 @@ class Vehicule:
         self.icon_reset_trailers = ImageTk.PhotoImage(self.icon_reset_trailers)
 
         self.test_frame = ScrolledFrame(self.main_frame, compound=RIGHT)
-        self.test_frame.pack(fill=BOTH, expand=1, anchor="ne")
+        self.test_frame.pack(fill=BOTH, expand=1, anchor="center")
 
         # self.remorca_frame = Frame(self.main_frame)
         self.remorca_frame = Frame(self.test_frame.interior)
-        self.remorca_frame.pack(fill=BOTH, expand=1, anchor="e")
+        self.remorca_frame.pack(fill=BOTH, expand=1, anchor="center")
 
         # self.main_frame.add(self.remorca_frame, text="Remorci")
         self.main_frame.add(self.test_frame, text="Remorci")
@@ -1008,7 +1009,7 @@ if __name__ == "__main__":
     # root.title("Adaugare Vehicul")
     # root.geometry("900x600")  
     root.title("Gestionare Flota")
-    root.geometry("1300x600")
+    # root.geometry("1300x600")
     hello = Vehicule(root)
 
     root.mainloop()
