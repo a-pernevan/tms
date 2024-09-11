@@ -1,3 +1,4 @@
+from optparse import Values
 from tkinter import *
 from tkinter import ttk, messagebox
 from unittest import result
@@ -392,11 +393,55 @@ class Vehicule:
     def editare_remorca(self, id=None, numar=None):
         print(id)
         date_tehnice = False
+
+        def sterge_campuri():
+            data_inmatriculare_remorca_entry.delete(0, END)       
+            lungime_remorca_entry.delete(0, END)
+            serie_civ_remorca_entry.delete(0, END)
+            latime_remorca_entry.delete(0, END)
+            serie_talon_remorca_entry.delete(0, END)
+            inaltime_remorca_entry.delete(0, END)
+            culoare_remorca_entry.delete(0, END)
+            masa_maxima_admisa_entry.delete(0, END)
+            tip_remorca_entry.set("")
+            incarcatura_max_admisa_entry.delete(0, END)
+            numar_axe_entry.delete(0, END)
+
+        
+        def adauga_date_tehnice():
+            
+            try: 
+                connection._open_connection()
+                sql = "INSERT INTO date_tehnice_rem (id_rem, data_reg, serie_civ, serie_talon, culoare, axe, lungime, latime, inaltime, masa_max, max_load, tip_rem) \
+                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                values = (id, data_inmatriculare_remorca_entry.get_date(), \
+                                        serie_civ_remorca_entry.get(), \
+                                        serie_talon_remorca_entry.get(), \
+                                        culoare_remorca_entry.get(), \
+                                        numar_axe_entry.get(), \
+                                        lungime_remorca_entry.get(), \
+                                        latime_remorca_entry.get(), \
+                                        inaltime_remorca_entry.get(), \
+                                        masa_maxima_admisa_entry.get(), \
+                                        incarcatura_max_admisa_entry.get(), \
+                                        tip_remorca_entry.get())
+                print(values)
+                cursor.execute(sql, values)
+                connection.commit()
+                print("ok!")
+                
+                return True
+            
+            except: 
+                return False
+            
+            finally:
+                connection.close()
+
         def salvare_modificari():
             
             try:
                 if date_tehnice:
-                    print("date tehnice")
                     connection._open_connection()
                     sql = "UPDATE date_tehnice_rem SET data_reg = %s, serie_civ = %s, serie_talon = %s, culoare = %s, axe = %s, lungime = %s, latime = %s, inaltime = %s, \
                         masa_max = %s, max_load = %s, tip_rem = %s WHERE id_rem = %s"
@@ -416,18 +461,26 @@ class Vehicule:
                     cursor.execute(sql, values)
                     connection.commit()
                     print("ok!")
-                connection._open_connection()
-                sql = "UPDATE tauros_truck SET plate_no = %s, serie_sasiu = %s, marca = %s, an_fabricatie = %s, proprietar = %s WHERE truck_id = %s AND categorie = %s"
-                values = (edit_nr_auto_entry.get().upper(), \
-                        edit_serie_sasiu_entry.get().upper(), \
-                        edit_marca_entry.get().upper(), \
-                        edit_an_fabricatie_entry.get(), \
-                        proprietar_combobox.get(), \
-                        id, 'SEMIREMORCA')
+
+                    result = True
                 
-                cursor.execute(sql, values)
-                connection.commit()
-                messagebox.showinfo(title="Success", message="Remorca modificata cu succes!")
+                else:
+                    result = adauga_date_tehnice()
+                
+                if result: 
+                    connection._open_connection()
+                    sql = "UPDATE tauros_truck SET plate_no = %s, serie_sasiu = %s, marca = %s, an_fabricatie = %s, proprietar = %s WHERE truck_id = %s AND categorie = %s"
+                    values = (edit_nr_auto_entry.get().upper(), \
+                            edit_serie_sasiu_entry.get().upper(), \
+                            edit_marca_entry.get().upper(), \
+                            edit_an_fabricatie_entry.get(), \
+                            proprietar_combobox.get(), \
+                            id, 'SEMIREMORCA')
+                    
+                    cursor.execute(sql, values)
+                    connection.commit()
+
+                    messagebox.showinfo(title="Success", message="Remorca modificata cu succes!")
 
             except:
                 messagebox.showerror(title="Error", message="Eroare la modificare!")
@@ -563,6 +616,7 @@ class Vehicule:
 
         lungime_remorca_entry = Entry(edit_detalii_tehnice_frame)
         lungime_remorca_entry.grid(row=0, column=3, padx=10, pady=5, sticky="w")
+        lungime_remorca_entry.insert(0, '0')
 
         serie_civ_remorca_label = Label(edit_detalii_tehnice_frame, text="Serie CIV:")
         serie_civ_remorca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
@@ -575,6 +629,7 @@ class Vehicule:
 
         latime_remorca_entry = Entry(edit_detalii_tehnice_frame)
         latime_remorca_entry.grid(row=1, column=3, padx=10, pady=5, sticky="w")
+        latime_remorca_entry.insert(0, '0')
 
         serie_talon_remorca_label = Label(edit_detalii_tehnice_frame, text="Serie talon:")
         serie_talon_remorca_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
@@ -587,6 +642,7 @@ class Vehicule:
 
         inaltime_remorca_entry = Entry(edit_detalii_tehnice_frame)
         inaltime_remorca_entry.grid(row=2, column=3, padx=10, pady=5, sticky="w")
+        inaltime_remorca_entry.insert(0, '0')
 
         culoare_remorca_label = Label(edit_detalii_tehnice_frame, text="Culoare:")
         culoare_remorca_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
@@ -599,6 +655,7 @@ class Vehicule:
 
         masa_maxima_admisa_entry = Entry(edit_detalii_tehnice_frame)
         masa_maxima_admisa_entry.grid(row=3, column=3, padx=10, pady=5, sticky="w")
+        masa_maxima_admisa_entry.insert(0, '0')
         
         tip_remorca_label = Label(edit_detalii_tehnice_frame, text="Tip remorca:")
         tip_remorca_label.grid(row=4, column=0, sticky="w", padx=10, pady=5)
@@ -611,16 +668,19 @@ class Vehicule:
 
         incarcatura_max_admisa_entry = Entry(edit_detalii_tehnice_frame)
         incarcatura_max_admisa_entry.grid(row=4, column=3, padx=10, pady=5, sticky="w")
+        incarcatura_max_admisa_entry.insert(0, '0')
 
         numar_axe_label = Label(edit_detalii_tehnice_frame, text="Numar axe:")
         numar_axe_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
 
         numar_axe_entry = Entry(edit_detalii_tehnice_frame)
         numar_axe_entry.grid(row=5, column=1, padx=10, pady=5, sticky="w")
+        numar_axe_entry.insert(0, '0') # Default numar
 
         # Verificam daca exista datele tehnice in db si le incarcam. 
         if date_tehnice:
-            data_inmatriculare_remorca_entry.set_date(date_tehnice[0][2])
+            sterge_campuri()
+            data_inmatriculare_remorca_entry.set_date(date_tehnice[0][2])            
             lungime_remorca_entry.insert(0, str(date_tehnice[0][8]))
             serie_civ_remorca_entry.insert(0, str(date_tehnice[0][3]))
             latime_remorca_entry.insert(0, str(date_tehnice[0][9]))
