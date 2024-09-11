@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
+from unittest import result
 from ttkwidgets.frames import ScrolledFrame
 from requests import delete
 # from tkinter.tix import ComboBox
@@ -49,6 +50,10 @@ class Vehicule:
         self.icon_reset_trailers = self.icon_reset_trailers.resize((33, 33))
         self.icon_reset_trailers = ImageTk.PhotoImage(self.icon_reset_trailers)
 
+        self.icon_add_trailer = Image.open("classes/utils/icons/add-text-icon-15.jpg")
+        self.icon_add_trailer = self.icon_add_trailer.resize((33, 33))
+        self.icon_add_trailer = ImageTk.PhotoImage(self.icon_add_trailer)
+
         # self.test_frame = ScrolledFrame(self.main_frame, compound=RIGHT)
         # self.test_frame.pack(fill=BOTH, expand=1, anchor="center")
         # # self.test_frame.grid(row=0, column=0, sticky="nsew")
@@ -81,6 +86,10 @@ class Vehicule:
         self.reset_remorci = Button(self.frame_cautare, image=self.icon_reset_trailers, borderwidth=0, highlightthickness=0, relief="flat", state="disabled", command=self.reset_detalii)
         self.reset_remorci.grid(row=0, column=3, sticky="e", padx=10, pady=10, ipadx=5, ipady=5)
         ToolTip(self.reset_remorci, "Resetare")
+
+        self.add_remorca = Button(self.frame_cautare, image=self.icon_add_trailer, borderwidth=0, highlightthickness=0, relief="flat", command=self.editare_remorca)
+        self.add_remorca.grid(row=0, column=4, sticky="e", padx=10, pady=10, ipadx=5, ipady=5)
+        ToolTip(self.add_remorca, "Adaugare")
 
         self.remorca_table_frame = Frame(self.vehicule_frame)
         self.remorca_table_frame.pack()
@@ -380,11 +389,33 @@ class Vehicule:
 
         Documente(self.documente_frame, id, date_rem[0])
 
-    def editare_remorca(self, id, numar):
+    def editare_remorca(self, id=None, numar=None):
         print(id)
+        date_tehnice = False
         def salvare_modificari():
             
             try:
+                if date_tehnice:
+                    print("date tehnice")
+                    connection._open_connection()
+                    sql = "UPDATE date_tehnice_rem SET data_reg = %s, serie_civ = %s, serie_talon = %s, culoare = %s, axe = %s, lungime = %s, latime = %s, inaltime = %s, \
+                        masa_max = %s, max_load = %s, tip_rem = %s WHERE id_rem = %s"
+                    
+                    values = (data_inmatriculare_remorca_entry.get_date(), \
+                                serie_civ_remorca_entry.get(), \
+                                serie_talon_remorca_entry.get(), \
+                                culoare_remorca_entry.get(), \
+                                numar_axe_entry.get(), \
+                                lungime_remorca_entry.get(), \
+                                latime_remorca_entry.get(), \
+                                inaltime_remorca_entry.get(), \
+                                masa_maxima_admisa_entry.get(), \
+                                incarcatura_max_admisa_entry.get(), \
+                                tip_remorca_entry.get(), id)
+
+                    cursor.execute(sql, values)
+                    connection.commit()
+                    print("ok!")
                 connection._open_connection()
                 sql = "UPDATE tauros_truck SET plate_no = %s, serie_sasiu = %s, marca = %s, an_fabricatie = %s, proprietar = %s WHERE truck_id = %s AND categorie = %s"
                 values = (edit_nr_auto_entry.get().upper(), \
@@ -427,7 +458,14 @@ class Vehicule:
 
             return result
 
+        if numar:
+            numar_remorca = numar[0]
+
+        else:
+            numar_remorca = ""
+
         edit_remorca_window = Toplevel(self.root)
+        edit_remorca_window.title("Adaugare / editare remorca")
         edit_remorca_window.transient(self.root)
         edit_remorca_window.grab_set()
 
@@ -437,7 +475,7 @@ class Vehicule:
         edit_detalii_generale_tab = Frame(edit_remorca_notebook)
         edit_remorca_notebook.add(edit_detalii_generale_tab, text="Detalii generale")
 
-        edit_detalii_generale_frame = LabelFrame(edit_detalii_generale_tab, text=f"Editare detalii generale {numar[0]}")
+        edit_detalii_generale_frame = LabelFrame(edit_detalii_generale_tab, text=f"Editare detalii generale {numar_remorca}")
         edit_detalii_generale_frame.pack(expand=1, fill="both", padx=5, pady=5)
 
         clienti = Lista_clienti(edit_detalii_generale_frame).incarca_clienti()
@@ -447,28 +485,28 @@ class Vehicule:
 
         edit_nr_auto_entry = Entry(edit_detalii_generale_frame)
         edit_nr_auto_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
-        edit_nr_auto_entry.insert(0, numar[0])
+        
 
         edit_marca_label = Label(edit_detalii_generale_frame, text="Marca:")
         edit_marca_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
 
         edit_marca_entry = Entry(edit_detalii_generale_frame)
         edit_marca_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
-        edit_marca_entry.insert(0, numar[1])
+        
 
         edit_serie_sasiu_label = Label(edit_detalii_generale_frame, text="Serie sasiu:")
         edit_serie_sasiu_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
 
         edit_serie_sasiu_entry = Entry(edit_detalii_generale_frame)
         edit_serie_sasiu_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
-        edit_serie_sasiu_entry.insert(0, numar[2])
+        
 
         edit_an_fabricatie_label = Label(edit_detalii_generale_frame, text="An fabricatie:")
         edit_an_fabricatie_label.grid(row=3, column=0, sticky="w", padx=10, pady=5)
 
         edit_an_fabricatie_entry = Entry(edit_detalii_generale_frame)
         edit_an_fabricatie_entry.grid(row=3, column=1, padx=10, pady=5, sticky="w")
-        edit_an_fabricatie_entry.insert(0, numar[3])
+        
 
         edit_proprietar_label = Label(edit_detalii_generale_frame, text="Proprietar:")
         edit_proprietar_label.grid(row=5, column=0, sticky="w", padx=10, pady=5)
@@ -487,24 +525,31 @@ class Vehicule:
         self.anulare_mod_remorca_button = Button(butoane_modificare_remorca_frame, text="Anuleaza", command=edit_remorca_window.destroy)
         self.anulare_mod_remorca_button.grid(row=0, column=1, padx=10, pady=5)
 
-        date_tehnice = incarcare_date_tehnice()
+        if id and numar:
 
-        # Cautam remorca in lista si extragem proprietarul. 
+            edit_nr_auto_entry.insert(0, numar[0])
+            edit_marca_entry.insert(0, numar[1])
+            edit_serie_sasiu_entry.insert(0, numar[2])
+            edit_an_fabricatie_entry.insert(0, numar[3])
 
-        for remorca in self.lista_remorci:
-            if str(remorca[0]) == str(id):
-                # print(remorca[5])
-                proprietar = str(remorca[5])
+            date_tehnice = incarcare_date_tehnice()
 
-            # else:
-            #     proprietar = ""
+            # Cautam remorca in lista si extragem proprietarul. 
 
-            proprietar_combobox.set(proprietar)
+            for remorca in self.lista_remorci:
+                if str(remorca[0]) == str(id):
+                    # print(remorca[5])
+                    proprietar = str(remorca[5])
+
+                # else:
+                #     proprietar = ""
+
+                proprietar_combobox.set(proprietar)
 
         edit_detalii_tehnice_tab = Frame(edit_remorca_notebook)
         edit_remorca_notebook.add(edit_detalii_tehnice_tab, text="Detalii tehnice")
 
-        edit_detalii_tehnice_frame = LabelFrame(edit_detalii_tehnice_tab, text=f"Editare detalii tehnice {numar[0]}")
+        edit_detalii_tehnice_frame = LabelFrame(edit_detalii_tehnice_tab, text=f"Editare detalii tehnice {numar_remorca}")
         edit_detalii_tehnice_frame.pack(expand=1, fill="both", padx=5, pady=5)
 
         data_inmatriculare_remorca_label = Label(edit_detalii_tehnice_frame, text="Data primei inmatriculari:")
