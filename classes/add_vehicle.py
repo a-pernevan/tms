@@ -691,9 +691,7 @@ class Vehicule:
             tip_remorca_entry.set(str(date_tehnice[0][13]))
             incarcatura_max_admisa_entry.insert(0, str(date_tehnice[0][12]))
             numar_axe_entry.insert(0, str(date_tehnice[0][7]))
-        
-    def adauga_remorca(self):
-        pass
+            
 
     def adauga_inventar(self, id, nr_remorca, id_inv=None):
         print(id, nr_remorca)
