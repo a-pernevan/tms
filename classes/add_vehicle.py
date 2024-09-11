@@ -32,9 +32,9 @@ class Vehicule:
         self.root = root
         self.lista_remorci = []
         
-        # self.main_frame = ttk.Notebook(self.root, width=1300, height=600)
+        self.main_frame = ttk.Notebook(self.root, width=1300, height=600)
 
-        self.main_frame = ttk.Notebook(self.root)
+        # self.main_frame = ttk.Notebook(self.root)
         self.main_frame.pack(fill=BOTH, expand=1)
 
         self.frame_remorci()
@@ -49,15 +49,16 @@ class Vehicule:
         self.icon_reset_trailers = self.icon_reset_trailers.resize((33, 33))
         self.icon_reset_trailers = ImageTk.PhotoImage(self.icon_reset_trailers)
 
-        self.test_frame = ScrolledFrame(self.main_frame, compound=RIGHT)
-        self.test_frame.pack(fill=BOTH, expand=1, anchor="center")
+        # self.test_frame = ScrolledFrame(self.main_frame, compound=RIGHT)
+        # self.test_frame.pack(fill=BOTH, expand=1, anchor="center")
+        # # self.test_frame.grid(row=0, column=0, sticky="nsew")
 
-        # self.remorca_frame = Frame(self.main_frame)
-        self.remorca_frame = Frame(self.test_frame.interior)
+        self.remorca_frame = Frame(self.main_frame)
+        # self.remorca_frame = Frame(self.test_frame)
         self.remorca_frame.pack(fill=BOTH, expand=1, anchor="center")
 
         # self.main_frame.add(self.remorca_frame, text="Remorci")
-        self.main_frame.add(self.test_frame, text="Remorci")
+        self.main_frame.add(self.remorca_frame, text="Remorci")
 
         self.vehicule_frame = LabelFrame(self.remorca_frame, text="Lista Semiremorci")
         self.vehicule_frame.pack()
