@@ -48,11 +48,15 @@ class Vehicule:
         self.icon_reset_trailers = self.icon_reset_trailers.resize((33, 33))
         self.icon_reset_trailers = ImageTk.PhotoImage(self.icon_reset_trailers)
 
-        # self.remorca_frame = Frame(self.main_frame)
-        self.remorca_frame = Frame(self.main_frame)
-        self.remorca_frame.pack(fill=BOTH, expand=1, anchor=W)
+        self.test_frame = ScrolledFrame(self.main_frame, compound=RIGHT)
+        self.test_frame.pack(fill=BOTH, expand=1, anchor="ne")
 
-        self.main_frame.add(self.remorca_frame, text="Remorci")
+        # self.remorca_frame = Frame(self.main_frame)
+        self.remorca_frame = Frame(self.test_frame.interior)
+        self.remorca_frame.pack(fill=BOTH, expand=1, anchor="e")
+
+        # self.main_frame.add(self.remorca_frame, text="Remorci")
+        self.main_frame.add(self.test_frame, text="Remorci")
 
         self.vehicule_frame = LabelFrame(self.remorca_frame, text="Lista Semiremorci")
         self.vehicule_frame.pack()
