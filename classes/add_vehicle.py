@@ -1,3 +1,4 @@
+from email import message
 from optparse import Values
 from tkinter import *
 from tkinter import ttk, messagebox
@@ -408,6 +409,20 @@ class Vehicule:
             numar_axe_entry.delete(0, END)
 
         
+        def dezactiveaza_campuri():
+            data_inmatriculare_remorca_entry.config(state=DISABLED)
+            lungime_remorca_entry.config(state=DISABLED)
+            serie_civ_remorca_entry.config(state=DISABLED)
+            latime_remorca_entry.config(state=DISABLED)
+            serie_talon_remorca_entry.config(state=DISABLED)
+            inaltime_remorca_entry.config(state=DISABLED)
+            culoare_remorca_entry.config(state=DISABLED)
+            masa_maxima_admisa_entry.config(state=DISABLED)
+            tip_remorca_entry.config(state=DISABLED)
+            incarcatura_max_admisa_entry.config(state=DISABLED)
+            numar_axe_entry.config(state=DISABLED)
+
+        
         def adauga_date_tehnice(id_rem):
             
             try: 
@@ -447,16 +462,16 @@ class Vehicule:
                         masa_max = %s, max_load = %s, tip_rem = %s WHERE id_rem = %s"
                     
                     values = (data_inmatriculare_remorca_entry.get_date(), \
-                                serie_civ_remorca_entry.get(), \
-                                serie_talon_remorca_entry.get(), \
-                                culoare_remorca_entry.get(), \
+                                serie_civ_remorca_entry.get().upper(), \
+                                serie_talon_remorca_entry.get().upper(), \
+                                culoare_remorca_entry.get().upper(), \
                                 numar_axe_entry.get(), \
                                 lungime_remorca_entry.get(), \
                                 latime_remorca_entry.get(), \
                                 inaltime_remorca_entry.get(), \
                                 masa_maxima_admisa_entry.get(), \
                                 incarcatura_max_admisa_entry.get(), \
-                                tip_remorca_entry.get(), id)
+                                tip_remorca_entry.get().upper(), id)
 
                     cursor.execute(sql, values)
                     connection.commit()
@@ -491,7 +506,35 @@ class Vehicule:
             edit_remorca_window.destroy()
 
         def salvare_remorca_noua():
-            pass
+            try:
+                connection._open_connection()
+                sql = "INSERT INTO tauros_truck (plate_no, serie_sasiu, categorie, marca, an_fabricatie, proprietar) values (%s, %s, %s, %s, %s, %s)"
+                values = (edit_nr_auto_entry.get().upper(), \
+                        edit_serie_sasiu_entry.get().upper(), \
+                        'SEMIREMORCA', \
+                        edit_marca_entry.get().upper(), \
+                        edit_an_fabricatie_entry.get(), \
+                        proprietar_combobox.get())
+
+                cursor.execute(sql, values)
+                connection.commit()
+
+                sql = "SELECT id FROM tauros_truck ORDER BY id DESC LIMIT 1"
+
+                cursor.execute(sql)
+
+                result = cursor.fetchone()
+
+                id = result[0]
+
+                rezultat = adauga_date_tehnice(id)
+
+                if rezultat:
+                    messagebox.showinfo(title="Success", message="Remorca adaugata cu succes!")
+
+            except:
+                messagebox.showerror(title="Eroare", message="Eroare conectarea la baza de date!")
+
 
         def incarcare_date_tehnice():
             try:
