@@ -506,6 +506,26 @@ class Vehicule:
             edit_remorca_window.destroy()
 
         def salvare_remorca_noua():
+            print("save")
+            try:
+                connection._open_connection()
+                sql = "SELECT * FROM tauros_truck WHERE plate_no = %s"
+
+                values = (edit_nr_auto_entry.get().upper(),)
+
+                cursor.execute(sql, values)
+
+                result = cursor.fetchall()
+
+            except:
+                messagebox.showerror(title="Error", message="Eroare la conectare la baza de date!")
+
+            finally:
+                if result:
+                    messagebox.showerror(title="Error", message="Remorca exista deja!")
+                    connection.close()
+                    return
+
             try:
                 connection._open_connection()
                 sql = "INSERT INTO tauros_truck (plate_no, serie_sasiu, categorie, marca, an_fabricatie, proprietar) values (%s, %s, %s, %s, %s, %s)"
@@ -515,17 +535,25 @@ class Vehicule:
                         edit_marca_entry.get().upper(), \
                         edit_an_fabricatie_entry.get(), \
                         proprietar_combobox.get())
+                
+                
 
                 cursor.execute(sql, values)
                 connection.commit()
 
-                sql = "SELECT id FROM tauros_truck ORDER BY id DESC LIMIT 1"
+                print(values)
 
-                cursor.execute(sql)
+                sql = "SELECT truck_id FROM tauros_truck WHERE plate_no = %s ORDER BY truck_id DESC LIMIT 1"
 
-                result = cursor.fetchone()
+                values = (edit_nr_auto_entry.get().upper(),)
 
-                id = result[0]
+                cursor.execute(sql, values)
+
+                result = cursor.fetchall()
+
+                print(result)
+
+                id = result[0][0]
 
                 rezultat = adauga_date_tehnice(id)
 
@@ -641,6 +669,9 @@ class Vehicule:
                 #     proprietar = ""
 
                 proprietar_combobox.set(proprietar)
+
+        else:
+            self.salvare_mod_remorca_button.config(command=salvare_remorca_noua)
 
         edit_detalii_tehnice_tab = Frame(edit_remorca_notebook)
         edit_remorca_notebook.add(edit_detalii_tehnice_tab, text="Detalii tehnice")
