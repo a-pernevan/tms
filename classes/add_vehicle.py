@@ -10,7 +10,7 @@ from utils.tooltip import ToolTip
 from liste import Remorci, Lista_clienti
 from datetime import datetime, timedelta, date
 from upload_download_docs import Documente
-from scadente import Scadente
+from scadente import Scadente, Scadente_directe
 from PIL import Image, ImageTk
 from right_click_menu import RightClickMenu
 from tkcalendar import DateEntry
@@ -22,11 +22,11 @@ except:
     quit()
 
 # TODO 
-# - functie editare remorca - in progress
+# - functie editare remorca - done
 # - functie stergere remorca
-# - funcie adaugare remorca
+# - funcie adaugare remorca - done
 # - tab autovehicule
-# - inventare remorci - in progress
+# - inventare remorci - done
 
 class Vehicule:
     # modificarea vehiculelor

@@ -13,6 +13,87 @@ from tkcalendar import DateEntry, Calendar
 from datetime import datetime, timedelta, date
 from liste import Scadente_auto
 
+class Scadente_directe:
+    def __init__(self, master, id_tms, nume, tip, tip_scadenta, data_scadenta):
+        self.master = master
+        self.id_tms = id_tms
+        self.nume = nume
+        self.tip = tip
+        self.tip_scadenta = tip_scadenta
+        self.data_scadenta = data_scadenta
+        
+        self.adauga_scadenta()
+    def check_denumire(self):
+        denumire_scadenta = []
+        try:
+            connection._open_connection()
+            sql = "SELECT nume_scadenta FROM tip_scadente"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
+            quit()
+
+        for i in result:
+            denumire_scadenta.append(i[0])
+
+        if self.tip_scadenta.upper() not in denumire_scadenta:
+            sql = "INSERT INTO tip_scadente (nume_scadenta) VALUES (%s)"
+            values = (self.tip_scadenta,)
+            cursor.execute(sql, values)
+            connection.commit()
+
+        connection.close()
+        return True
+
+    def check_scadenta(self):
+        try:
+            connection._open_connection()
+            sql = "SELECT * FROM tabel_scadente WHERE id_tms = %s AND scadenta = %s"
+            values = (self.id_tms, self.tip_scadenta)
+            cursor.execute(sql, values)
+            result = cursor.fetchall()
+
+        except:
+            messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
+
+        finally:
+            
+            if result:
+                sql = "DELETE FROM tabel_scadente WHERE id_tms = %s AND scadenta = %s"
+                values = (self.id_tms, self.tip_scadenta)
+                cursor.execute(sql, values)
+                connection.commit()
+                connection.close()
+                return True
+            else:
+                return False
+    
+    def adauga_scadenta(self):
+        if self.check_denumire() and self.check_scadenta():
+            data_inv = datetime.strptime(str(self.data_scadenta), "%Y-%m-%d")
+            data_scadenta = data_inv + timedelta(days=20)
+            print(data_scadenta)
+            input()
+            try:
+                connection._open_connection()
+                sql = "INSERT INTO tabel_scadente (id_tms, nume, tip, scadenta, data_scadenta) VALUES (%s, %s, %s, %s, %s)"
+                values = (self.id_tms, self.nume, self.tip, self.tip_scadenta, data_scadenta)
+                cursor.execute(sql, values)
+                connection.commit()
+            
+            except:
+                messagebox.showerror(title="Connection error", message="Could not connect to DB Server, program will exit")
+                quit()
+
+            finally:
+                connection.close()
+
+            messagebox.showinfo(title="Success", message= f"Scadenta {self.nume} - {self.tip_scadenta} adaugata cu succes!")
+
+    
+
 class Scadente:
     def __init__(self, master, id_tms, nume, tip):
         self.master = master
@@ -43,6 +124,10 @@ class Scadente:
         self.icon_save = self.icon_save.resize((22, 22))
         self.icon_save = ImageTk.PhotoImage(self.icon_save)
 
+        self.icon_refresh = Image.open("classes/utils/icons/reset-icon-png-10.jpg")
+        self.icon_refresh = self.icon_refresh.resize((22, 22))
+        self.icon_refresh = ImageTk.PhotoImage(self.icon_refresh)
+
         self.scadente_frame = tk.LabelFrame(self.master, text="Scadente")
         self.scadente_frame.pack(padx=5, pady=5)
 
@@ -52,6 +137,10 @@ class Scadente:
         self.scadenta_noua_button = tk.Button(self.scadente_frame, image=self.icon_new, borderwidth=0, highlightthickness=0, relief="flat", command=self.adauga_scadenta_rem)
         self.scadenta_noua_button.grid(row=0, column=1, sticky=W, padx=10, pady=10)
         ToolTip(self.scadenta_noua_button, text="Adauga scadenta")
+
+        self.refresh_scadente = tk.Button(self.scadente_frame, image=self.icon_refresh, borderwidth=0, highlightthickness=0, relief="flat", command=self.incarca_scadente)
+        self.refresh_scadente.grid(row=0, column=2, sticky=W, padx=10, pady=10)
+        ToolTip(self.refresh_scadente, text="Refresh")
         
         lista_scadente = self.incarca_scadente()
 
@@ -59,7 +148,7 @@ class Scadente:
 
             for i, scadenta in enumerate(lista_scadente):
                 # Debug code - verificam daca lista e ok
-                # print(i, scandenta)
+                # print(i, scadenta)
                 i += 1
                 b = 0
                 if (date.today() + timedelta(days=15)) >= scadenta[1] - timedelta(days=15):
@@ -90,6 +179,7 @@ class Scadente:
 
     def incarca_scadente(self):
         self.lista_scadente = []
+        print("Ok")
         connection._open_connection()
         
         sql = "SELECT scadenta, data_scadenta FROM tabel_scadente WHERE id_tms = %s AND nume = %s AND tip = %s"
@@ -200,6 +290,18 @@ class Scadente:
             self.main_window()
 
     
+    def sterge_scadenta(self):
+        try:
+            connection._open_connection()
+            sql = "DELETE FROM tabel_scadente WHERE id_tms = %s AND nume = %s AND tip = %s AND scadenta = %s"
+            values = (self.id_tms, self.nume, self.tip, self.select_scadenta.get())
+            cursor.execute(sql, values)
+            connection.commit()
+            messagebox.showinfo(title="Success", message="Scadenta stearsa cu succes!")
+
+        except: 
+            messagebox.showerror(title="Error", message="Failed to delete scadenta!")
+    
 
     def adauga_scadenta_rem(self):
         
@@ -248,7 +350,9 @@ class Scadente:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Scadente")
-    registru = Scadente(root, 9, "AR11YHA", "SEMIREMORCA")
-    # registru.main_window(root)
-    # root.protocol("WM_DELETE_WINDOW", on_closing)
+    # registru = Scadente(root, 9, "AR11YHA", "SEMIREMORCA")
+    # # registru.main_window(root)
+    # # root.protocol("WM_DELETE_WINDOW", on_closing)
+    # root.mainloop()
+    new_scadenta = Scadente_directe(root, 3, "AR03LDF", "SEMIREMORCA", "INVENTAR", "2024-09-11")
     root.mainloop()
