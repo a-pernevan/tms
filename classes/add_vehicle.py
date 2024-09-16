@@ -833,8 +833,11 @@ class Vehicule:
                 file_menu.entryconfig(0, state="active")
                 file_menu.entryconfig(1, state="active")
                 file_menu.entryconfig(2, state="disabled")
-        
 
+                Scadente_directe(adauga_inventar_window, id, nr_remorca, "SEMIREMORCA", "INVENTAR", data_inventar_entry.get())
+                self.reset_detalii()
+                adauga_inventar_window.destroy()
+                
         def disable_fields():
             data_inventar_entry.config(state="disabled")
             intocmit_de_entry.config(state="disabled")
