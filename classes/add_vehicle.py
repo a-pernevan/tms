@@ -751,6 +751,12 @@ class Vehicule:
         numar_axe_entry.grid(row=5, column=1, padx=10, pady=5, sticky="w")
         numar_axe_entry.insert(0, '0') # Default numar
 
+        code_xl_label = Label(edit_detalii_tehnice_frame, text="Cod XL:")
+        code_xl_label.grid(row=5, column=2, sticky="w", padx=10, pady=5)
+        
+        code_xl_combo = ttk.Combobox(edit_detalii_tehnice_frame, values=["Da", "Nu"], width=17)
+        code_xl_combo.grid(row=5, column=3, padx=10, pady=5, sticky="w")
+
         # Verificam daca exista datele tehnice in db si le incarcam. 
         if date_tehnice:
             sterge_campuri()
