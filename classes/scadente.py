@@ -1,3 +1,4 @@
+from cProfile import label
 import locale
 import tkinter as tk
 from tkinter import Toplevel, ttk
@@ -21,6 +22,8 @@ class Scadente_directe:
         self.tip = tip
         self.tip_scadenta = tip_scadenta
         self.data_scadenta = data_scadenta
+
+        print(self.id_tms, self.nume, self.tip, self.tip_scadenta, self.data_scadenta)
         
         self.adauga_scadenta()
     def check_denumire(self):
@@ -68,14 +71,14 @@ class Scadente_directe:
                 connection.close()
                 return True
             else:
-                return False
+                return True
     
     def adauga_scadenta(self):
         if self.check_denumire() and self.check_scadenta():
             data_inv = datetime.strptime(str(self.data_scadenta), "%Y-%m-%d")
             data_scadenta = data_inv + timedelta(days=20)
             print(data_scadenta)
-            input()
+            # input()
             try:
                 connection._open_connection()
                 sql = "INSERT INTO tabel_scadente (id_tms, nume, tip, scadenta, data_scadenta) VALUES (%s, %s, %s, %s, %s)"
@@ -148,7 +151,7 @@ class Scadente:
 
             for i, scadenta in enumerate(lista_scadente):
                 # Debug code - verificam daca lista e ok
-                # print(i, scadenta)
+                print(i, scadenta)
                 i += 1
                 b = 0
                 if (date.today() + timedelta(days=15)) >= scadenta[1] - timedelta(days=15):
@@ -158,7 +161,7 @@ class Scadente:
                     self.edit_button.grid(row=i, column=b+1, sticky="w", padx=10, pady=5)
                     ToolTip(self.edit_button, text="Modifica scadenta")
 
-                    self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat")
+                    self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.sterge_scadenta(label))
                     self.delete_button.grid(row=i, column=b+2, sticky="w", padx=2, pady=5)
                     ToolTip(self.delete_button, text="Sterge scadenta")
                     
@@ -172,7 +175,7 @@ class Scadente:
                     ToolTip(self.edit_button, text="Modifica scadenta")
 
 
-                    self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat")
+                    self.delete_button = tk.Button(self.scadente_frame, image=self.icon_delete, borderwidth=0, highlightthickness=0, relief="flat", command=lambda label=scadenta[0] : self.sterge_scadenta(label))
                     self.delete_button.grid(row=i, column=b+2, sticky="w", padx=2, pady=5)
                     ToolTip(self.delete_button, text="Sterge scadenta")
 
@@ -290,17 +293,20 @@ class Scadente:
             self.main_window()
 
     
-    def sterge_scadenta(self):
+    def sterge_scadenta(self, label):
         try:
             connection._open_connection()
             sql = "DELETE FROM tabel_scadente WHERE id_tms = %s AND nume = %s AND tip = %s AND scadenta = %s"
-            values = (self.id_tms, self.nume, self.tip, self.select_scadenta.get())
+            values = (self.id_tms, self.nume, self.tip, label)
             cursor.execute(sql, values)
             connection.commit()
             messagebox.showinfo(title="Success", message="Scadenta stearsa cu succes!")
 
         except: 
             messagebox.showerror(title="Error", message="Failed to delete scadenta!")
+
+        self.scadente_frame.pack_forget()
+        self.main_window()
     
 
     def adauga_scadenta_rem(self):
