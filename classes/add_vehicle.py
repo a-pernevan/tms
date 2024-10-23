@@ -305,6 +305,12 @@ class Vehicule:
             incarcatura_max_rem = Label(self.frame_detalii_tehnice, text=f"{detalii_rem[0][12]} kg")
             incarcatura_max_rem.grid(row=4, column=3, sticky="w", padx=10, pady=5)
 
+            code_xl_rem_label = Label(self.frame_detalii_tehnice, text="Cod XL:")
+            code_xl_rem_label.grid(row=5, column=2, sticky="w", padx=10, pady=5)
+
+            code_xl_rem = Label(self.frame_detalii_tehnice, text=detalii_rem[0][14])
+            code_xl_rem.grid(row=5, column=3, sticky="w", padx=10, pady=5)
+
         # else: 
         #     # self.frame_detalii_tehnice.grid_forget()
         #     for widget in self.frame_detalii_tehnice.winfo_children():
@@ -312,6 +318,7 @@ class Vehicule:
 
         #     self.frame_detalii_tehnice.grid_forget()
 
+        # Tab-ul de inventare remorci
         self.frame_inventare_remorci = Frame(self.detalii_tab)
         self.frame_inventare_remorci.grid(row=0, column=0, padx=2, pady=5)
 
@@ -391,6 +398,8 @@ class Vehicule:
 
         Documente(self.documente_frame, id, date_rem[0])
 
+    # Editarea remorcilor
+
     def editare_remorca(self, id=None, numar=None):
         print(id)
         date_tehnice = False
@@ -407,6 +416,7 @@ class Vehicule:
             tip_remorca_entry.set("")
             incarcatura_max_admisa_entry.delete(0, END)
             numar_axe_entry.delete(0, END)
+            code_xl_combo.set("")
 
         
         def dezactiveaza_campuri():
@@ -421,14 +431,15 @@ class Vehicule:
             tip_remorca_entry.config(state=DISABLED)
             incarcatura_max_admisa_entry.config(state=DISABLED)
             numar_axe_entry.config(state=DISABLED)
+            code_xl_combo.config(state=DISABLED)
 
         
         def adauga_date_tehnice(id_rem):
             
             try: 
                 connection._open_connection()
-                sql = "INSERT INTO date_tehnice_rem (id_rem, data_reg, serie_civ, serie_talon, culoare, axe, lungime, latime, inaltime, masa_max, max_load, tip_rem) \
-                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                sql = "INSERT INTO date_tehnice_rem (id_rem, data_reg, serie_civ, serie_talon, culoare, axe, lungime, latime, inaltime, masa_max, max_load, tip_rem, code_xl) \
+                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 values = (id_rem, data_inmatriculare_remorca_entry.get_date(), \
                                         serie_civ_remorca_entry.get(), \
                                         serie_talon_remorca_entry.get(), \
@@ -439,7 +450,8 @@ class Vehicule:
                                         inaltime_remorca_entry.get(), \
                                         masa_maxima_admisa_entry.get(), \
                                         incarcatura_max_admisa_entry.get(), \
-                                        tip_remorca_entry.get())
+                                        tip_remorca_entry.get(), \
+                                        code_xl_combo.get())
                 print(values)
                 cursor.execute(sql, values)
                 connection.commit()
@@ -459,7 +471,7 @@ class Vehicule:
                 if date_tehnice:
                     connection._open_connection()
                     sql = "UPDATE date_tehnice_rem SET data_reg = %s, serie_civ = %s, serie_talon = %s, culoare = %s, axe = %s, lungime = %s, latime = %s, inaltime = %s, \
-                        masa_max = %s, max_load = %s, tip_rem = %s WHERE id_rem = %s"
+                        masa_max = %s, max_load = %s, tip_rem = %s, code_xl = %s WHERE id_rem = %s"
                     
                     values = (data_inmatriculare_remorca_entry.get_date(), \
                                 serie_civ_remorca_entry.get().upper(), \
@@ -471,7 +483,8 @@ class Vehicule:
                                 inaltime_remorca_entry.get(), \
                                 masa_maxima_admisa_entry.get(), \
                                 incarcatura_max_admisa_entry.get(), \
-                                tip_remorca_entry.get().upper(), id)
+                                tip_remorca_entry.get().upper(), \
+                                code_xl_combo.get(), id)
 
                     cursor.execute(sql, values)
                     connection.commit()
@@ -772,15 +785,22 @@ class Vehicule:
             incarcatura_max_admisa_entry.insert(0, str(date_tehnice[0][12]))
             numar_axe_entry.insert(0, str(date_tehnice[0][7]))
             
-
+    # Inventarele remorcilor
     def adauga_inventar(self, id, nr_remorca, id_inv=None):
-        print(id, nr_remorca)
+        print(id, nr_remorca, id_inv)
 
         data_inventar = date.today().strftime("%Y-%m-%d")
         # print(data_inventar)
 
         # Introducem un inventar nou in baza de date. 
         def inventar_nou():
+            global id_inv
+            print(id_inv)
+            id_inv = nr_inventar_entry.get()
+            print(id_inv)
+            if id_inv != None:
+                messagebox.showinfo("Duplicat", "Inventarul exista deja, se dubleaza!")
+                
             disable_fields()
             try:
                 connection._open_connection()
@@ -842,7 +862,7 @@ class Vehicule:
 
                 Scadente_directe(adauga_inventar_window, id, nr_remorca, "SEMIREMORCA", "INVENTAR", data_inventar_entry.get())
                 self.reset_detalii()
-                adauga_inventar_window.destroy()
+                # adauga_inventar_window.destroy()
                 
         def disable_fields():
             data_inventar_entry.config(state="disabled")
