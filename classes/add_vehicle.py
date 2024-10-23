@@ -794,75 +794,77 @@ class Vehicule:
 
         # Introducem un inventar nou in baza de date. 
         def inventar_nou():
-            global id_inv
-            print(id_inv)
+            # global id_inv
+            # print(id_inv)
             id_inv = nr_inventar_entry.get()
-            print(id_inv)
-            if id_inv != None:
+            print(f"ID Inventar: {id_inv}")
+            if id_inv != "":
                 messagebox.showinfo("Duplicat", "Inventarul exista deja, se dubleaza!")
+
+            else: 
                 
-            disable_fields()
-            try:
-                connection._open_connection()
+                disable_fields()
+                try:
+                    connection._open_connection()
 
-            except:
-                messagebox.showerror("Error", "Nu s-a putut conecta la baza de date!")
+                except:
+                    messagebox.showerror("Error", "Nu s-a putut conecta la baza de date!")
 
-            else:
-                sql = "INSERT INTO inventar_remorci (id_tms, data_inventar, intocmit, axa1_marca, axa1_dim, axa1_stare, axa2_marca, axa2_dim, axa2_stare, axa3_marca, axa3_dim, axa3_stare, \
-                    rezerva_cap, rezerva_rem, cablu_vamal, coltare, covorase, stickere, scanduri, chingi, clicheti, bari, cala, stiker_unghi) \
-                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                values = (id, data_inventar_entry.get(), \
-                            intocmit_de_entry.get(), \
-                            marca_anv_axa1_entry.get(), \
-                            dim_anv_axa1_entry.get(), \
-                            stare_anv_axa1_entry.get(), \
-                            marca_anv_axa2_entry.get(), \
-                            dim_anv_axa2_entry.get(), \
-                            stare_anv_axa2_entry.get(), \
-                            marca_anv_axa3_entry.get(), \
-                            dim_anv_axa3_entry.get(), \
-                            stare_anv_axa3_entry.get(), \
-                            rezerva_cap_var.get(), \
-                            rezerva_remorca_var.get(), \
-                            cablu_vamal_var.get(), \
-                            coltare_var.get(), \
-                            covorase_var.get(), \
-                            sticker_limite_var.get(), \
-                            nr_scanduri_entry.get(), \
-                            nr_chingi_entry.get(), \
-                            nr_crikete_entry.get(), \
-                            nr_bari_marfa_entry.get(), \
-                            nr_cala_roata_entry.get(), \
-                            nr_stickere_unghi_entry.get())
-                
-                cursor.execute(sql, values)
-                connection.commit()
+                else:
+                    sql = "INSERT INTO inventar_remorci (id_tms, data_inventar, intocmit, axa1_marca, axa1_dim, axa1_stare, axa2_marca, axa2_dim, axa2_stare, axa3_marca, axa3_dim, axa3_stare, \
+                        rezerva_cap, rezerva_rem, cablu_vamal, coltare, covorase, stickere, scanduri, chingi, clicheti, bari, cala, stiker_unghi) \
+                            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    values = (id, data_inventar_entry.get(), \
+                                intocmit_de_entry.get(), \
+                                marca_anv_axa1_entry.get(), \
+                                dim_anv_axa1_entry.get(), \
+                                stare_anv_axa1_entry.get(), \
+                                marca_anv_axa2_entry.get(), \
+                                dim_anv_axa2_entry.get(), \
+                                stare_anv_axa2_entry.get(), \
+                                marca_anv_axa3_entry.get(), \
+                                dim_anv_axa3_entry.get(), \
+                                stare_anv_axa3_entry.get(), \
+                                rezerva_cap_var.get(), \
+                                rezerva_remorca_var.get(), \
+                                cablu_vamal_var.get(), \
+                                coltare_var.get(), \
+                                covorase_var.get(), \
+                                sticker_limite_var.get(), \
+                                nr_scanduri_entry.get(), \
+                                nr_chingi_entry.get(), \
+                                nr_crikete_entry.get(), \
+                                nr_bari_marfa_entry.get(), \
+                                nr_cala_roata_entry.get(), \
+                                nr_stickere_unghi_entry.get())
+                    
+                    cursor.execute(sql, values)
+                    connection.commit()
 
-                sql = "SELECT id from inventar_remorci WHERE id_tms = %s ORDER BY id DESC LIMIT 1"
+                    sql = "SELECT id from inventar_remorci WHERE id_tms = %s ORDER BY id DESC LIMIT 1"
 
-                cursor.execute(sql, (id,))
+                    cursor.execute(sql, (id,))
 
-                result = cursor.fetchall()
-                id_inv = result[0][0]
+                    result = cursor.fetchall()
+                    id_inv = result[0][0]
 
-                nr_inventar_entry.config(state="normal")
+                    nr_inventar_entry.config(state="normal")
 
-                nr_inventar_entry.insert(0, id_inv)
+                    nr_inventar_entry.insert(0, id_inv)
 
-                nr_inventar_entry.config(state="disabled")
+                    nr_inventar_entry.config(state="disabled")
 
-                connection.close()
+                    connection.close()
 
-                messagebox.showinfo("Success", "Inventar adaugat cu succes!")
+                    messagebox.showinfo("Success", "Inventar adaugat cu succes!")
 
-                file_menu.entryconfig(0, state="active")
-                file_menu.entryconfig(1, state="active")
-                file_menu.entryconfig(2, state="disabled")
+                    file_menu.entryconfig(0, state="active")
+                    file_menu.entryconfig(1, state="active")
+                    file_menu.entryconfig(2, state="disabled")
 
-                Scadente_directe(adauga_inventar_window, id, nr_remorca, "SEMIREMORCA", "INVENTAR", data_inventar_entry.get())
-                self.reset_detalii()
-                # adauga_inventar_window.destroy()
+                    Scadente_directe(adauga_inventar_window, id, nr_remorca, "SEMIREMORCA", "INVENTAR", data_inventar_entry.get())
+                    self.reset_detalii()
+                    # adauga_inventar_window.destroy()
                 
         def disable_fields():
             data_inventar_entry.config(state="disabled")
