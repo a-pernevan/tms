@@ -1196,6 +1196,10 @@ class Vehicule:
         self.frame_detalii.pack_forget()
         self.detalii_remorca(values, id)
 
+    
+    def incarca_inventar(self, e=None):
+        pass
+
     def reset_detalii(self):
         """Resetam detaliile incarcate despre remorci, cautarea si butoanele."""
         self.lista_remorci = []
