@@ -117,7 +117,7 @@ class Rezervare_parcare:
         self.reservation_period_label = Label(self.main_window, text="Durata (ore):")
         self.reservation_period_label.grid(row=6, column=0, sticky="nw")
 
-        for hour in range(1, 25):
+        for hour in range(1, 46):
             parking_period.append(hour)
 
         self.reservation_period_combo = ttk.Combobox(self.main_window, values=parking_period)
